@@ -6,7 +6,7 @@ setlocal enabledelayedexpansion
 :: %2 = weather file path
 set inp_file=%1
 set weather=%2
-set doe_cmd=C:\doe22\doe22.bat exe48z
+set doe_cmd=doe22/doe22.bat exe48z
 
 echo Running file: %inp_file%.inp
 call %doe_cmd% %inp_file% %weather%
