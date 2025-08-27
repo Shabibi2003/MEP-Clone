@@ -1,0 +1,1340 @@
+      SUBROUTINE USERPR                                                         USERPR   2
+C                                                                               USERPR   3
+C              USERPR READS ALL RECORDS FROM THE DATA FILE AND HEADER           USERPR   4
+C              FILE OF THE USER-REPORTS INTO A BUFFER(IA).  TITLES,             USERPR   5
+C              HEADERS AND DATA ARE PRINTED OUT FOR ITEMS AND HOURS             USERPR   6
+C              SPECIFIED BY USER.                                               USERPR   7
+C                                                                               USERPR   8
+      COMMON  /IAX   / IAX, IADIM, IADIMV, IAXMAX, KORE, IAXlds, IAXsys         /IAX/    2
+      COMMON /AALEN / MAXAA,MAXFL,AANOW                                         /AALEN/  2
+      COMMON   /CTRL/   VERS(2),IRPFLG(4),IOVRLL(7),IWRTFL,IPROG,               /CTRL/   2
+     1                 IFATAL, NAMPRG(3,7), MTRICR                              /CTRL/   3
+      COMMON  /FILES / ISTNDF,ICTRL,IWEATH,ITDV,IDSNFL,ILDSO,ISYSO,             -044     1
+     1                IREPFL,IHDFIL,IHRHDF,IOUTPT,IOVRL                         /FILES/  3
+     2              , IPLTO, IPPFIL, ICECHR, ICECDT, ICECPR,                    /FILES/  4
+     3                IHRREP(3), IHRPAS(2)                                      /FILES/  5
+      COMMON   /FUNC/   NFUN,NHRP,NRP,ICOLR(4,128),IDATA,NHREC                  -048j    1
+      COMMON   /MISH/   ITOTC,NREP,IYR,IOPT,                                    /MISH/   2
+     1                  LCOL,IREPP(8,128),IREPL(128),                           -048j    2
+     2             BUF(32768), ICOL, ICHRT, IREPI(21,512),                      -048j    3
+     3                  IRNAME(8,128),IECOLP(128)                               -048j    4
+      INTEGER           IBUF(32768)  ! 128 reports by 256 var                   -048j    5
+      EQUIVALENCE       (BUF(1),IBUF(1))                                        /MISH/   7
+      COMMON /NHRSHR/ NHRSHR(128), IHRCTR(5,128), NHRITM, FILEHR, ICECHS        -048j    6
+      INTEGER         FILEHR                                                    /NHRSHR/ 3
+      COMMON /PTRSHR/ IHFPTR,IEHF,IPRO,IPROGU(3),IPROGP(3),LRB,LHR              BIGNAM   3
+      COMMON  /REPORT/ IREPRT(4,37),IPRG,IUNIQV(100),IUNIQS(100),IUNIQL         BIGNAM   4
+      COMMON /TITLE / ITITLE(10,5)                                              REPHDR   1
+      COMMON /IRUNPD/  NRUNPD, JRUNPD, IRUNPD(6,15)                             REPHDR   2
+      COMMON /TIME  / IDUM1, IDUM2, IDUM3, IDUM4, IDUM5,                        REPHDR   3
+     &                IDUM6, IDUM7, IDUM8, IDUM9, IDUM10, IDUM11(6),            -044e5   1
+     &                IDUM12, IDUM13, IDUM14, IDUM15, IDUM16,                   -044e5   2
+     &                CLOCK(10), IDUM17(13), IDUM18(12), IDUM19(12)             -044e5   3
+C     INTEGER CLOCK                                                             REPHDR   6
+      INTEGER CLOCK                                                             PC       1
+      COMMON  /WEATH / IWDID(5),LRECX,WLAT,WLONG,LTIMZ,IFX,IWSIZ,               /WEATH/  2
+     1                 CLRNES,TGNDR,WBT,DBT,PATM,CLDAMT,ISNOW,IRAIN,            /WEATH/  3
+     2                 IWNDDR,HUMRAT,DENSTY,ENTHAL,DIFSOL,DIRSOL,SOLRAD,        /WEATH/  4
+     3                 ICLDTY,WNDSPD,IDUMMY,DPT,WNDDRR,CLDCOV,RDNCC,            /WEATH/  5
+     4                 BSCC,SKYA,DBTR,GTEMP(12),CLR(12),ESKY,EGND,IWINTR        /WEATH/  6
+#ifdef _DLL                                                                  /* -048a    1 */ 
+      COMMON        // AA( 75 000 000)                                          -048a    2
+      INTEGER          IA( 75 000 000)                                          -048a    3
+#else                                                                        /* -048a    4 */ 
+      COMMON        // AA( 75 000 000)                                          -048a    5
+      INTEGER          IA( 75 000 000)                                          -048a    6
+#endif                                                                       /* -048a    7 */ 
+      EQUIVALENCE      (AA(1), IA(1))                                           HRa      3
+      EQUIVALENCE       (IDATA,IBHF)                                            USERPR  21
+      COMMON /WCTRL/  IwinReturn, Imsgflg                                       /WCTRL/  2
+c              For DLLs, delete Win_MB and enable msgbox.fi                     /WCTRL/  3
+#ifndef _DLL                                                                 /* -048     1 */ 
+      COMMON /WIN_MB/ MB_OK,MB_ICONSTOP,MB_ICONEXCLAMATION,MB_TASKMODAL,        -048     2
+     &                MB_ICONINFORMATION                                        -048     3
+#else                                                                        /* -048     4 */ 
+      include 'msgbox.fi'                                                       -048     5
+#endif                                                                       /* -048     6 */ 
+      CALL INIT0(IA,1024)                                                       USERPR  22
+      MAXAA  = 1024                                                             USERPR  23
+      MAXFL = IADIM - 20000                                                     USERPR  24
+      AANOW  = 1024                                                             USERPR  25
+      LRB    = 11                                                               BIGNAM   5
+      LHR    = 47                                                               BIGNAM   6
+C                                                                               USERPR  26
+C              HEADER FILE WHICH CONTAINS FORMATS AND HEADINGS FOR ITEMS        USERPR  27
+      REWIND IHRHDF                                                             USERPR  28
+C              DATA FILE WHICH CONTAINS TITLES, VARIABLE HEADINGS AND           USERPR  29
+C              DATA FOR ITEMS SPECIFIED BY USER                                 USERPR  30
+      REWIND IHRREP(1)                                                          USERPR  31
+C              READ FIRST RECORD--NO. REPORTS,TITLE,DATE                        USERPR  32
+      READ (IHRREP(1)) NHRP,IPRO,CLOCK,                                         REPHDR   7
+     $                  ITITLE,NRUNPD,IRUNPD,IWDID                              REPHDR   8
+      IF (IREPRT(IPRG,33) .GT. 0)  WRITE (IOUTPT,9001) NHRP, IPRO               IREPRT   2
+      IF (IREPRT(IPRG,33) .GT. 0)                                               IREPRT   3
+     1 CALL DUMPIT(20HITITLE               ,ITITLE(1,1),50)                     USERPR  36
+      IF (IREPRT(IPRG,33) .GT. 0)                                               IREPRT   4
+     1 CALL DUMPIT(20HCLOCK                ,CLOCK(1),10)                        USERPR  38
+ 9001 FORMAT(//1H ,7HNHRP = ,I2,4X,7HIPRO = ,I2)                                USERPR  39
+C              READ HEADER RECORDS FROM IHRREP INTO CORE                        USERPR  40
+      CALL READRF                                                               USERPR  41
+      IF (IwinReturn .ne. 0)  Return                                            -047k    1
+C              READ ALL HEADER RECORDS FROM IHRHDF INTO CORE                    USERPR  42
+      CALL READHF                                                               USERPR  43
+      IF (IwinReturn .ne. 0)  Return                                            -047k    2
+C              MOVE CORRESPONDING HEADER RECORDS FROM IHRHDF IN CORE            USERPR  44
+C              TO SPACE RESERVED IN CORE FOLLOWING HEADER RECORDS               USERPR  45
+C              FROM IHRREP                                                      USERPR  46
+      CALL MOVEHF                                                               USERPR  47
+C              BEGINNING COL NO. OF FIRST REPORT                                USERPR  48
+      ICOLR(2,1) = 1                                                            USERPR  49
+C              ENDING COL NO. OF FIRST REPORT                                   USERPR  50
+      ICOLR(3,1) = ICOLR(1,1)                                                   USERPR  51
+C              IF MORE THAN ONE REPORT                                          USERPR  52
+      IF(NHRP .EQ. 1) GOTO 475                                                  USERPR  53
+C              SAVE BEGINNING AND ENDING COL NO. FOR EACH REPORT                USERPR  54
+      DO 450 I=2,NHRP                                                           USERPR  55
+      ICOLR(1,I) = ICOLR(1,I) - ICOLR(3,I-1)                                    USERPR  56
+      ICOLR(2,I) = ICOLR(2,I-1) + ICOLR(1,I-1)                                  USERPR  57
+      ICOLR(3,I) = ICOLR(1,I) + ICOLR(2,I) - 1                                  USERPR  58
+  450 CONTINUE                                                                  USERPR  59
+  475 CONTINUE                                                                  USERPR  60
+      DO 425 NRP=1,NHRP                                                         USERPR  61
+C              FOR EACH REPORT, COMPUTE TOTAL SPACE OF CORE USED                USERPR  62
+      IREPL(NRP) = ICOLR(1,NRP) * NHRSHR(NRP) + NHRSHR(NRP) + 1                 USERPR  63
+  425 CONTINUE                                                                  USERPR  64
+C                                                                               USERPR  65
+C                                                                               USERPR  66
+C-----SKIP IF HOURLY-DATA-SAVE IS NOT BINARY                                    USERPR  67
+      IF(IREPRT(IPRG,37).NE.1) GO TO 430                                        IREPRT   5
+C          WRITE TITLE AND CLOCK INFO TO ICECHR AND ICECPR                      USERPR  69
+C            IPRO IS THE NUMBER OF THE OVERLAY (2 FOR SYS).                     USERPR  70
+      WRITE (ICECHR) ((ITITLE(I,J), I=1,10), J=1,5),                            USERPR  71
+     1                (VERS(I),I=1,2), (CLOCK(I),I=1,8)                         USERPR  72
+     2                ,(IWDID(I),I=1,5)                                         USERPR  73
+      WRITE (ICECPR,9011,ERR=99011)((ITITLE(I,J),I=1,10),J=1,2),                USERPR  74
+     1 (VERS(I),I=1,2),(CLOCK(I),I=1,8),((ITITLE(I,J),I=1,10),J=3,5)            USERPR  75
+     2 ,(IWDID(I),I=1,5)                                                        USERPR  76
+99011 CONTINUE                                                                  USERPR  77
+ 9011 FORMAT(1H1,20A4,' DOE-',2A4,2X,7A4,3HRUN,I3/                              USERPR  78
+     1  1H ,30A4/15H WEATHER FILE- ,5A4/)                                       USERPR  79
+      IF(IREPRT(IPRG,33).GT.0)WRITE(IOUTPT,9950,ERR=99950)                      IREPRT   6
+     1 (IWDID(I),I=1,5)                                                         USERPR  81
+99950 CONTINUE                                                                  USERPR  82
+ 9950 FORMAT(15H WEATHER FILE= ,5A4)                                            USERPR  83
+      WRITE (ICECHR) IPRO                                                       USERPR  84
+      WRITE (ICECPR,9960,ERR=99960)IPRO                                         USERPR  85
+99960 CONTINUE                                                                  USERPR  86
+ 9960 FORMAT(6H IPRO=,I2)                                                       USERPR  87
+ 430  CONTINUE                                                                  USERPR  88
+C              PRINT DATA OR PLOT DATA                                          USERPR  89
+      DO 500 I=1,NHRP                                                           USERPR  90
+  500 IREPP(1,I) = 0                                                            USERPR  91
+      DO 900 NRP=1,NHRP                                                         USERPR  92
+      IF((NHRSHR(NRP).EQ.0) .or. (ICOLR(1,NRP).EQ.0))  GOTO 900                 BIGNAM   7
+C              GET THE HEADERS SET UP FOR THIS REPORT                           USERPR  94
+      CALL GETHR                                                                USERPR  95
+C              POSITION DATA FILE                                               USERPR  96
+      IF(NRP .EQ. 1)  GOTO 560                                                  USERPR  97
+      IF(IREPP(1,NRP) .EQ. 1)  GOTO 600                                         USERPR  98
+      REWIND IHRREP(1)                                                          USERPR  99
+      DO 550 I=1,NHREC                                                          USERPR 100
+  550 READ(IHRREP(1))                                                           USERPR 101
+  560 IPART  = 0                                                                USERPR 102
+  600 IF(IREPP(1,NRP).EQ.0)  CALL READDR(IPART)                                 USERPR 103
+      IF (IwinReturn .ne. 0)  Return                                            -047k    3
+      IF(IOPT .EQ. 1)  CALL PRNTHR                                              USERPR 104
+      IF(IOPT .EQ. 2)  CALL PLT                                                 USERPR 105
+      IF(IPART .NE. 0)  GOTO 600                                                USERPR 106
+  900 CONTINUE                                                                  USERPR 107
+C        PUT A FLAG IN ICECFL AT THE END OF THIS OVERLAY'S DATA                 USERPR 108
+      IEDFLG = -7777                                                            USERPR 109
+      IF (IREPRT(IPRG,37).NE.1) GOTO 950                                        IREPRT   7
+      WRITE(ICECDT)IEDFLG                                                       USERPR 111
+      WRITE(ICECPR,9012,ERR=99012)IPRO,ICECHS                                   USERPR 112
+99012 CONTINUE                                                                  USERPR 113
+ 9012 FORMAT(17H PROGRAM NUMBER= ,I1,19H   NUMBER OF HOURS=,I5//)               USERPR 114
+      WRITE (ICECHR) ICECHS                                                     USERPR 115
+  950 CONTINUE                                                                  USERPR 116
+      RETURN                                                                    USERPR 117
+      END                                                                       USERPR 118
+      SUBROUTINE CENTR (IARR, N)                                                CENTR    2
+C                                                                               CENTR    3
+      DIMENSION IARR(1)                                                         CENTR    4
+      DATA IHOLL1/4H    /                                                       CENTR    5
+C                                                                               CENTR    6
+      IF(IARR(1).EQ.IHOLL1) RETURN                                              CENTR    7
+      DO 100 ISHIFT = 1,N                                                       CENTR    8
+      IF(IARR(N+1-ISHIFT).NE.IHOLL1) GO TO 120                                  CENTR    9
+  100 CONTINUE                                                                  CENTR   10
+      RETURN                                                                    CENTR   11
+  120 ISHIFT = ISHIFT - 1                                                       CENTR   12
+      IF(ISHIFT.LT.2) RETURN                                                    CENTR   13
+      ISHIFT = ISHIFT/2                                                         CENTR   14
+      J      = N - ISHIFT                                                       CENTR   15
+  130 IARR(J+ISHIFT) = IARR(J)                                                  CENTR   16
+      J      = J - 1                                                            CENTR   17
+      IF(J.GT.0) GO TO 130                                                      CENTR   18
+      DO 140 I = 1,ISHIFT                                                       CENTR   19
+  140 IARR(I) = IHOLL1                                                          CENTR   20
+      RETURN                                                                    CENTR   21
+      END                                                                       CENTR   22
+      SUBROUTINE GETDR(NHR)                                                     GETDR    2
+C                                                                               GETDR    3
+C              THIS SUBROUTINE READS DATA FROM CORE TO BUF                      GETDR    4
+C                                                                               GETDR    5
+      COMMON   /FUNC/   NFUN,NHRP,NRP,ICOLR(4,128),IDATA,NHREC                  -048j    1
+      COMMON   /MISH/   ITOTC,NREP,IYR,IOPT,                                    /MISH/   2
+     1                  LCOL,IREPP(8,128),IREPL(128),                           -048j    2
+     2             BUF(32768), ICOL, ICHRT, IREPI(21,512),                      -048j    3
+     3                  IRNAME(8,128),IECOLP(128)                               -048j    4
+      INTEGER           IBUF(32768)  ! 128 reports by 256 var                   -048j    5
+      EQUIVALENCE       (BUF(1),IBUF(1))                                        /MISH/   7
+      COMMON  /REPORT/ IREPRT(4,37),IPRG,IUNIQV(100),IUNIQS(100),IUNIQL         BIGNAM   4
+      COMMON   /TIME2/   IMO,IDAY,IHR                                           /TIME2/  2
+#ifdef _DLL                                                                  /* -048a    1 */ 
+      COMMON        // AA( 75 000 000)                                          -048a    2
+      INTEGER          IA( 75 000 000)                                          -048a    3
+#else                                                                        /* -048a    4 */ 
+      COMMON        // AA( 75 000 000)                                          -048a    5
+      INTEGER          IA( 75 000 000)                                          -048a    6
+#endif                                                                       /* -048a    7 */ 
+      EQUIVALENCE      (AA(1), IA(1))                                           HRa      3
+C                                                                               GETDR   11
+C              PTR TO BEGINNING COL FOR EACH HOUR IN CORE                       GETDR   12
+      IBCOLC = IREPP(2,NRP) + ((ICOLR(1,NRP) + 1) * NHR)                        GETDR   13
+C              PTR TO ENDING COL FOR EACH HOUR IN CORE                          GETDR   14
+      IECOLC = IBCOLC + ICOLR(1,NRP)                                            GETDR   15
+C              UNPACK WORD WHICH CONTAINS MONTH,DAY AND HOUR                    GETDR   16
+      CALL UNPAK2(IA(IBCOLC))                                                   GETDR   17
+      IF(IHR .EQ. 0)  RETURN                                                    GETDR   18
+      IBCOLC = IBCOLC + 1                                                       GETDR   19
+      J      = 1                                                                GETDR   20
+C              TRANSFER DATA FROM CORE TO BUFFER                                GETDR   21
+      DO 100 I=IBCOLC,IECOLC                                                    GETDR   22
+      BUF(J) = AA(I)                                                            GETDR   23
+      J      = J + 1                                                            GETDR   24
+  100 CONTINUE                                                                  GETDR   25
+      RETURN                                                                    GETDR   26
+      END                                                                       GETDR   27
+      SUBROUTINE GETRR2(IRD,SCALES)                                             GETRR2   2
+C                                                                               GETRR2   3
+C              GETRR2 GETS THE NEXT DATA RECORD FROM CORE                       GETRR2   4
+C              AND PUTS IT IN R.                                                GETRR2   5
+C                                                                               GETRR2   6
+      COMMON   /CTRL/   VERS(2),IRPFLG(4),IOVRLL(7),IWRTFL,IPROG,               /CTRL/   2
+     1                 IFATAL, NAMPRG(3,7), MTRICR                              /CTRL/   3
+      COMMON   /FUNC/   NFUN,NHRP,NRP,ICOLR(4,128),IDATA,NHREC                  -048j    1
+      COMMON   /MISH/   ITOTC,NREP,IYR,IOPT,                                    /MISH/   2
+     1                  LCOL,IREPP(8,128),IREPL(128),                           -048j    2
+     2             BUF(32768), ICOL, ICHRT, IREPI(21,512),                      -048j    3
+     3                  IRNAME(8,128),IECOLP(128)                               -048j    4
+      INTEGER           IBUF(32768)  ! 128 reports by 256 var                   -048j    5
+      EQUIVALENCE       (BUF(1),IBUF(1))                                        /MISH/   7
+      COMMON   /RBUF/   RDATA(50)                                               /RBUF/   2
+      INTEGER           IRDATA(50)                                              /RBUF/   3
+      EQUIVALENCE       (RDATA(1),IRDATA(1))                                    /RBUF/   4
+      COMMON  /REPORT/ IREPRT(4,37),IPRG,IUNIQV(100),IUNIQS(100),IUNIQL         BIGNAM   4
+      COMMON   /TIME2/   IMO,IDAY,IHR                                           /TIME2/  2
+      COMMON /UNITT/  VKONV(300), DUMLOG(4), JUNITT(4,300,2)                    UNITS1   1
+#ifdef _DLL                                                                  /* -048a    1 */ 
+      COMMON        // AA( 75 000 000)                                          -048a    2
+      INTEGER          IA( 75 000 000)                                          -048a    3
+#else                                                                        /* -048a    4 */ 
+      COMMON        // AA( 75 000 000)                                          -048a    5
+      INTEGER          IA( 75 000 000)                                          -048a    6
+#endif                                                                       /* -048a    7 */ 
+      EQUIVALENCE      (AA(1), IA(1))                                           HRa      3
+      DIMENSION SCALES(12)                                                      GETRR2  15
+C                                                                               GETRR2  16
+      INDEX  = NFUN + 1                                                         GETRR2  17
+      CALL UNPAK2(IA(IRD+1))                                                    GETRR2  18
+      IF(IHR .EQ. 0)  RETURN                                                    GETRR2  19
+      DO 100 I=2,INDEX                                                          GETRR2  20
+      RDATA(I)=AA(IRD+I)                                                        GETRR2  21
+      IF (MTRICR.EQ.0)  GOTO 50                                                 GETRR2  22
+      IR     = IREPI(15,I-1)                                                    GETRR2  23
+      IF((IR.GT.300).OR.(IR.LE.2)) GOTO 50                                      BIGNAM   8
+      RDATA(I)=RDATA(I)*VKONV(IR)                                               GETRR2  25
+      IF (IR.EQ.8)  RDATA(I)=RDATA(I)-17.777778                                 GETRR2  26
+   50 RDATA(I)=RDATA(I)*SCALES(I-1)                                             GETRR2  27
+  100 CONTINUE                                                                  GETRR2  28
+      IRD    = ICOLR(1,NRP) + IRD + 1                                           GETRR2  29
+      RETURN                                                                    GETRR2  30
+      END                                                                       GETRR2  31
+      SUBROUTINE GETHR                                                          GETHR    2
+C                                                                               GETHR    3
+C              HEADER RECORDS ARE READ FROM CORE.                               GETHR    4
+C                                                                               GETHR    5
+      COMMON   /CTRL/   VERS(2),IRPFLG(4),IOVRLL(7),IWRTFL,IPROG,               /CTRL/   2
+     1                 IFATAL, NAMPRG(3,7), MTRICR                              /CTRL/   3
+      COMMON  /FILES / ISTNDF,ICTRL,IWEATH,ITDV,IDSNFL,ILDSO,ISYSO,             -044     1
+     1                IREPFL,IHDFIL,IHRHDF,IOUTPT,IOVRL                         /FILES/  3
+     2              , IPLTO, IPPFIL, ICECHR, ICECDT, ICECPR,                    /FILES/  4
+     3                IHRREP(3), IHRPAS(2)                                      /FILES/  5
+      COMMON   /FUNC/   NFUN,NHRP,NRP,ICOLR(4,128),IDATA,NHREC                  -048j    1
+      COMMON   /MISH/   ITOTC,NREP,IYR,IOPT,                                    /MISH/   2
+     1                  LCOL,IREPP(8,128),IREPL(128),                           -048j    2
+     2             BUF(32768), ICOL, ICHRT, IREPI(21,512),                      -048j    3
+     3                  IRNAME(8,128),IECOLP(128)                               -048j    4
+      INTEGER           IBUF(32768)  ! 128 reports by 256 var                   -048j    5
+      EQUIVALENCE       (BUF(1),IBUF(1))                                        /MISH/   7
+      COMMON /PTRSHR/ IHFPTR,IEHF,IPRO,IPROGU(3),IPROGP(3),LRB,LHR              BIGNAM   3
+      COMMON  /REPORT/ IREPRT(4,37),IPRG,IUNIQV(100),IUNIQS(100),IUNIQL         BIGNAM   4
+      COMMON /UNITT/  VKONV(300), DUMLOG(4), JUNITT(4,300,2)                    UNITS1   1
+#ifdef _DLL                                                                  /* -048a    1 */ 
+      COMMON        // AA( 75 000 000)                                          -048a    2
+      INTEGER          IA( 75 000 000)                                          -048a    3
+#else                                                                        /* -048a    4 */ 
+      COMMON        // AA( 75 000 000)                                          -048a    5
+      INTEGER          IA( 75 000 000)                                          -048a    6
+#endif                                                                       /* -048a    7 */ 
+      EQUIVALENCE      (AA(1), IA(1))                                           HRa      3
+C                                                                               GETHR   14
+      CHARACTER*4     IREPI_CHAR(21,512)                                        -048j    7
+        EQUIVALENCE ( IREPI_CHAR, IREPI )                                       GETHR   16
+      INTEGER INAM(8)                                                           BIGNAM   9
+      ICOL   = 1                                                                GETHR   17
+C              PTR TO BEGINNING OF REPORT LOCATED IN CORE                       GETHR   18
+      IPTR1  = IREPP(5,NRP)                                                     GETHR   19
+C              TRANSFER REPORT-BLOCK RECORD OF IHRREP FROM CORE--               GETHR   20
+C              TITLES, PLOTER-OPTION, WIDTH, LENGTH, NO. REPORT-BLOCKS          GETHR   21
+      DO JJ=1,8                                                                 BIGNAM  10
+       IRNAME(JJ,NRP) = IA(IPTR1+JJ-1)                                          BIGNAM  11
+      ENDDO                                                                     BIGNAM  12
+      IOPT   = IA(IPTR1 + 8)                                                    BIGNAM  13
+      NRBS   = IA(IPTR1 + (LHR-1))                                              BIGNAM  14
+      ICOLP  = 1                                                                GETHR   28
+      ICHRT  = 124                                                              GETHR   29
+      ICHR   = 0                                                                GETHR   30
+      IPTR1  = IREPP(5,NRP) + LHR                                               BIGNAM  15
+C              FOR EACH REPORT-BLOCK                                            GETHR   32
+      DO 175 JJ=1,NRBS                                                          GETHR   33
+C              PTRS TO BEGINNING OF JJ'TH REPORT-BLOCK IN CORE                  GETHR   34
+C              TRANSFER JJ'TH RB RECORD FROM CORE--                             GETHR   35
+C              VAR-NAME,TYPE NO.,NO. OF ITEMS                                   GETHR   36
+      DO J=1,8                                                                  BIGNAM  16
+        INAM(J)  = IA(IPTR1+J-1)                                                BIGNAM  17
+      ENDDO                                                                     BIGNAM  18
+      ITYP   = IA(IPTR1 + 8)                                                    BIGNAM  19
+      LEN    = IA(IPTR1 + 9)                                                    BIGNAM  20
+      IPTR1  = IPTR1 + 9                                                        BIGNAM  21
+      IPTR2  = IPTR1 + LEN + 1                                                  GETHR   44
+C              FOR EACH ITEM, TRANSFER THE TYPE NO.,ITEM NO.,VAR-NAME,          GETHR   45
+C              FORMAT WIDTH,FORMAT AND ITEM HEADINGS INTO IREPI                 GETHR   46
+      DO 150 I=1,LEN                                                            GETHR   47
+      IREPI(1,ICOL) = ITYP                                                      GETHR   48
+      IREPI(2,ICOL) = IA(IPTR1 + I)                                             GETHR   49
+      DO J=1,4                                                                  BIGNAM  22
+        IREPI(2+J,ICOL) = INAM(J)                                               BIGNAM  23
+      ENDDO                                                                     BIGNAM  24
+      IR     = IA(IPTR2+8)                                                      GETHR   54
+      DO 110 J=1,4                                                              GETHR   55
+      IREPI(6+J,ICOL)=IA(IPTR2+3+J)                                             GETHR   56
+      IREPI(10+J,ICOL)=IA(IPTR2-1+J)                                            GETHR   57
+      IREPI(16+J,ICOL)=JUNITT(J,IR,2-MTRICR)                                    GETHR   58
+  110 CONTINUE                                                                  GETHR   59
+      IREPI(15,ICOL)=IR                                                         GETHR   60
+ 1001 FORMAT(I3,1H-)                                                            GETHR   61
+      IF (IA(IPTR2+9) .GT. 99) THEN                                             GETHR   62
+          WRITE(IREPI_CHAR(21,ICOL)(:4),1001) IA(IPTR2+9)                       GETHR   63
+      ELSE                                                                      GETHR   64
+          WRITE(IREPI_CHAR(21,ICOL)(:4),1000) IA(IPTR2+9)                       GETHR   65
+      END IF                                                                    GETHR   66
+ 1000 FORMAT(1H(,I2,1H) )                                                       GETHR   67
+      IPTR2  = IPTR2+10                                                         GETHR   68
+      IFW    = IREPI(11,ICOL)                                                   GETHR   69
+C              TOTAL NO. OF CHARACTERS OF DATA PER PASS                         GETHR   70
+      ICHR   = ICHR + IFW                                                       GETHR   71
+C              IF I'TH ITEM WILL NOT FIT ON PAGE                                GETHR   72
+      IF(ICHR .LE. 124) GOTO 100                                                GETHR   73
+C              STORE COL. NO. OF LAST ITEM THAT WILL FIT ON PAGE PER PASS       GETHR   74
+      IECOLP(ICOLP) = ICOL - 1                                                  GETHR   75
+      ICOLP  = ICOLP + 1                                                        GETHR   76
+C         TOTAL NO. OF CHARACTERS OF DATA IN REPORT                             GETHR   77
+      ICHRT = ICHRT + 124                                                       GETHR   78
+C              RESET COUNTER FOR TOTAL NO. OF CHARS. PER PASS                   GETHR   79
+      ICHR   = IFW                                                              GETHR   80
+  100 CONTINUE                                                                  GETHR   81
+      ICOL   = ICOL + 1                                                         GETHR   82
+  150 CONTINUE                                                                  GETHR   83
+      IPTR1  = IPTR2                                                            GETHR   84
+  175 CONTINUE                                                                  GETHR   85
+C              IF ALL ITEMS FIT ON ONE PAGE                                     GETHR   86
+      IF(ICOLP .EQ. 1) GOTO 200                                                 GETHR   87
+C              IF LAST COL. NO. SAVED IS LESS THAN TOTAL NO. COLS. PER REPORT   GETHR   88
+      IF(IECOLP(ICOLP-1) .LT. ICOLR(1,NRP)) GOTO 200                            GETHR   89
+      GOTO 250                                                                  GETHR   90
+C              COL.NO. OF LAST ITEM OF LAST PASS = TOTAL NO. OF ITEMS IN REPORT GETHR   91
+  200 IECOLP(ICOLP) = ICOLR(1,NRP)                                              GETHR   92
+  250 CONTINUE                                                                  GETHR   93
+C-----SKIP IF HOURLY-DATA-SAVE IS NOT BINARY; OTHERWISE,                        GETHR   94
+C          WRITE ONE RECORD TO ICECHR FOR EACH VARIABLE LIST ITEM               GETHR   95
+C          WITH ALL THE HEADER INFO FROM IREPI.                                 GETHR   96
+C          THIS CONTAINS VARIABLE TYPE, LIST NO., NAME OF THE                   GETHR   97
+C          VARIABLE TYPE (I.E. GLOBAL), NAME OF THE VARIABLE                    GETHR   98
+C          LIST ITEM (I.E. DBTEMP), FORMAT INFO, AND                            GETHR   99
+C          UNIT TABLE INFO. THIS IS DONE ONCE PER OVERLAY.                      GETHR  100
+      IF(IREPRT(IPRG,37).NE.1) GO TO 340                                        IREPRT   8
+      ICOL=ICOL-1                                                               GETHR  102
+  310 WRITE (ICECHR) ICOL                                                       GETHR  103
+      DO 315 JCOL= 1,ICOL                                                       GETHR  104
+        WRITE (ICECHR) (IREPI(J,JCOL),J=1,21)                                   GETHR  105
+        WRITE(ICECPR,9002,ERR=99002)(IREPI(J,JCOL),J=1,21)                      GETHR  106
+99002 CONTINUE                                                                  GETHR  107
+ 9002 FORMAT (1H ,2I4,1X,4A4,1X,4A4,I4,1X,E12.5,1X,2A4,2I4,1X,4A4,1X,           GETHR  108
+     1            E12.5/)                                                       GETHR  109
+  315 CONTINUE                                                                  GETHR  110
+  340 CONTINUE                                                                  GETHR  111
+      RETURN                                                                    GETHR  112
+      END                                                                       GETHR  113
+      SUBROUTINE HDATA2                                                         HDATA2   2
+C                                                                               HDATA2   3
+C              HDATA2 GETS HEADER RECORD INFORMATION FROM CORE                  HDATA2   4
+C                                                                               HDATA2   5
+      COMMON   /DESC/   IDESC(4,12),IVTYP(8,12)                                 BIGNAM   1
+      COMMON   /FUNC/   NFUN,NHRP,NRP,ICOLR(4,128),IDATA,NHREC                  -048j    1
+      COMMON   /MISH/   ITOTC,NREP,IYR,IOPT,                                    /MISH/   2
+     1                  LCOL,IREPP(8,128),IREPL(128),                           -048j    2
+     2             BUF(32768), ICOL, ICHRT, IREPI(21,512),                      -048j    3
+     3                  IRNAME(8,128),IECOLP(128)                               -048j    4
+      INTEGER           IBUF(32768)  ! 128 reports by 256 var                   -048j    5
+      EQUIVALENCE       (BUF(1),IBUF(1))                                        /MISH/   7
+      COMMON /PTRSHR/ IHFPTR,IEHF,IPRO,IPROGU(3),IPROGP(3),LRB,LHR              BIGNAM   3
+      COMMON  /REPORT/ IREPRT(4,37),IPRG,IUNIQV(100),IUNIQS(100),IUNIQL         BIGNAM   4
+#ifdef _DLL                                                                  /* -048a    1 */ 
+      COMMON        // AA( 75 000 000)                                          -048a    2
+      INTEGER          IA( 75 000 000)                                          -048a    3
+#else                                                                        /* -048a    4 */ 
+      COMMON        // AA( 75 000 000)                                          -048a    5
+      INTEGER          IA( 75 000 000)                                          -048a    6
+#endif                                                                       /* -048a    7 */ 
+      EQUIVALENCE      (AA(1), IA(1))                                           HRa      3
+C                                                                               HDATA2  12
+      N      = 0                                                                HDATA2  13
+      NRBS   = IA(IREPP(5,NRP) + (LHR-1))                                       BIGNAM  25
+      IPTR1  = IREPP(5,NRP) + (LHR-1)                                           BIGNAM  26
+      DO 300 I=1,NRBS                                                           HDATA2  16
+      LEN    = IA(IPTR1+10)                                                     BIGNAM  27
+      IAX    = IPTR1 + 14 + LEN                                                 BIGNAM  28
+      IBX    = IPTR1                                                            HDATA2  19
+      DO 200 K=1,LEN                                                            HDATA2  20
+      N      = N + 1                                                            HDATA2  21
+      IF(N .GT. 12) RETURN                                                      HDATA2  22
+      DO 100 J=1,8                                                              BIGNAM  29
+        IF(J .LE. 4)  IDESC(J,N) = IA(IAX+J)                                    BIGNAM  30
+        IVTYP(J,N) = IA(IBX+J)                                                  BIGNAM  31
+  100 CONTINUE                                                                  HDATA2  26
+      IAX    = IAX + 10                                                         HDATA2  27
+  200 CONTINUE                                                                  HDATA2  28
+      IPTR1  = IPTR1+10+11*LEN                                                  BIGNAM  32
+  300 CONTINUE                                                                  HDATA2  30
+      RETURN                                                                    HDATA2  31
+      END                                                                       HDATA2  32
+      SUBROUTINE MOVEHF                                                         MOVEHF   2
+C                                                                               MOVEHF   3
+C              STEP THROUGH THE ITEMS IN EACH REPORT BLOCK.  WHEN THE           MOVEHF   4
+C              CORRESPONDING ITEM IS FOUND IN THE IHRHDF FILE IN CORE,          MOVEHF   5
+C              MOVE ITS RECORDS SO THAT THEY FOLLOW THE REPORT BLOCK            MOVEHF   6
+C              RECORDS IN CORE.                                                 MOVEHF   7
+      COMMON   /CTRL/   VERS(2),IRPFLG(4),IOVRLL(7),IWRTFL,IPROG,               /CTRL/   2
+     1                 IFATAL, NAMPRG(3,7), MTRICR                              /CTRL/   3
+      COMMON  /FILES / ISTNDF,ICTRL,IWEATH,ITDV,IDSNFL,ILDSO,ISYSO,             -044     1
+     1                IREPFL,IHDFIL,IHRHDF,IOUTPT,IOVRL                         /FILES/  3
+     2              , IPLTO, IPPFIL, ICECHR, ICECDT, ICECPR,                    /FILES/  4
+     3                IHRREP(3), IHRPAS(2)                                      /FILES/  5
+      COMMON   /FUNC/   NFUN,NHRP,NRP,ICOLR(4,128),IDATA,NHREC                  -048j    1
+      COMMON   /MISH/   ITOTC,NREP,IYR,IOPT,                                    /MISH/   2
+     1                  LCOL,IREPP(8,128),IREPL(128),                           -048j    2
+     2             BUF(32768), ICOL, ICHRT, IREPI(21,512),                      -048j    3
+     3                  IRNAME(8,128),IECOLP(128)                               -048j    4
+      INTEGER           IBUF(32768)  ! 128 reports by 256 var                   -048j    5
+      EQUIVALENCE       (BUF(1),IBUF(1))                                        /MISH/   7
+      COMMON /PTRSHR/ IHFPTR,IEHF,IPRO,IPROGU(3),IPROGP(3),LRB,LHR              BIGNAM   3
+      COMMON  /REPORT/ IREPRT(4,37),IPRG,IUNIQV(100),IUNIQS(100),IUNIQL         BIGNAM   4
+#ifdef _DLL                                                                  /* -048a    1 */ 
+      COMMON        // AA( 75 000 000)                                          -048a    2
+      INTEGER          IA( 75 000 000)                                          -048a    3
+#else                                                                        /* -048a    4 */ 
+      COMMON        // AA( 75 000 000)                                          -048a    5
+      INTEGER          IA( 75 000 000)                                          -048a    6
+#endif                                                                       /* -048a    7 */ 
+      EQUIVALENCE      (AA(1), IA(1))                                           HRa      3
+C                                                                               MOVEHF  15
+C              FOR EACH REPORT                                                  MOVEHF  16
+      DO 700 I=1,NHRP                                                           MOVEHF  17
+C              NO. REPORT BLOCKS                                                MOVEHF  18
+      NRBS   = IA(IREPP(5,I) + (LHR-1))                                         BIGNAM  33
+      IPTR1  = IREPP(5,I) + (LHR-1)                                             BIGNAM  34
+C              FOR EACH REPORT-BLOCK                                            MOVEHF  21
+      DO 600 J=1,NRBS                                                           MOVEHF  22
+C              LOCATE TYPE-NO.                                                  MOVEHF  23
+      ITYP   = IA(IPTR1+9)                                                      BIGNAM  35
+C              IN PROGRAM MODULE, ITYP = IVTYPE + IPROG*1000                    MOVEHF  25
+      IP     = ITYP / 1000                                                      MOVEHF  26
+      ITYP   = ITYP - IP*1000                                                   MOVEHF  27
+C              SET CURRENT PTR TO CURRENT PROG. NO.                             MOVEHF  28
+      IHFPTR = IPROGP(IP)                                                       MOVEHF  29
+C              NO. OF ITEMS FOR I'TH RB                                         MOVEHF  30
+      LEN    = IA(IPTR1+10)                                                     BIGNAM  36
+C              POINTER TO FIRST ITEM OF R-B                                     MOVEHF  32
+      IPTR1  = IPTR1 + 11                                                       BIGNAM  37
+      IF(LEN .EQ. 0)  GOTO 510                                                  BIGNAM  38
+C              POINTER TO FIRST FORMAT                                          MOVEHF  34
+      IPTR2  = IPTR1 + LEN                                                      MOVEHF  35
+      IHFPTR = IHFPTR-11                                                        MOVEHF  36
+  300 CONTINUE                                                                  MOVEHF  37
+C              POINTS TO TYPE-NO.                                               MOVEHF  38
+      IHFPTR = IHFPTR+12                                                        MOVEHF  39
+C              CHECK FOR ERROR-GONE PAST END OF HEADER RECORDS                  MOVEHF  40
+      IF(IHFPTR .GE. IEHF) GOTO 810                                             MOVEHF  41
+C              FIND MATCHING TYPE                                               MOVEHF  42
+      IF(IA(IHFPTR) .NE. ITYP) GOTO 300                                         MOVEHF  43
+C              ITYPP POINTS TO LOCATION OF MATCHING TYPE                        MOVEHF  44
+      ITYPP  = IHFPTR                                                           MOVEHF  45
+      IHFPTR = IHFPTR-11                                                        MOVEHF  46
+C              FOR EACH ITEM                                                    MOVEHF  47
+      DO 500 K=1,LEN                                                            MOVEHF  48
+  350 CONTINUE                                                                  MOVEHF  49
+C              CURRENT POINTS TO K'TH ITEM                                      MOVEHF  50
+      IHFPTR = IHFPTR+12                                                        MOVEHF  51
+C              K'TH ITEM FROM RB                                                MOVEHF  52
+      IITEM  = IA(IPTR1)                                                        MOVEHF  53
+C              CHECK FOR ERROR-GONE PAST END OF HEADER RECORDS                  MOVEHF  54
+      IF(IHFPTR .GE. IEHF) GOTO 820                                             MOVEHF  55
+C              FIND MATCHING ITEM NO.                                           MOVEHF  56
+      IF(IA(IPTR1) .NE. IA(IHFPTR)) GOTO 350                                    MOVEHF  57
+C              TRANSFER HEADER FILE RECORDS                                     MOVEHF  58
+      DO 450 L=1,9                                                              MOVEHF  59
+      IHFPTR = IHFPTR + 1                                                       MOVEHF  60
+      IA(IPTR2) = IA(IHFPTR)                                                    MOVEHF  61
+      IPTR2  = IPTR2 + 1                                                        MOVEHF  62
+  450 CONTINUE                                                                  MOVEHF  63
+      IA(IPTR2)=IA(IHFPTR-9)                                                    MOVEHF  64
+      IPTR2  = IPTR2+1                                                          MOVEHF  65
+C              CURRENT RB PTR POINTS TO NEXT ITEM ON RB LIST                    MOVEHF  66
+      IPTR1  = IPTR1 + 1                                                        MOVEHF  67
+C              RESET CURRENT PTR TO MATCHING TYPE FOR J'TH RB                   MOVEHF  68
+      IHFPTR = ITYPP-11                                                         MOVEHF  69
+  500 CONTINUE                                                                  MOVEHF  70
+  510 IPTR1  = IPTR1+LEN*10-1                                                   BIGNAM  39
+  600 CONTINUE                                                                  MOVEHF  72
+  700 CONTINUE                                                                  MOVEHF  73
+      GOTO 830                                                                  MOVEHF  74
+  800 WRITE(IOUTPT,9050) IPRO                                                   MOVEHF  75
+      CALL ABT                                                                  MOVEHF  76
+  810 WRITE(IOUTPT,9051) ITYP                                                   MOVEHF  77
+      CALL ABT                                                                  MOVEHF  78
+  820 WRITE(IOUTPT,9052) IITEM                                                  MOVEHF  79
+      CALL ABT                                                                  MOVEHF  80
+  830 CONTINUE                                                                  MOVEHF  81
+      RETURN                                                                    MOVEHF  82
+ 9050 FORMAT(26H ERROR-NO MATCH FOR PROGN= ,I3)                                 MOVEHF  83
+ 9051 FORMAT(29H ERROR-NO MATCH FOR VAR-TYPE= ,I3)                              MOVEHF  84
+ 9052 FORMAT(29H ERROR-NO MATCH FOR ITEM NUM= ,I3)                              MOVEHF  85
+      END                                                                       MOVEHF  86
+      SUBROUTINE NEWPA2                                                         NEWPA2   2
+C                                                                               NEWPA2   3
+      COMMON   /CTRL/   VERS(2),IRPFLG(4),IOVRLL(7),IWRTFL,IPROG,               /CTRL/   2
+     1                 IFATAL, NAMPRG(3,7), MTRICR                              /CTRL/   3
+      COMMON  /FILES / ISTNDF,ICTRL,IWEATH,ITDV,IDSNFL,ILDSO,ISYSO,             -044     1
+     1                IREPFL,IHDFIL,IHRHDF,IOUTPT,IOVRL                         /FILES/  3
+     2              , IPLTO, IPPFIL, ICECHR, ICECDT, ICECPR,                    /FILES/  4
+     3                IHRREP(3), IHRPAS(2)                                      /FILES/  5
+      COMMON   /FUNC/   NFUN,NHRP,NRP,ICOLR(4,128),IDATA,NHREC                  -048j    1
+      COMMON   /MISH/   ITOTC,NREP,IYR,IOPT,                                    /MISH/   2
+     1                  LCOL,IREPP(8,128),IREPL(128),                           -048j    2
+     2             BUF(32768), ICOL, ICHRT, IREPI(21,512),                      -048j    3
+     3                  IRNAME(8,128),IECOLP(128)                               -048j    4
+      INTEGER           IBUF(32768)  ! 128 reports by 256 var                   -048j    5
+      EQUIVALENCE       (BUF(1),IBUF(1))                                        /MISH/   7
+      COMMON  /REPORT/ IREPRT(4,37),IPRG,IUNIQV(100),IUNIQS(100),IUNIQL         BIGNAM   4
+      COMMON   /PAGEHR/   IPAGE,LPP,LINCNT                                      /PAGEHR/ 2
+      COMMON   /TIME2/   IMO,IDAY,IHR                                           /TIME2/  2
+      COMMON /TITLE / ITITLE(10,5)                                              REPHDR   1
+      COMMON /IRUNPD/  NRUNPD, JRUNPD, IRUNPD(6,15)                             REPHDR   2
+      COMMON /TIME  / IDUM1, IDUM2, IDUM3, IDUM4, IDUM5,                        REPHDR   3
+     &                IDUM6, IDUM7, IDUM8, IDUM9, IDUM10, IDUM11(6),            -044e5   1
+     &                IDUM12, IDUM13, IDUM14, IDUM15, IDUM16,                   -044e5   2
+     &                CLOCK(10), IDUM17(13), IDUM18(12), IDUM19(12)             -044e5   3
+C     INTEGER CLOCK                                                             REPHDR   6
+      INTEGER CLOCK                                                             PC       1
+      COMMON  /WEATH / IWDID(5),LRECX,WLAT,WLONG,LTIMZ,IFX,IWSIZ,               /WEATH/  2
+     1                 CLRNES,TGNDR,WBT,DBT,PATM,CLDAMT,ISNOW,IRAIN,            /WEATH/  3
+     2                 IWNDDR,HUMRAT,DENSTY,ENTHAL,DIFSOL,DIRSOL,SOLRAD,        /WEATH/  4
+     3                 ICLDTY,WNDSPD,IDUMMY,DPT,WNDDRR,CLDCOV,RDNCC,            /WEATH/  5
+     4                 BSCC,SKYA,DBTR,GTEMP(12),CLR(12),ESKY,EGND,IWINTR        /WEATH/  6
+C                                                                               NEWPA2  11
+      DIMENSION ProgName(2,2)                                                   -048q    2
+      DATA      ProgName /4H  LO, 4HADS ,                                       -048q    3
+     &                    4H  HV, 4HAC  /                                       -048q    4
+                                                                                -048q    5
+      IPAGE  = IPAGE + 1                                                        NEWPA2  12
+      WRITE(IOUTPT,9000,ERR=99001)((ITITLE(I,J),I=1,10),J=1,2),VERS,            NEWPA2  13
+     .                       (CLOCK(I),I=1,8),                                  NEWPA2  14
+     2           ((ITITLE(I,J),I=1,10),J=3,5),(IRNAME(I,NRP),I=1,8),            BIGNAM  40
+     3           (ProgName(I,IPRG),I=1,2),IWDID,IPAGE                           -048q    6
+99001 CONTINUE                                                                  NEWPA2  17
+      LINCNT = 4                                                                NEWPA2  18
+      RETURN                                                                    NEWPA2  19
+ 9000 FORMAT(1H1,20A4,' DOE-',2A4,2X,7A4,3HRUN,I3 /                             NEWPA2  20
+     1       1H ,30A4/' HOURLY REPORT- ',8A4,2A4,32X,                           -048q    7
+     2      15H WEATHER FILE- ,5A4,2HPg ,I5 / 1X,129(1H-))                      -048r    1
+      END                                                                       NEWPA2  23
+      SUBROUTINE PLT                                                            PLT      2
+C                                                                               PLT      3
+C              PLOTS HOURLY REPORTS                                             PLT      4
+C                                                                               PLT      5
+      COMMON   /FUNC/   NFUN,NHRP,NRP,ICOLR(4,128),IDATA,NHREC                  -048j    1
+      COMMON   /PAGEHR/   IPAGE,LPP,LINCNT                                      /PAGEHR/ 2
+      COMMON  /REPORT/ IREPRT(4,37),IPRG,IUNIQV(100),IUNIQS(100),IUNIQL         BIGNAM   4
+C                                                                               PLT      9
+      IPAGE  = 0                                                                PLT     10
+      LPP    = 60                                                               PLT     11
+      NFUN   = ICOLR(1,NRP)                                                     PLT     12
+      IF(NFUN .GT. 12) NFUN = 12                                                PLT     13
+      CALL HDATA2                                                               PLT     14
+      CALL PRT22                                                                PLT     15
+      RETURN                                                                    PLT     16
+      END                                                                       PLT     17
+      SUBROUTINE PRNTHR                                                         PRNTHR   2
+C                                                                               PRNTHR   3
+C      COMMON  /WEATH / IWDID(5),LRECX,WLAT,WLONG,LTIMZ,IFX,IWSIZ,              -067     1
+C     1                 CLRNES,TGNDR,WBT,DBT,PATM,CLDAMT,ISNOW,IRAIN,           -067     2
+C     2                 IWNDDR,HUMRAT,DENSTY,ENTHAL,DIFSOL,DIRSOL,SOLRAD,       -067     3
+C     3                 ICLDTY,WNDSPD,IDUMMY,DPT,WNDDRR,CLDCOV,RDNCC,           -067     4
+C     4                 BSCC,SKYA,DBTR,GTEMP(12),CLR(12),ESKY,EGND,IWINTR       -067     5
+      COMMON   /CTRL/   VERS(2),IRPFLG(4),IOVRLL(7),IWRTFL,IPROG,               /CTRL/   2
+     1                 IFATAL, NAMPRG(3,7), MTRICR                              /CTRL/   3
+      COMMON  /FILES / ISTNDF,ICTRL,IWEATH,ITDV,IDSNFL,ILDSO,ISYSO,             -044     1
+     1                IREPFL,IHDFIL,IHRHDF,IOUTPT,IOVRL                         /FILES/  3
+     2              , IPLTO, IPPFIL, ICECHR, ICECDT, ICECPR,                    /FILES/  4
+     3                IHRREP(3), IHRPAS(2)                                      /FILES/  5
+      COMMON   /FUNC/   NFUN,NHRP,NRP,ICOLR(4,128),IDATA,NHREC                  -048j    1
+      COMMON   /MISH/   ITOTC,NREP,IYR,IOPT,                                    /MISH/   2
+     1                  LCOL,IREPP(8,128),IREPL(128),                           -048j    2
+     2             BUF(32768), ICOL, ICHRT, IREPI(21,512),                      -048j    3
+     3                  IRNAME(8,128),IECOLP(128)                               -048j    4
+      INTEGER           IBUF(32768)  ! 128 reports by 256 var                   -048j    5
+      EQUIVALENCE       (BUF(1),IBUF(1))                                        /MISH/   7
+      COMMON  /REPORT/ IREPRT(4,37),IPRG,IUNIQV(100),IUNIQS(100),IUNIQL         BIGNAM   4
+      COMMON   /TIME2/   IMO,IDAY,IHR                                           /TIME2/  2
+      COMMON /TITLE / ITITLE(10,5)                                              REPHDR   1
+      COMMON /IRUNPD/  NRUNPD, JRUNPD, IRUNPD(6,15)                             REPHDR   2
+      COMMON /TIME  / IDUM1, IDUM2, IDUM3, IDUM4, IDUM5,                        REPHDR   3
+     &                IDUM6, IDUM7, IDUM8, IDUM9, IDUM10, IDUM11(6),            -044e5   1
+     &                IDUM12, IDUM13, IDUM14, IDUM15, IDUM16,                   -044e5   2
+     &                CLOCK(10), IDUM17(13), IDUM18(12), IDUM19(12)             -044e5   3
+C     INTEGER CLOCK                                                             REPHDR   6
+      INTEGER CLOCK                                                             PC       1
+      COMMON /UNITT/  VKONV(300), DUMLOG(4), JUNITT(4,300,2)                    UNITS1   1
+      COMMON  /WEATH / IWDID(5),LRECX,WLAT,WLONG,LTIMZ,IFX,IWSIZ,               /WEATH/  2
+     1                 CLRNES,TGNDR,WBT,DBT,PATM,CLDAMT,ISNOW,IRAIN,            /WEATH/  3
+     2                 IWNDDR,HUMRAT,DENSTY,ENTHAL,DIFSOL,DIRSOL,SOLRAD,        /WEATH/  4
+     3                 ICLDTY,WNDSPD,IDUMMY,DPT,WNDDRR,CLDCOV,RDNCC,            /WEATH/  5
+     4                 BSCC,SKYA,DBTR,GTEMP(12),CLR(12),ESKY,EGND,IWINTR        /WEATH/  6
+      DIMENSION        IFORM(50),IHEAD(50),INUMS(9),IHOLL(26),IHOLLB(1)         -067     6
+      DATA IHOLL/4H(1H , 4H2HMM, 4H2HDD, 4H2HHH, 1H), 2H6X,                     PRNTHR  13
+     +          4H----,4H(1X,,3H3I2,4H(5X,,4H2HMN,4H2HMX,4H2HSM,                PRNTHR  14
+     +          4H2HAV,3HJAN,3HFEB,3HMAR,3HAPR,3HMAY,3HJUN,3HJUL,               PRNTHR  15
+     +          3HAUG,3HSEP,3HOCT,3HNOV,3HDEC/                                  PRNTHR  16
+C THIS DATA STORES THE FORMAT IN WHICH THE DATA IS WRITTEN IN ASCII             -067     7
+C FORMAT WHEN HOURLY-DATA-SAVE=FORMATTED                                        -067     8
+      DATA IHOLLB/3H3I3/                                                        -067     9
+      DATA  IFILLE /4H    /                                                     PRNTHR  17
+      DATA  IHEAD/50*4H,2A4/                                                    PRNTHR  18
+      DATA  INUMS/3H,1X,3H,2X,3H,3X,3H,4X,3H,5X,3H,6X,                          PRNTHR  19
+     1      3H,7X,3H,8X,3H,9X/                                                  PRNTHR  20
+                                                                                -048q    8
+      DIMENSION ProgName(2,2)                                                   -048q    9
+      DATA      ProgName /4H  LO, 4HADS ,                                       -048q   10
+     &                    4H  HV, 4HAC  /                                       -048q   11
+C                                                                               PRNTHR  21
+C              FOR EACH REPORT                                                  PRNTHR  22
+C              NO. OF PASSES = TOTAL NO. OF CHARS. / 124                        PRNTHR  23
+      IFORM(1) = IHOLL(8)                                                       PRNTHR  24
+      IFORM(2) = IHOLL(9)                                                       PRNTHR  25
+      NPASS = ICHRT/124                                                         PRNTHR  26
+      IF(NPASS*124 .LT. ICHRT) NPASS = NPASS + 1                                PRNTHR  27
+      IBCOL  = 1                                                                PRNTHR  28
+      IPAGNO = 0                                                                PRNTHR  29
+C              FOR EACH PASS                                                    PRNTHR  30
+      DO 800 IPASS=1,NPASS                                                      PRNTHR  31
+      NHR    = -1                                                               PRNTHR  32
+      INDBEG = 0                                                                PRNTHR  33
+      IPAGE  = 0                                                                PRNTHR  34
+C              ENDING COL. NO. OF PAGE PER PASS                                 PRNTHR  35
+      IECOL  = IECOLP(IPASS)                                                    PRNTHR  36
+      IF (IPASS .GT. 1)   IBCOL = IECOLP(IPASS-1) + 1                           PRNTHR  37
+C                                                                               PRNTHR  38
+C              FILL FORMAT ARRAYS IHEAD,IFORM                                   PRNTHR  39
+C                                                                               PRNTHR  40
+      IHEAD(1) = IHOLL(1)                                                       PRNTHR  41
+      IHEAD(2) = IHOLL(2)                                                       PRNTHR  42
+      IHEAD(3) = IHOLL(3)                                                       PRNTHR  43
+      IHEAD(4) = IHOLL(4)                                                       PRNTHR  44
+      N      = 1                                                                PRNTHR  45
+      M      = 1                                                                PRNTHR  46
+      K      = 3                                                                PRNTHR  47
+      ISTEP  = 0                                                                PRNTHR  48
+      INDEX  = IBCOL - 1                                                        PRNTHR  49
+C              FOR EACH ITEM OF IPASS                                           PRNTHR  50
+  480 CONTINUE                                                                  PRNTHR  51
+C              FOR EACH ITEM OF IPASS                                           PRNTHR  52
+      K      = K + 2                                                            PRNTHR  53
+      ISTEP  = ISTEP + 3                                                        PRNTHR  54
+      INDEX  = INDEX + 1                                                        PRNTHR  55
+C              MOVE FORMAT TO IFORM                                             PRNTHR  56
+      IFORM(ISTEP) = IREPI(12,INDEX)                                            PRNTHR  57
+      IFORM(ISTEP+1) = IREPI(13,INDEX)                                          PRNTHR  58
+      IFORM(ISTEP+2) = IREPI(14,INDEX)                                          PRNTHR  59
+C              ISPACE = FORMAT WIDTH - 8 (HEADING WIDTH)                        PRNTHR  60
+      ISPACE = IREPI(11,INDEX) - 8                                              PRNTHR  61
+      M      = ISPACE/2                                                         PRNTHR  62
+      M      = M + N                                                            PRNTHR  63
+C              NO. SPACES BETWEEN HEADINGS                                      PRNTHR  64
+      IHEAD(K) = INUMS(M)                                                       PRNTHR  65
+      N      = ISPACE/2                                                         PRNTHR  66
+      IF((N*2) .NE. ISPACE) N = N+1                                             PRNTHR  67
+      IF(INDEX .LT. IECOL) GOTO 480                                             PRNTHR  68
+      ISTEP  = ISTEP + 3                                                        PRNTHR  69
+      IFORM(ISTEP) = IHOLL(5)                                                   PRNTHR  70
+      K      = K + 2                                                            PRNTHR  71
+      IHEAD(K) = IHOLL(5)                                                       PRNTHR  72
+C                                                                               PRNTHR  73
+C              PRINT TITLES AND DATA                                            PRNTHR  74
+C  CHECK TO SEE HOW MANY REPORTS ARE BEING PRINTED AND THEN CHECK THE           PRNTHR  75
+C  LINE COUNT TO SEE IF A NEW PAGE IS NEEDED FOR THIS PASS                      PRNTHR  76
+      IF(IPASS.NE.1 .AND. IREPRT(IPRG,36).GT.0 .AND. LINECT.LT.44)              IREPRT   9
+     +   WRITE(IOUTPT,9020)                                                     PRNTHR  78
+      IF(IPASS.NE.1.AND.IREPRT(IPRG,36).GT.0.AND.LINECT.LT.44) GOTO 610         IREPRT  10
+C                                                                               PRNTHR  80
+  600 CONTINUE                                                                  PRNTHR  81
+      IPAGE  = IPAGE + 1                                                        PRNTHR  82
+      IPAGNO = IPAGNO + 1                                                       PRNTHR  83
+      LINECT = 0                                                                PRNTHR  84
+      WRITE(IOUTPT,9000,ERR=99002)((ITITLE(I,J),I=1,10),J=1,2),VERS,            PRNTHR  85
+     .                       (CLOCK(I),I=1,8),                                  PRNTHR  86
+     2               ((ITITLE(I,J),I=1,10),J=3,5),                              PRNTHR  87
+     &                (IRNAME(I,NRP),I=1,8),(ProgName(I,IPRG),I=1,2),           -048q   12
+     &                IWDID,IPAGE,IPASS                                         -048q   13
+99002 CONTINUE                                                                  PRNTHR  89
+610   CONTINUE                                                                  PRNTHR  90
+      WRITE(IOUTPT,IHEAD,ERR=99003)((IREPI(I,J),I=3,4),J=IBCOL,IECOL)           PRNTHR  91
+99003 CONTINUE                                                                  PRNTHR  92
+C                                                                               PRNTHR  93
+      IHEAD(2) = IHOLL(6)                                                       PRNTHR  94
+      DO 625 I= 3,4                                                             PRNTHR  95
+      IHEAD(I) = IFILLE                                                         PRNTHR  96
+  625 CONTINUE                                                                  PRNTHR  97
+C                                                                               PRNTHR  98
+      WRITE(IOUTPT,IHEAD) ((IREPI(I,J),I=5,6),J=IBCOL,IECOL)                    PRNTHR  99
+      WRITE(IOUTPT,IHEAD) ((IREPI(I,J),I=7,8),J=IBCOL,IECOL)                    PRNTHR 100
+      WRITE(IOUTPT,IHEAD) ((IREPI(I,J),I=9,10),J=IBCOL,IECOL)                   PRNTHR 101
+      WRITE(IOUTPT,IHEAD) ((IREPI(I,J),I=17,18),J=IBCOL,IECOL)                  PRNTHR 102
+      WRITE(IOUTPT,IHEAD) ((IREPI(I,J),I=19,20),J=IBCOL,IECOL)                  PRNTHR 103
+      WRITE(IOUTPT,IHEAD) (IHOLL(7),IREPI(21,J),J=IBCOL,IECOL)                  PRNTHR 104
+      LINE   = 0                                                                PRNTHR 105
+      LINECT   = LINECT + 14                                                    PRNTHR 106
+  700 LINE   = LINE + 1                                                         PRNTHR 107
+  750 CONTINUE                                                                  PRNTHR 108
+C              (HOUR TO BE PRINTED) - 1                                         PRNTHR 109
+      IF((INDBEG.EQ.1).AND.                                                     IREPRT  11
+     $   ((IREPRT(IPRG,36).GT.0).OR.(IREPRT(IPRG,37).EQ.1)))                    IREPRT  12
+     1  GO TO 790                                                               PRNTHR 111
+      IF(INDBEG.EQ.1) GOTO 705                                                  PRNTHR 112
+  799 CONTINUE                                                                  PRNTHR 113
+      NHR    = NHR + 1                                                          PRNTHR 114
+C              GET DATA FOR CURRENT HOUR                                        PRNTHR 115
+      CALL GETDR(NHR)                                                           PRNTHR 116
+C                                                                               PRNTHR 117
+C  CHECK FOR THE END OF THE REPORT                                              PRNTHR 118
+      IF(IHR.EQ.0) GOTO 800                                                     PRNTHR 119
+C  IF ONLY SUMMARY REPORTS ARE BEING WRITTEN, SKIP THE HOURLY WRITE             PRNTHR 120
+      IF (IREPRT(IPRG,37).EQ.1) GO TO 790                                       IREPRT  13
+      IF((IREPRT(IPRG,37).EQ.2).AND.(IHR.GE.25)) GOTO 790                       IREPRT  14
+      IF(IREPRT(IPRG,36).GT.0) GOTO 790                                         IREPRT  15
+C  CHECK FOR THE END OF THE DAY;  IF NOT THE END, PRINT DATA                    PRNTHR 124
+C    FOR THE HOUR.                                                              PRNTHR 125
+      IF(IHR.EQ.25) GOTO 710                                                    PRNTHR 126
+705   IFORM(1) = IHOLL(8)                                                       PRNTHR 127
+      IFORM(2) = IHOLL(9)                                                       PRNTHR 128
+C               CONVERTS IF DESIRED                                             PRNTHR 129
+40    IF (MTRICR.EQ.0) GOTO 60                                                  PRNTHR 130
+      DO 50 I=IBCOL,IECOL                                                       PRNTHR 131
+      IR      = IREPI(15,I)                                                     PRNTHR 132
+      IF (IR.GT.300.OR.IR.LE.2)  GOTO 50                                        -048j    8
+      BUF(I) = BUF(I)*VKONV(IR)                                                 PRNTHR 134
+      IF  (IR.EQ.8)  BUF(I)=BUF(I)-17.777778                                    PRNTHR 135
+50    CONTINUE                                                                  PRNTHR 136
+60    CONTINUE                                                                  PRNTHR 137
+      IF(IREPRT(IPRG,37).EQ.2) GOTO 792                                         IREPRT  16
+      WRITE(IOUTPT,IFORM,ERR=99004)IMO,IDAY,IHR,(BUF(I),I=IBCOL,IECOL)          PRNTHR 139
+      GOTO 99004                                                                PRNTHR 140
+C WRITES THE SELECTED HOURLY VALUES IN THE ASCII FILE                           -067    11
+  792 IFORM(2) = IHOLLB(1)                                                      -067    12
+      WRITE(ICECDT,IFORM,ERR=99004)IMO,IDAY,IHR,(BUF(I),I=IBCOL,IECOL)          -067    13
+99004 CONTINUE                                                                  PRNTHR 142
+      INDBEG = 0                                                                PRNTHR 143
+      GOTO 700                                                                  PRNTHR 144
+C                                                                               PRNTHR 145
+C  PRINT THE DAILY SUMMARY STATISTICS                                           PRNTHR 146
+710   LINE = LINE + 1                                                           PRNTHR 147
+      WRITE(IOUTPT,715) IHOLL(IMO+14),IDAY                                      PRNTHR 148
+715   FORMAT(1H0,1X,13HDAILY SUMMARY,1X,1H(,A3,I3,1H))                          PRNTHR 149
+      GOTO 760                                                                  PRNTHR 150
+C                                                                               PRNTHR 151
+C  PRINT THE MONTHLY SUMMARY STATISTICS                                         PRNTHR 152
+720   LINE = LINE + 1                                                           PRNTHR 153
+      WRITE(IOUTPT,725) IHOLL(IMO+14)                                           PRNTHR 154
+725   FORMAT(1H0,1X,15HMONTHLY SUMMARY,1X,1H(,A3,1H))                           PRNTHR 155
+      GOTO 760                                                                  PRNTHR 156
+C                                                                               PRNTHR 157
+C  PRINT THE YEARLY SUMMARY STATISTICS                                          PRNTHR 158
+730   LINE = LINE + 1                                                           PRNTHR 159
+      WRITE (IOUTPT,735)                                                        PRNTHR 160
+735   FORMAT(1H0,1X,14HYEARLY SUMMARY)                                          PRNTHR 161
+C                                                                               PRNTHR 162
+C  PRINT THE SUMMARY STATISTICS                                                 PRNTHR 163
+760   IFORM(1) = IHOLL(10)                                                      PRNTHR 164
+      DO 780 ISTAT=1,4                                                          PRNTHR 165
+      IFORM(2) = IHOLL(ISTAT+10)                                                PRNTHR 166
+C               CONVERTS IF DESIRED                                             PRNTHR 167
+44    IF (MTRICR.EQ.0) GOTO 66                                                  PRNTHR 168
+      DO 55 I=IBCOL,IECOL                                                       PRNTHR 169
+      IR      = IREPI(15,I)                                                     PRNTHR 170
+      IF (IR.GT.300.OR.IR.LE.2)  GOTO 55                                        -048j    9
+      BUF(I) = BUF(I)*VKONV(IR)                                                 PRNTHR 172
+      IF  (IR.EQ.8)  BUF(I)=BUF(I)-17.777778                                    PRNTHR 173
+55    CONTINUE                                                                  PRNTHR 174
+66    CONTINUE                                                                  PRNTHR 175
+      WRITE (IOUTPT,IFORM,ERR=99005) (BUF(I),I=IBCOL,IECOL)                     PRNTHR 176
+99005 CONTINUE                                                                  PRNTHR 177
+      LINE = LINE + 1                                                           PRNTHR 178
+      NHR = NHR + 1                                                             PRNTHR 179
+      CALL GETDR(NHR)                                                           PRNTHR 180
+780   CONTINUE                                                                  PRNTHR 181
+      LINECT = LINECT + 6                                                       PRNTHR 182
+      INDBEG = 1                                                                PRNTHR 183
+C                                                                               PRNTHR 184
+C  CHECK FOR THE END OF RECORD                                                  PRNTHR 185
+      IF(IHR.EQ.0) GOTO 800                                                     PRNTHR 186
+C  IF PRINTING ONLY SUMMARY REPORTS, CHECK TO SEE IF THE NEXT                   PRNTHR 187
+C  REPORT WILL FIT ON THE CURRENT PAGE.                                         PRNTHR 188
+      IF(IREPRT(IPRG,36).GT.0 .AND. LINECT.GE.56) GOTO 600                      IREPRT  17
+C                                                                               PRNTHR 190
+C  CHECK FOR THE END OF THE MONTH, YEAR, AND END OF RECORD                      PRNTHR 191
+ 790  IF ((IREPRT(IPRG,37).EQ.1).AND.(IHR.LT.29)) GO TO 799                     IREPRT  18
+      IF((IREPRT(IPRG,37).EQ.2).AND.(IHR.LT.29)) GOTO 750                       IREPRT  19
+      IF (IHR.EQ.25) GO TO 710                                                  PRNTHR 194
+      IF(IHR.EQ.29) GOTO 720                                                    PRNTHR 195
+      IF(IHR.EQ.33) GOTO 730                                                    PRNTHR 196
+      IF(IHR.EQ.0) GOTO 800                                                     PRNTHR 197
+C                                                                               PRNTHR 198
+C  IF NOT AT THE END OF THE MONTH OR YEAR, GO TO A NEW PAGE.                    PRNTHR 199
+C  ALREADY HAVE THE NEXT HOURS DATA SO SET A FLAG (DO NOT WANT                  PRNTHR 200
+C  TO CALL GETDR AGAIN) AND BEGIN PRINTING THE REPORT FOR                       PRNTHR 201
+C  A NEW DAY.                                                                   PRNTHR 202
+      INDBEG = 1                                                                PRNTHR 203
+      GOTO 600                                                                  PRNTHR 204
+  800 CONTINUE                                                                  PRNTHR 205
+      RETURN                                                                    PRNTHR 206
+ 9000 FORMAT(1H1,20A4,' DOE-',2A4,2X,7A4,3HRUN,I3 /                             PRNTHR 207
+     1       1H ,30A4/' HOURLY REPORT- ',8A4,2A4,25X,                           -048q   14
+     2      15H WEATHER FILE- ,5A4,1X,'Pg:',I5,2H -, I3 / 1H ,129(1H-))         -048q   15
+9020  FORMAT(129(1H-),///)                                                      PRNTHR 210
+ 9040 FORMAT(1X)                                                                PRNTHR 211
+      END                                                                       PRNTHR 212
+      SUBROUTINE PRT22                                                          PRT22    2
+C                                                                               PRT22    3
+C              PRT22 CREATES LINE-PRINTER PLOTS                                 PRT22    4
+C                                                                               PRT22    5
+      COMMON   /CTRL/   VERS(2),IRPFLG(4),IOVRLL(7),IWRTFL,IPROG,               /CTRL/   2
+     1                 IFATAL, NAMPRG(3,7), MTRICR                              /CTRL/   3
+      COMMON   /DESC/   IDESC(4,12),IVTYP(8,12)                                 BIGNAM   1
+      COMMON  /FILES / ISTNDF,ICTRL,IWEATH,ITDV,IDSNFL,ILDSO,ISYSO,             -044     1
+     1                IREPFL,IHDFIL,IHRHDF,IOUTPT,IOVRL                         /FILES/  3
+     2              , IPLTO, IPPFIL, ICECHR, ICECDT, ICECPR,                    /FILES/  4
+     3                IHRREP(3), IHRPAS(2)                                      /FILES/  5
+      COMMON   /FUNC/   NFUN,NHRP,NRP,ICOLR(4,128),IDATA,NHREC                  -048j    1
+      COMMON   /MISH/   ITOTC,NREP,IYR,IOPT,                                    /MISH/   2
+     1                  LCOL,IREPP(8,128),IREPL(128),                           -048j    2
+     2             BUF(32768), ICOL, ICHRT, IREPI(21,512),                      -048j    3
+     3                  IRNAME(8,128),IECOLP(128)                               -048j    4
+      INTEGER           IBUF(32768)  ! 128 reports by 256 var                   -048j    5
+      EQUIVALENCE       (BUF(1),IBUF(1))                                        /MISH/   7
+      COMMON   /PAGEHR/   IPAGE,LPP,LINCNT                                      /PAGEHR/ 2
+      COMMON  /REPORT/ IREPRT(4,37),IPRG,IUNIQV(100),IUNIQS(100),IUNIQL         BIGNAM   4
+      COMMON   /TIME2/   IMO,IDAY,IHR                                           /TIME2/  2
+      COMMON /UNITT/  VKONV(300), DUMLOG(4), JUNITT(4,300,2)                    UNITS1   1
+#ifdef _DLL                                                                  /* -048a    1 */ 
+      COMMON        // AA( 75 000 000)                                          -048a    2
+      INTEGER          IA( 75 000 000)                                          -048a    3
+#else                                                                        /* -048a    4 */ 
+      COMMON        // AA( 75 000 000)                                          -048a    5
+      INTEGER          IA( 75 000 000)                                          -048a    6
+#endif                                                                       /* -048a    7 */ 
+      EQUIVALENCE      (AA(1), IA(1))                                           HRa      3
+      DIMENSION ISYMB(12), LINE(101), NCOL(12), V(6,2),                         PRT22   16
+     1      DIFF(2), SCALES(12)                                                 PRT22   17
+      DIMENSION IAXIS(12), LABEL1(4), LABEL2(4),                                PRT22   18
+     1      ITITL1(4), ITITL2(4)                                                PRT22   19
+      COMMON   /RBUF/   RDATA(50)                                               PRT22   20
+      INTEGER   IRDATA(50)                                                      PRT22   21
+      EQUIVALENCE   (IRDATA(1),RDATA(1),MDH)                                    PRT22   22
+      DATA ISYMB/1H1,1H2,1H3,1H4,1H5,1H6,1H7,1H8,1H9,1HA,1HB,1HC/               PRT22   23
+      DATA NCOL/12*0/                                                           PRT22   24
+      DATA LINE/101*1H /                                                        PRT22   25
+      DATA IHOLL1/1H /                                                          PRT22   26
+      DATA IHOLL2/1H*/                                                          PRT22   27
+      DATA IHOLL3/1H./                                                          PRT22   28
+      DATA  ITITL1           /4H    ,4H    ,4H    ,4H    /                      PRT22   29
+      DATA  ITITL2           /4H    ,4H    ,4H    ,4H    /                      PRT22   30
+C                                                                               PRT22   31
+      IRD    = IREPP(2,NRP) - 1                                                 PRT22   32
+      IFLAG = 0                                                                 PRT22   33
+C                                                                               PRT22   34
+C              OBTAIN AXIS INFO FROM CORE                                       PRT22   35
+      DO 10 J = 1,4                                                             PRT22   36
+      LABEL1(J) = IA(IREPP(5,NRP) + 36 + J)                                     BIGNAM  44
+      LABEL2(J) = IA(IREPP(5,NRP) + 40 + J)                                     BIGNAM  45
+   10 CONTINUE                                                                  PRT22   39
+      VMAX1  = AA(IREPP(5,NRP) + 32)                                            BIGNAM  46
+      VMAX2  = AA(IREPP(5,NRP) + 34)                                            BIGNAM  47
+      VMIN1  = AA(IREPP(5,NRP) + 35)                                            BIGNAM  48
+      VMIN2  = AA(IREPP(5,NRP) + 36)                                            BIGNAM  49
+      DO 20 J = 1,12                                                            PRT22   44
+      IAXIS(J) = AA(IREPP(5,NRP) + 20 +J)                                       BIGNAM  50
+   20 CONTINUE                                                                  PRT22   46
+      DO 30 J=1,12                                                              PRT22   47
+   30 SCALES(J) = AA(IREPP(5,NRP)+8+J)                                          BIGNAM  51
+C              INIT BORDERS                                                     PRT22   49
+      LINE(1) = IHOLL3                                                          PRT22   50
+      LINE(101) = IHOLL3                                                        PRT22   51
+C              CENTR DESCRIPTIONS                                               PRT22   52
+      CALL CENTR (LABEL1, 4)                                                    PRT22   53
+      CALL CENTR (LABEL2, 4)                                                    PRT22   54
+      DIFF(1) = VMAX1 - VMIN1                                                   PRT22   55
+      DIFF(2) = VMAX2 - VMIN2                                                   PRT22   56
+      V(1,1) = VMIN1                                                            PRT22   57
+      V(6,1) = VMAX1                                                            PRT22   58
+      V(1,2) = VMIN2                                                            PRT22   59
+      V(6,2) = VMAX2                                                            PRT22   60
+      DO 40 I = 1,4                                                             PRT22   61
+      DO 40 J = 1,2                                                             PRT22   62
+   40 V(I+1,J) = V(1,J) + I/5.*DIFF(J)                                          PRT22   63
+      IA2    = 1                                                                PRT22   64
+      DO 50 I = 1,NFUN                                                          PRT22   65
+      IF(IAXIS(I).EQ.2) IA2 = 2                                                 PRT22   66
+   50 CONTINUE                                                                  PRT22   67
+C                                                                               PRT22   68
+C              GET NEXT RECORD                                                  PRT22   69
+C                                                                               PRT22   70
+  200 CALL GETRR2(IRD,SCALES)                                                   PRT22   71
+      IF(IHR.EQ.0) GO TO 300                                                    PRT22   72
+      IF(IREPRT(IPRG,36).EQ.0 .AND. IHR.GT.24) GOTO 200                         IREPRT  20
+      IF(IREPRT(IPRG,36).EQ.1 .AND. IHR.NE.27) GOTO 200                         IREPRT  21
+      IF(IREPRT(IPRG,36).EQ.2 .AND. IHR.NE.31) GOTO 200                         IREPRT  22
+      IF(IREPRT(IPRG,36).EQ.3 .AND. IHR.NE.35) GOTO 200                         IREPRT  23
+      IF(IFLAG.EQ.0) IST=1                                                      PRT22   77
+      IF(IFLAG.EQ.0) GOTO 400                                                   PRT22   78
+C              IF STILL ROOM ON PAGE                                            PRT22   79
+      IF(LINCNT.LT.(LPP-1)) GO TO 500                                           PRT22   80
+C                                                                               PRT22   81
+C              END OF PAGE                                                      PRT22   82
+C                                                                               PRT22   83
+  300 IF(LINCNT.gt.0 .and. IPAGE.gt.0) WRITE(IOUTPT,1001)                       -130     1
+ 1001 FORMAT(11X,  1HI , 5(20H......... .........I ))                           PRT22   85
+      IF(IHR.EQ.0) GO TO 900                                                    PRT22   86
+C                                                                               PRT22   87
+C              BEGINNING OF PAGE                                                PRT22   88
+C                                                                               PRT22   89
+  400 CALL NEWPA2                                                               PRT22   90
+      WRITE(IOUTPT,1010)  ITITL1, ITITL2                                        PRT22   91
+ 1010 FORMAT(//,57X,4A4,//57X,4A4)                                              PRT22   92
+C              INCR LINE COUNT FOR TITLES                                       PRT22   93
+      LINCNT = LINCNT + 5                                                       PRT22   94
+C              IF NO SYMBOL TABLE TO BE PRINTED                                 PRT22   95
+      IF(IST.EQ.0) GO TO 420                                                    PRT22   96
+      IST    = 0                                                                PRT22   97
+C              IF DUAL AXIS                                                     PRT22   98
+      IF(IA2 .EQ. 2) GO TO 405                                                  PRT22   99
+C                                                                               PRT22  100
+C              PRINT SYM TBL WITHOUT AXIS NOTATION                              PRT22  101
+C                                                                               PRT22  102
+      WRITE(IOUTPT,1004)                                                        PRT22  103
+ 1004 FORMAT(//' SYMBOL  COMPONENT NAME',20X'DESCRIPTION'/)                     BIGNAM  52
+      WRITE(IOUTPT,1005) (ISYMB(I),(IVTYP(J,I),J=1,8),                          BIGNAM  53
+     $                             (IDESC(J,I),J=1,4),I=1,NFUN)                 BIGNAM  54
+ 1005 FORMAT(3X,A1,5X,8A4,2X,4A4)                                               BIGNAM  55
+      GO TO 415                                                                 PRT22  109
+C                                                                               PRT22  110
+C                 PRINT SYM TBL WITH AXIS NOTATION                              PRT22  111
+C                                                                               PRT22  112
+  405 WRITE(IOUTPT,1011)                                                        PRT22  113
+ 1011 FORMAT(//' SYMBOL  COMPONENT NAME',20X,                                   BIGNAM  56
+     1  '(NO.)  DESCRIPTION    AXIS',5X,4HUNIT /)                               BIGNAM  57
+      DO I=1,NFUN                                                               BIGNAM  58
+        IR     = IREPI(15,I)                                                    BIGNAM  59
+        WRITE(IOUTPT,1020) ISYMB(I),(IVTYP(J,I),J=1,8),IREPI(21,I),             BIGNAM  60
+     1       (IDESC(J,I),J=1,4),IAXIS(I),(JUNITT(J,IR,2-MTRICR),J=1,4)          BIGNAM  61
+      ENDDO                                                                     BIGNAM  62
+ 1020 FORMAT(3X,A1,5X,8A4,2X,A4,3X,4A4,I2,4X,4A4)                               BIGNAM  63
+C              INCR LINE COUNT FOR SYMBOL TABLE                                 PRT22  122
+  415 LINCNT = LINCNT + 4 + NFUN                                                PRT22  123
+  420 WRITE(IOUTPT,1006)                                                        PRT22  124
+ 1006 FORMAT(/)                                                                 PRT22  125
+      LINCNT = LINCNT + 2                                                       PRT22  126
+      IF(IA2.EQ.1) GO TO 440                                                    PRT22  127
+      WRITE(IOUTPT,1003)  LABEL2                                                PRT22  128
+ 1003 FORMAT(43X, 4A4)                                                          PRT22  129
+      WRITE(IOUTPT,1002)  (V(I,2),I=1,6)                                        PRT22  130
+ 1002 FORMAT(E16.5, 5E20.5)                                                     PRT22  131
+      WRITE(IOUTPT,1001)                                                        PRT22  132
+      LINCNT = LINCNT + 3                                                       PRT22  133
+  440 WRITE(IOUTPT,1003)  LABEL1                                                PRT22  134
+      WRITE(IOUTPT,1002)  (V(I,1),I=1,6)                                        PRT22  135
+      WRITE(IOUTPT,1001)                                                        PRT22  136
+      LINCNT = LINCNT + 3                                                       PRT22  137
+C                                                                               PRT22  138
+C              PRINT LINE OF PLOT                                               PRT22  139
+C                                                                               PRT22  140
+  500 DO 540 IFUN = 1,NFUN                                                      PRT22  141
+      I      = 1                                                                PRT22  142
+      JAXIS  = IAXIS(IFUN)                                                      PRT22  143
+      IF(RDATA(IFUN+1).GT.V(6,JAXIS)) RDATA(IFUN+1) = V(6,JAXIS)                PRT22  144
+      IF(RDATA(IFUN+1).LT.V(1,JAXIS)) RDATA(IFUN+1) = V(1,JAXIS)                PRT22  145
+      J      = (RDATA(IFUN+1)-V(1,JAXIS))/DIFF(JAXIS)*100. + 0.5                PRT22  146
+      NCOL(IFUN) = J                                                            PRT22  147
+      K      = ISYMB(IFUN)                                                      PRT22  148
+      IF(LINE(J+1).NE.IHOLL1) K = IHOLL2                                        PRT22  149
+C              IF BORDER AND STILL .,                                           PRT22  150
+      IF(((J.EQ.0).OR.(J.EQ.100)).AND.(LINE(J+1).EQ.IHOLL3))                    PRT22  151
+     1      K = ISYMB(IFUN)                                                     PRT22  152
+  540 LINE(J+1) = K                                                             PRT22  153
+      LINCNT = LINCNT + 1                                                       PRT22  154
+      IF(IREPRT(IPRG,36).EQ.0) WRITE(IOUTPT,1009)  IMO,IDAY,IHR,LINE            IREPRT  24
+      IF(IREPRT(IPRG,36).EQ.1) WRITE(IOUTPT,1015)  IMO,IDAY,LINE                IREPRT  25
+      IF(IREPRT(IPRG,36).EQ.2) WRITE(IOUTPT,1016)  IMO,LINE                     IREPRT  26
+      IF(IREPRT(IPRG,36).EQ.3) WRITE(IOUTPT,1017)  LINE                         IREPRT  27
+ 1009 FORMAT(3X,I2,I2,I3,1X,101A1)                                              PRT22  159
+1015  FORMAT(2X,I2,I2,1X,3HTOT,1X,101A1)                                        PRT22  160
+1016  FORMAT(5X,I2,1X,3HTOT,1X,101A1)                                           PRT22  161
+1017  FORMAT(6X,5HTOTAL,1X,101A1)                                               PRT22  162
+      DO 600 I = 1,NFUN                                                         PRT22  163
+      J      = NCOL(I)                                                          PRT22  164
+  600 LINE(J+1) = IHOLL1                                                        PRT22  165
+C              RESET BORDERS                                                    PRT22  166
+      LINE(1) = IHOLL3                                                          PRT22  167
+      LINE(101) = IHOLL3                                                        PRT22  168
+      IFLAG = 1                                                                 PRT22  169
+      GO TO 200                                                                 PRT22  170
+  900 RETURN                                                                    PRT22  171
+      END                                                                       PRT22  172
+      SUBROUTINE READDR(IPART)                                                  READDR   2
+C                                                                               READDR   3
+C              THIS SUBROUTINE READS ALL DATA RECORDS FOR ALL REPORTS INTO      READDR   4
+C              THE BUFFER ARRAY IA.                                             READDR   5
+C                                                                               READDR   6
+      COMMON   /CTRL/   VERS(2),IRPFLG(4),IOVRLL(7),IWRTFL,IPROG,               /CTRL/   2
+     1                 IFATAL, NAMPRG(3,7), MTRICR                              /CTRL/   3
+      COMMON  /IAX   / IAX, IADIM, IADIMV, IAXMAX, KORE, IAXlds, IAXsys         /IAX/    2
+      COMMON /NHRSHR/ NHRSHR(128), IHRCTR(5,128), NHRITM, FILEHR, ICECHS        -048j    6
+      INTEGER         FILEHR                                                    /NHRSHR/ 3
+      COMMON /AALEN / MAXAA,MAXFL,AANOW                                         /AALEN/  2
+      COMMON  /FILES / ISTNDF,ICTRL,IWEATH,ITDV,IDSNFL,ILDSO,ISYSO,             -044     1
+     1                IREPFL,IHDFIL,IHRHDF,IOUTPT,IOVRL                         /FILES/  3
+     2              , IPLTO, IPPFIL, ICECHR, ICECDT, ICECPR,                    /FILES/  4
+     3                IHRREP(3), IHRPAS(2)                                      /FILES/  5
+      COMMON   /FUNC/   NFUN,NHRP,NRP,ICOLR(4,128),IDATA,NHREC                  -048j    1
+      COMMON   /MISH/   ITOTC,NREP,IYR,IOPT,                                    /MISH/   2
+     1                  LCOL,IREPP(8,128),IREPL(128),                           -048j    2
+     2             BUF(32768), ICOL, ICHRT, IREPI(21,512),                      -048j    3
+     3                  IRNAME(8,128),IECOLP(128)                               -048j    4
+      INTEGER           IBUF(32768)  ! 128 reports by 256 var                   -048j    5
+      EQUIVALENCE       (BUF(1),IBUF(1))                                        /MISH/   7
+      COMMON  /REPORT/ IREPRT(4,37),IPRG,IUNIQV(100),IUNIQS(100),IUNIQL         BIGNAM   4
+      COMMON   /TIME2/   IMO,IDAY,IHR                                           /TIME2/  2
+#ifdef _DLL                                                                  /* -048a    1 */ 
+      COMMON        // AA( 75 000 000)                                          -048a    2
+      INTEGER          IA( 75 000 000)                                          -048a    3
+#else                                                                        /* -048a    4 */ 
+      COMMON        // AA( 75 000 000)                                          -048a    5
+      INTEGER          IA( 75 000 000)                                          -048a    6
+#endif                                                                       /* -048a    7 */ 
+      EQUIVALENCE      (AA(1), IA(1))                                           HRa      3
+      COMMON /WCTRL/  IwinReturn, Imsgflg                                       /WCTRL/  2
+c              For DLLs, delete Win_MB and enable msgbox.fi                     /WCTRL/  3
+#ifndef _DLL                                                                 /* -048     1 */ 
+      COMMON /WIN_MB/ MB_OK,MB_ICONSTOP,MB_ICONEXCLAMATION,MB_TASKMODAL,        -048     2
+     &                MB_ICONINFORMATION                                        -048     3
+#else                                                                        /* -048     4 */ 
+      include 'msgbox.fi'                                                       -048     5
+#endif                                                                       /* -048     6 */ 
+      IPACK(M,ID,IH) = M*2048 + ID*64 + IH                                      READDR  17
+C         ZERO ICECHS OUTSIDE OF THE LOOP WITH IPART                            READDR  18
+      IF(IPART.EQ.1) GO TO 90                                                   READDR  19
+      ICECHS=0                                                                  READDR  20
+   90 CONTINUE                                                                  READDR  21
+C              IF NOT RETURN FROM PARTIAL PRINT                                 READDR  22
+      IF(IPART .EQ. 0)  GO TO 100                                               READDR  23
+      IREPL(NRP) = IREPL(NRP) - NPHRS*(ICOLR(1,NRP)+1)                          READDR  24
+      IPART  = 0                                                                READDR  25
+C              SEE WHAT CAN FIT INTO CORE                                       READDR  26
+  100 NEED   = 0                                                                READDR  27
+      DO 110 I=NRP,NHRP                                                         READDR  28
+  110 NEED   = NEED + IREPL(I)                                                  READDR  29
+      NEED   = MIN0(NEED,MAXFL-IDATA+1)                                         READDR  30
+      IF(IDATA+NEED .LE. MAXAA)  GOTO 120                                       READDR  31
+      CALL CKAA(IA,IDATA+NEED-IAX)                                              -42c     4
+      IF (IwinReturn .ne. 0)  Return                                            -047k    4
+      MAXAA  = IDATA + NEED                                                     READDR  33
+  120 CONTINUE                                                                  READDR  34
+      ITOTC  = MAXAA - IDATA                                                    READDR  35
+      NPHRS  = 0                                                                READDR  36
+C                                                                               READDR  37
+C              CHECK EACH REPORT--WILL IT FIT IN CORE                           READDR  38
+      DO 150 I=NRP,NHRP                                                         READDR  39
+      IF (IREPL(I) .GT. ITOTC) GOTO 200                                         READDR  40
+C              SUBTRACT SIZE OF REPORT FROM TOTAL REMAINING SPACE IN CORE       READDR  41
+      ITOTC  = ITOTC - IREPL(I)                                                 READDR  42
+      IREPP(1,I) = 1                                                            READDR  43
+  150 CONTINUE                                                                  READDR  44
+      GOTO 250                                                                  READDR  45
+C              SET FLAG - REPORT WILL NOT FIT   IF FIRST                        READDR  46
+  200 IF(I .NE. NRP)  GOTO 250                                                  READDR  47
+      IPART  = 1                                                                READDR  48
+      NPHRS  = (ITOTC-1)/((ICOLR(1,NRP)+1)*48)                                  READDR  49
+      NPHRS  = NPHRS*48                                                         READDR  50
+  250 CONTINUE                                                                  READDR  51
+C              SET CORE PTRS                                                    READDR  52
+C              PTR TO BEGINNING OF DATA                                         READDR  53
+      IREPP(2,NRP) = IDATA                                                      READDR  54
+C              PTR TO END OF DATA                                               READDR  55
+      IREPP(3,NRP) = IDATA + IREPL(NRP) - 1                                     READDR  56
+C              CURRENT DATA PTR                                                 READDR  57
+      IREPP(4,NRP) = IREPP(2,NRP)                                               READDR  58
+C              ONE REPORT                                                       READDR  59
+      IF (NHRP .EQ. NRP) GOTO 550                                               READDR  60
+C              FOR EACH REPORT                                                  READDR  61
+      K      = NRP + 1                                                          READDR  62
+      DO 500 I=K,NHRP                                                           READDR  63
+C              REPORT DOES NOT FIT                                              READDR  64
+      IF (IREPP(1,I) .EQ. 0) GOTO 550                                           READDR  65
+C              PTR TO BEGINNING OF DATA FOR I'TH REPORT                         READDR  66
+      IREPP(2,I) = IREPP(3,I-1) + 1                                             READDR  67
+C              PTR TO END OF DATA FOR I'TH REPORT                               READDR  68
+      IREPP(3,I) = IREPP(2,I) + IREPL(I) - 1                                    READDR  69
+      IREPP(4,I) = IREPP(2,I)                                                   READDR  70
+  500 CONTINUE                                                                  READDR  71
+  550 CONTINUE                                                                  READDR  72
+      IHRS   = 1                                                                READDR  73
+C              MOVE DATA, AN HOUR AT A TIME, FROM BUF TO CORE(IA)               READDR  74
+  730 CONTINUE                                                                  READDR  75
+      READ(IHRREP(1),END=99730)IYR,IMO,IDAY,IHR,LEN,(BUF(N),N=1,LEN)            READDR  76
+99730 CONTINUE                                                                  READDR  77
+      IF(IHR .EQ. 0)  GO TO 810                                                 READDR  78
+C-----SKIP IF HOURLY-DATA-SAVE IS NOT = BINARY                                  READDR  79
+      IF(IREPRT(IPRG,37).NE.1) GO TO 740                                        IREPRT  28
+C          DO NOT WRITE SUMMARY STATISTICS TO ICECFL                            READDR  81
+      IF(IHR.GT.24) GO TO 740                                                   READDR  82
+C           WRITE ONE HOUR OF DATA TO ICECFL                                    READDR  83
+C            FOR EACH VARIABLE LIST ITEM.                                       READDR  84
+      WRITE(ICECDT)IMO,IDAY,IHR,(BUF(J),J=1,LEN)                                READDR  85
+      ICECHS = ICECHS + 1                                                       READDR  86
+  740 CONTINUE                                                                  READDR  87
+C              PACK MONTH, DAY AND HOUR INTO ONE WORD                           READDR  88
+      IWORD  = IPACK(IMO,IDAY,IHR)                                              READDR  89
+      DO 750 I=NRP,NHRP                                                         READDR  90
+C              EMPTY RECORD                                                     READDR  91
+      IF (BUF(ICOLR(2,I)) .EQ. -99999.) GOTO 750                                READDR  92
+C              REPORT DOES NOT FIT                                              READDR  93
+      IF((I.NE.NRP).AND.(IREPP(1,I).EQ.0))  GOTO 800                            READDR  94
+      IF(I .EQ. NRP)  IHRS = IHRS + 1                                           READDR  95
+C              MOVE DATE                                                        READDR  96
+      IA(IREPP(4,I)) = IWORD                                                    READDR  97
+      IREPP(4,I) = IREPP(4,I) + 1                                               READDR  98
+      INDEX  = ICOLR(1,I)                                                       READDR  99
+C              FOR EACH ITEM IN REPORT                                          READDR 100
+      DO 700 J=1,INDEX                                                          READDR 101
+C              LAST COL. NO. READ FROM BUF TO CORE                              READDR 102
+      LCOL   = ICOLR(2,I) + J - 1                                               READDR 103
+C              MOVE DATA                                                        READDR 104
+      AA(IREPP(4,I)) = BUF(LCOL)                                                READDR 105
+      IREPP(4,I) = IREPP(4,I) + 1                                               READDR 106
+  700 CONTINUE                                                                  READDR 107
+  750 CONTINUE                                                                  READDR 108
+  800 IF(IPART .EQ. 0)  GOTO 730                                                READDR 109
+      IF(IHRS .LE. NPHRS)  GOTO 730                                             READDR 110
+      IA(IREPP(4,NRP)) = 0                                                      READDR 111
+  810 DO 820 I=NRP,NHRP                                                         READDR 112
+  820 IF(IREPP(1,I) .NE. 0)  IA(IREPP(4,I)) = 0                                 READDR 113
+      IF(IREPRT(IPRG,33).EQ.1)WRITE(IOUTPT,9001,ERR=99001)ICECHS                IREPRT  29
+99001 CONTINUE                                                                  READDR 115
+ 9001 FORMAT(8H ICECHS=,I5)                                                     READDR 116
+      RETURN                                                                    READDR 117
+      END                                                                       READDR 118
+      SUBROUTINE READHF                                                         READHF   2
+C                                                                               READHF   3
+C              READ RECORDS FROM IHRHDF INTO CORE.  ASSIGN POINTERS TO          READHF   4
+C              BEGINNING,END AND CURRENT PLACE OF FILE.                         READHF   5
+C                                                                               READHF   6
+      COMMON  /FILES / ISTNDF,ICTRL,IWEATH,ITDV,IDSNFL,ILDSO,ISYSO,             -044     1
+     1                IREPFL,IHDFIL,IHRHDF,IOUTPT,IOVRL                         /FILES/  3
+     2              , IPLTO, IPPFIL, ICECHR, ICECDT, ICECPR,                    /FILES/  4
+     3                IHRREP(3), IHRPAS(2)                                      /FILES/  5
+      COMMON   /FUNC/   NFUN,NHRP,NRP,ICOLR(4,128),IDATA,NHREC                  -048j    1
+      COMMON  /IAX   / IAX, IADIM, IADIMV, IAXMAX, KORE, IAXlds, IAXsys         /IAX/    2
+      COMMON   /MISH/   ITOTC,NREP,IYR,IOPT,                                    /MISH/   2
+     1                  LCOL,IREPP(8,128),IREPL(128),                           -048j    2
+     2             BUF(32768), ICOL, ICHRT, IREPI(21,512),                      -048j    3
+     3                  IRNAME(8,128),IECOLP(128)                               -048j    4
+      INTEGER           IBUF(32768)  ! 128 reports by 256 var                   -048j    5
+      EQUIVALENCE       (BUF(1),IBUF(1))                                        /MISH/   7
+      COMMON /PTRSHR/ IHFPTR,IEHF,IPRO,IPROGU(3),IPROGP(3),LRB,LHR              BIGNAM   3
+      COMMON  /REPORT/ IREPRT(4,37),IPRG,IUNIQV(100),IUNIQS(100),IUNIQL         BIGNAM   4
+#ifdef _DLL                                                                  /* -048a    1 */ 
+      COMMON        // AA( 75 000 000)                                          -048a    2
+      INTEGER          IA( 75 000 000)                                          -048a    3
+#else                                                                        /* -048a    4 */ 
+      COMMON        // AA( 75 000 000)                                          -048a    5
+      INTEGER          IA( 75 000 000)                                          -048a    6
+#endif                                                                       /* -048a    7 */ 
+      EQUIVALENCE      (AA(1), IA(1))                                           HRa      3
+      DIMENSION LEN(3)                                                          READHF  13
+      COMMON /WCTRL/  IwinReturn, Imsgflg                                       /WCTRL/  2
+c              For DLLs, delete Win_MB and enable msgbox.fi                     /WCTRL/  3
+#ifndef _DLL                                                                 /* -048     1 */ 
+      COMMON /WIN_MB/ MB_OK,MB_ICONSTOP,MB_ICONEXCLAMATION,MB_TASKMODAL,        -048     2
+     &                MB_ICONINFORMATION                                        -048     3
+#else                                                                        /* -048     4 */ 
+      include 'msgbox.fi'                                                       -048     5
+#endif                                                                       /* -048     6 */ 
+C                                                                               READHF  14
+C              SET CURRENT CORE PTR TO BEGINNING OF SPACE FOR IHRHDF            READHF  15
+      IHFPTR = IDATA                                                            READHF  16
+      READ (IHRHDF) LEN                                                         READHF  17
+      DO  IP=1,IPRO                                                             READHF  18
+C              STORE POINTER TO START OF HEADERS FOR EACH PROGRAM               READHF  19
+        IPROGP(IP) = IHFPTR                                                     READHF  20
+        INDEX      = IHFPTR + LEN(IP) - 1                                       READHF  21
+        CALL CKAA(IA,INDEX-IAX)                                                 -42c     6
+        IF (IwinReturn .ne. 0)  Return                                          -047k    5
+C              READ RECORD INTO CORE                                            READHF  23
+        READ (IHRHDF) (IA(K),K=IHFPTR,INDEX)                                    READHF  24
+C              KEEP HEADERS ONLY FOR PROGRAM MODULES WHICH HAVE DATA IN THESE   READHF  25
+C              HOURLY REPORTS.  OTHERWISE, ALLOW NEXT SET TO OVERWRITE.         READHF  26
+        IF (IPROGU(IP) .GT. 0)  IHFPTR = IHFPTR + LEN(IP)                       READHF  27
+      ENDDO                                                                     READHF  28
+C              SET PTR TO END OF IHRHDF FILE NOW IN CORE                        READHF  29
+      IEHF   = IHFPTR - 1                                                       READHF  30
+      RETURN                                                                    READHF  31
+      END                                                                       READHF  32
+      SUBROUTINE READRF                                                         READRF   2
+C                                                                               READRF   3
+C              READ IN RECORDS FROM IHRREP.  AFTER EACH REPORT BLOCK SAVE       READRF   4
+C              ROOM FOR RECORDS FROM IHRHDF.  ASSIGN POINTERS(IREPP AND IHPTR)  READRF   5
+C              TO BEGINNING, END AND CURRENT SPACE FOR EACH REPORT, EACH REPORT READRF   6
+C              BLOCK AND EACH SPACE FOR RECORDS FROM IHRHDF.                    READRF   7
+C                                                                               READRF   8
+      COMMON  /FILES / ISTNDF,ICTRL,IWEATH,ITDV,IDSNFL,ILDSO,ISYSO,             -044     1
+     1                IREPFL,IHDFIL,IHRHDF,IOUTPT,IOVRL                         /FILES/  3
+     2              , IPLTO, IPPFIL, ICECHR, ICECDT, ICECPR,                    /FILES/  4
+     3                IHRREP(3), IHRPAS(2)                                      /FILES/  5
+      COMMON   /FUNC/   NFUN,NHRP,NRP,ICOLR(4,128),IDATA,NHREC                  -048j    1
+      COMMON  /IAX   / IAX, IADIM, IADIMV, IAXMAX, KORE, IAXlds, IAXsys         /IAX/    2
+      COMMON   /MISH/   ITOTC,NREP,IYR,IOPT,                                    /MISH/   2
+     1                  LCOL,IREPP(8,128),IREPL(128),                           -048j    2
+     2             BUF(32768), ICOL, ICHRT, IREPI(21,512),                      -048j    3
+     3                  IRNAME(8,128),IECOLP(128)                               -048j    4
+      INTEGER           IBUF(32768)  ! 128 reports by 256 var                   -048j    5
+      EQUIVALENCE       (BUF(1),IBUF(1))                                        /MISH/   7
+      COMMON /PTRSHR/ IHFPTR,IEHF,IPRO,IPROGU(3),IPROGP(3),LRB,LHR              BIGNAM   3
+      COMMON  /REPORT/ IREPRT(4,37),IPRG,IUNIQV(100),IUNIQS(100),IUNIQL         BIGNAM   4
+#ifdef _DLL                                                                  /* -048a    1 */ 
+      COMMON        // AA( 75 000 000)                                          -048a    2
+      INTEGER          IA( 75 000 000)                                          -048a    3
+#else                                                                        /* -048a    4 */ 
+      COMMON        // AA( 75 000 000)                                          -048a    5
+      INTEGER          IA( 75 000 000)                                          -048a    6
+#endif                                                                       /* -048a    7 */ 
+      EQUIVALENCE      (AA(1), IA(1))                                           HRa      3
+      INTEGER INAM(8)                                                           BIGNAM  64
+      EQUIVALENCE      (IDATA,IBHF)                                             READRF  15
+      COMMON /WCTRL/  IwinReturn, Imsgflg                                       /WCTRL/  2
+c              For DLLs, delete Win_MB and enable msgbox.fi                     /WCTRL/  3
+#ifndef _DLL                                                                 /* -048     1 */ 
+      COMMON /WIN_MB/ MB_OK,MB_ICONSTOP,MB_ICONEXCLAMATION,MB_TASKMODAL,        -048     2
+     &                MB_ICONINFORMATION                                        -048     3
+#else                                                                        /* -048     4 */ 
+      include 'msgbox.fi'                                                       -048     5
+#endif                                                                       /* -048     6 */ 
+C                                                                               READRF  16
+      NHREC  = 1                                                                READRF  17
+      ICOL   = 0                                                                READRF  18
+C              PROGRAM MODULES FROM WHICH DATA IS USED IN THESE HOURLY REPORTS  READRF  19
+      DO  IP=1,3                                                                READRF  20
+        IPROGU(IP) = 0                                                          READRF  21
+      ENDDO                                                                     READRF  22
+C              CURRENT PTR FOR REPORTS IN CORE                                  READRF  23
+      IHFPTR = IAX + 1                                                          HR       3
+      DO 200 I=1,NHRP                                                           READRF  25
+C              IF MORE THAN ONE REPORT SET BEGINNING AND CURRENT PTRS           READRF  26
+C              FOR I'TH REPORT                                                  READRF  27
+      IREPP(5,I) = IHFPTR                                                       READRF  28
+      INDEX  = IHFPTR + (LHR-1)                                                 BIGNAM  65
+      CALL CKAA(IA,INDEX-IAX)                                                   -42c     7
+      IF (IwinReturn .ne. 0)  Return                                            -047k    6
+C              READ IN REPORT RECORD                                            READRF  31
+      READ (IHRREP(1)) (IA(K),K=IHFPTR,INDEX)                                   READRF  32
+      IF (IREPRT(IPRG,33) .GT. 0)                                               IREPRT  30
+     1 CALL DUMPIT(20HHOURLY-REPORT       ,IA(IHFPTR),LHR)                      BIGNAM  66
+      IHFPTR = INDEX + 1                                                        READRF  35
+      NRBS   = IA(INDEX)                                                        READRF  36
+      NHREC  = NHREC + NRBS + 1                                                 READRF  37
+C              FOR EACH REPORT-BLOCK                                            READRF  38
+      DO 150 J=1,NRBS                                                           READRF  39
+C              READ IN REPORT-BLOCK RECORD                                      READRF  40
+      READ(IHRREP(1)) INAM,ITYP,LEN,(IBUF(K),K=1,LEN)                           BIGNAM  67
+      IF (IREPRT(IPRG,33) .GT. 0) WRITE (IOUTPT,9001) INAM,ITYP,LEN             BIGNAM  68
+      IF (IREPRT(IPRG,33) .GT. 0)                                               IREPRT  32
+     1 CALL DUMPIT(20HREPORT-BLOCK ITEMS  ,IBUF(1),LEN)                         READRF  46
+ 9001 FORMAT(//' REPORT-BLOCK = ',8A4,4X,'ITYP = ',I4,4X,'LEN = ',I3)           BIGNAM  69
+C              COUNTER FOR TOTAL NO. OF ITEMS IN REPORTS                        READRF  49
+      ICOL   = ICOL + LEN                                                       READRF  50
+C              PROGRAM MODULE IN WHICH THIS REPORT-BLOCK ORIGINATED.            READRF  51
+C              IN MODULES, ITYP = ITYPE + IPROG*1000                            READRF  52
+      IP = ITYP / 1000                                                          READRF  53
+      IF(IP .EQ. 0)  IP = IPRO                                                  BIGNAM  70
+      IPROGU(IP) = IPROGU(IP) + 1                                               READRF  54
+      N      = IHFPTR                                                           READRF  55
+      CALL CKAA(IA,N+9+11*LEN)                                                  BIGNAM  71
+      IF (IwinReturn .ne. 0)  Return                                            -047k    7
+      DO K=1,8                                                                  BIGNAM  72
+        IA(N+K-1)  = INAM(K)                                                    BIGNAM  73
+      ENDDO                                                                     BIGNAM  74
+      IA(N+8) = ITYP                                                            BIGNAM  75
+      IA(N+9) = LEN                                                             BIGNAM  76
+      N      = N + 9                                                            BIGNAM  77
+      DO 125 K=1,LEN                                                            READRF  64
+      IA(N+K)  = IBUF(K)                                                        READRF  65
+  125 CONTINUE                                                                  READRF  66
+      IHFPTR = N+11*LEN+1                                                       BIGNAM  78
+  150 CONTINUE                                                                  READRF  68
+C              PTR TO END OF I'TH REPORT                                        READRF  69
+      IREPP(6,I) = IHFPTR - 1                                                   READRF  70
+      ICOLR(1,I) = ICOL                                                         READRF  71
+  200 CONTINUE                                                                  READRF  72
+      IDATA  = IHFPTR                                                           READRF  73
+      RETURN                                                                    READRF  74
+      END                                                                       READRF  75
+      SUBROUTINE UNPAK2(MDH)                                                    UNPAK2   2
+C                                                                               UNPAK2   3
+C              UNPAK2 UNPACKS THE DATE FROM ONE WORD TO THREE                   UNPAK2   4
+C                                                                               UNPAK2   5
+      COMMON   /TIME2/   IMO,IDAY,IHR                                           /TIME2/  2
+C                                                                               UNPAK2   7
+      IMO    = MDH/2048                                                         UNPAK2   8
+      IDAY   = (MDH - IMO*2048) / 64                                            UNPAK2   9
+      IHR    = (MDH - IMO*2048 - IDAY*64)                                       UNPAK2  10
+      RETURN                                                                    UNPAK2  11
+      END                                                                       UNPAK2  12

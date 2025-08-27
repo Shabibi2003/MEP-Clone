@@ -1,0 +1,38 @@
+;
+;  (c) Copyright 1998, Scott A. Criswell.  All Rights Reserved.
+;
+; - MAX characters per line in this file = 80 !!
+; - Comments only in header and line must begin w/ ';'
+;
+; Fixed column file identifying what components to output
+; to the <project>.nhk file which is used to identify what
+; input components exist for the purpose of retrieving their
+; results following simulation
+;
+2001   86  Component Cost
+2005   89  Utility Rate
+2006   90  Block Charge
+2007   91  Ratchet
+2010   48  System
+2019   55  Zone
+2020   10  Exterior Wall
+2040   14  Underground Wall
+2046   13  Interior Wall
+2050   12  Window
+2055   33  Door
+2061   63  Pump
+2062   64  Circulation Loop
+2063   65  Chiller
+2064   66  Boiler
+2065   67  DW Heater
+2066   68  Heat Rejection
+2068   70  Elec Generator
+2069   71  Thermal Storage
+2070    8  Space
+2085   75  Elec Meter
+2086   76  Fuel Meter
+2087   77  Steam Meter
+2088   78  CHW Meter
+2091   80  Materials Cost
+2092   82  Ground Loop HX
+  -1 

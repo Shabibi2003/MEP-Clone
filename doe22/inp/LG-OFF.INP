@@ -1,0 +1,4023 @@
+INPUT ..
+
+
+$ ---------------------------------------------------------
+$              Abort, Diagnostics
+$ ---------------------------------------------------------
+
+
+
+
+$ ---------------------------------------------------------
+$              Global Parameters
+$ ---------------------------------------------------------
+
+PARAMETER
+   "exht1"        = 23  ..
+PARAMETER
+   "exht2"        = 9  ..
+PARAMETER
+   "plenht"       = 3  ..
+PARAMETER
+   "exht3"        = 20  ..
+
+
+$ ---------------------------------------------------------
+$              Title, Run Periods, Design Days, Holidays
+$ ---------------------------------------------------------
+
+TITLE           
+   LINE-1           = *Main Facility with shading*
+   LINE-2           = *PG&E Tool Show Example*
+   ..
+
+"Annual" = RUN-PERIOD-PD
+   ..
+
+
+
+
+$ ---------------------------------------------------------
+$              Site and Building Data
+$ ---------------------------------------------------------
+
+SITE-PARAMETERS 
+   LATITUDE         = 37.62
+   LONGITUDE        = 122.38
+   TIME-ZONE        = 8
+   ALTITUDE         = 100
+   ..
+
+BUILD-PARAMETERS
+   AZIMUTH          = -15
+   GROSS-AREA       = 451700
+   ..
+
+
+
+$ ---------------------------------------------------------
+$              Materials / Layers / Constructions
+$ ---------------------------------------------------------
+
+"Mat 2ft Gnd" = MATERIAL        
+   TYPE             = PROPERTIES
+   THICKNESS        = 2
+   CONDUCTIVITY     = 0.5
+   DENSITY          = 100
+   SPECIFIC-HEAT    = 0.25
+   ..
+"Mat R11M" = MATERIAL        
+   TYPE             = RESISTANCE
+   RESISTANCE       = 5.5
+   ..
+"Mat R19W" = MATERIAL        
+   TYPE             = RESISTANCE
+   RESISTANCE       = 12.28
+   ..
+"AC01" = MATERIAL        
+   TYPE             = RESISTANCE
+   RESISTANCE       = 0.5
+   ..
+
+"Lay Int Wall" = LAYERS          
+   INSIDE-FILM-RES  = 0.76
+   MATERIAL         = ( "GypBd 5/8in (GP02)", "Air Lay <4in Vert (AL21)",
+        "GypBd 5/8in (GP02)" )
+   ..
+"Lay Ext Wall" = LAYERS          
+   INSIDE-FILM-RES  = 0.76
+   MATERIAL         = ( "Stucco 1in (SC01)", "Polystyrene 1.25in (IN34)",
+        "GypBd 5/8in (GP02)" )
+   ..
+"Lay Int Floor" = LAYERS          
+   MATERIAL         = ( "Conc HW 140lb 6in (CC04)", "Carpet & Fiber Pad (CP01)")
+   ..
+"Lay Undgnd" = LAYERS          
+   MATERIAL         = ( "Mat 2ft Gnd", "Conc HW 140lb 12in (CC07)" )
+   ..
+"Lay Floor" = LAYERS          
+   MATERIAL         = ( "Mat 2ft Gnd", "Conc HW 140lb 4in (CC14)", 
+        "Carpet & Rubber Pad (CP02)" )
+   THICKNESS        = ( 2, 0.333, 0.042 )
+   ..
+"Lay Roof" = LAYERS          
+   MATERIAL         = ( "Gravel 1in (RG02)", "Blt-Up Roof 3/8in (BR01)", 
+         "Mat R19W", "MinBd 2in R-6.9 (IN23)", 
+         "Plywd 3/4in (PW05)", "Air Lay >4in Horiz (AL33)", 
+         "AcousTile 3/4in (AC03)" )
+   THICKNESS        = ( 0.083, 0.0313, 0.25, 0.167, 0.0623, 0.35, 0.0623 )
+   ..
+
+"Cons Floor" = CONSTRUCTION    
+   TYPE             = LAYERS
+   LAYERS           = "Lay Floor"
+   ..
+"Cons Int Floor" = CONSTRUCTION    
+   TYPE             = LAYERS
+   LAYERS           = "Lay Int Floor"
+   ..
+"Cons Perim Wall" = CONSTRUCTION    
+   TYPE             = LAYERS
+   LAYERS           = "Lay Ext Wall"
+   ..
+"Cons Ungrd Wall" = CONSTRUCTION    
+   TYPE             = LAYERS
+   LAYERS           = "Lay Undgnd"
+   ..
+"Cons Roof" = CONSTRUCTION    
+   TYPE             = LAYERS
+   LAYERS           = "Lay Roof"
+   ..
+"Cons Ceiling" = CONSTRUCTION    
+   TYPE             = U-VALUE
+   U-VALUE          = 0.5
+   ..
+"Cons Int Wall" = CONSTRUCTION    
+   TYPE             = LAYERS
+   LAYERS           = "Lay Int Wall"
+   ..
+"Cons Air Wall" = CONSTRUCTION    
+   TYPE             = U-VALUE
+   U-VALUE          = 1.3
+   ..
+"Cons Door" = CONSTRUCTION    
+   TYPE             = U-VALUE
+   U-VALUE          = 0.59
+   ..
+
+
+$ ---------------------------------------------------------
+$              Glass Types
+$ ---------------------------------------------------------
+
+"Clear Single" = GLASS-TYPE      
+   TYPE             = GLASS-TYPE-CODE
+   GLASS-TYPE-CODE  = "1001"
+   ..
+
+
+$ ---------------------------------------------------------
+$              Window Layers
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Lamps / Luminaries / Lighting Systems
+$ ---------------------------------------------------------
+
+
+
+
+
+$ ---------------------------------------------------------
+$              Day Schedules
+$ ---------------------------------------------------------
+
+"Occ WD" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0, 0, 0, 0, 0, 0, 0.1, 0.2, 0.9, 0.9, 0.9, 0.9, 0.9, 
+         0.9, 0.9, 0.9, 0.9, 0.3, 0.1, 0.1, 0.1, 0.1, 0, 0 )
+   ..
+"Occ WDhi" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0, 0, 0, 0, 0, 0, 0.1, 0.2, 0.9, 0.9, 0.9, 0.9, 0.9, 
+         0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.5, 0.1, 0.1, 0, 0 )
+   ..
+"Occ WDlo" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0, 0, 0, 0, 0, 0, 0.1, 0.2, 0.7, 0.7, 0.7, 0.7, 0.7, 
+         0.7, 0.7, 0.7, 0.7, 0.3, 0.1, 0.1, 0.1, 0.1, 0, 0 )
+   ..
+"Occ SAT" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0, 0, 0, 0, 0, 0, 0.1, 0.1, 0.3, 0.3, 0.3, 0.3, 0.1, 
+         0.1, 0.1, 0.1, 0.1, 0, 0, 0, 0, 0, 0, 0 )
+   ..
+"Occ SUNHOL" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.1, 0.2, 0.2, 0.2, 0.1, 
+         0.1, 0, 0, 0, 0, 0, 0, 0, 0, 0 )
+   ..
+"Lght WD" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.3, 0.9, 0.9, 0.9, 
+         0.9, 0.8, 0.9, 0.9, 0.9, 0.9, 0.5, 0.3, 0.3, 0.2, 0.2, 0.1, 0.1 )
+   ..
+"Lght WDhi" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.3, 0.9, 0.9, 0.9, 
+         0.9, 0.8, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.5, 0.2, 0.1, 0.1 )
+   ..
+"Lght WDlo" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.3, 0.7, 0.7, 0.7, 
+         0.7, 0.5, 0.7, 0.9, 0.9, 0.7, 0.4, 0.3, 0.3, 0.2, 0.2, 0.1, 0.1 )
+   ..
+"Lght SAT" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.3, 0.3, 0.3, 
+         0.3, 0.3, 0.3, 0.3, 0.2, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1 )
+   ..
+"Lght SUNHOL" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.3, 
+         0.3, 0.3, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1 )
+   ..
+"Eqp WD" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.7, 0.7, 0.7, 
+         0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.5, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3 )
+   ..
+"Eqp WDhi" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.7, 0.7, 0.7, 
+         0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.3, 0.3, 0.3 )
+   ..
+"Eqp WDlo" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 
+         0.3, 0.5, 0.5, 0.5, 0.5, 0.5, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3 )
+   ..
+"Eqp SAT" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 
+         0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3 )
+   ..
+"Eqp SUNHOL" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 
+         0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3 )
+   ..
+"DHW WD" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.23, 0.32, 
+         0.58, 0.83, 1, 1, 1, 0.97, 0.92, 0.88, 0.86, 0.15, 0.1, 0.25, 0.25, 
+         0.05, 0.05 )
+   ..
+"DHW WEH" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.1, 0.15, 
+         0.15, 0.15, 0.2, 0.2, 0.2, 0.18, 0.15, 0.15, 0.1, 0.1, 0.1, 0.05, 0, 
+         0.05, 0.05 )
+   ..
+"Inf WD" = DAY-SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   VALUES           = ( 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+         0, 1, 1, 1, 1, 1 )
+   ..
+"Inf SAT" = DAY-SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   VALUES           = ( 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+         1, 1, 1, 1, 1, 1 )
+   ..
+"Inf SUNHOL" = DAY-SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   VALUES           = ( 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+         1, 1, 1, 1, 1, 1 )
+   ..
+"Max Solar Day" = DAY-SCHEDULE-PD
+   TYPE             = RADIATION
+   VALUES           = ( 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 
+         30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30 )
+   ..
+"Shading Day" = DAY-SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   VALUES           = ( 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 
+         0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8 )
+   ..
+"Open Shade Day" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 
+         0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 
+         0.75, 0.75, 0.75, 0.75 )
+   ..
+"Vis Trans Day" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 
+         0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8 )
+   ..
+"Always On Day" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF
+   VALUES           = ( 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+         1, 1, 1, 1, 1, 1 )
+   ..
+"Fan Op WD" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF/FLAG
+   VALUES           = ( 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+         1, 0, 0, 0, 0, 0 )
+   ..
+"Fan Op SAT" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF/FLAG
+   VALUES           = ( 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+         0, 0, 0, 0, 0, 0 )
+   ..
+"Fan Op SUNHOL" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF/FLAG
+   VALUES           = ( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+         0, 0, 0, 0, 0, 0 )
+   ..
+"Heat Weekday Sched" = DAY-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   VALUES           = ( 55, 55, 55, 55, 55, 55, 55, 55, 70, 70, 70, 70, 70, 
+         70, 70, 70, 70, 70, 55, 55, 55, 55, 55, 55 )
+   ..
+"Heat Weekend Sched" = DAY-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   VALUES           = ( 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 
+         55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55 )
+   ..
+"Cool-Off Day Sched" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF/TEMP
+   VALUES           = ( 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 
+         60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60 )
+   ..
+"Cool Weekday Sched" = DAY-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   VALUES           = ( 80, 80, 80, 80, 80, 80, 80, 80, 76, 76, 76, 76, 76, 
+         76, 76, 76, 76, 76, 80, 80, 80, 80, 80, 80 )
+   ..
+"Cool Weekend Sched" = DAY-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   VALUES           = ( 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 
+         80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80 )
+   ..
+"SA Reset 1" = DAY-SCHEDULE-PD
+   TYPE             = RESET-TEMP
+   OUTSIDE-HI       = 65
+   OUTSIDE-LO       = 55
+   SUPPLY-HI        = 65
+   SUPPLY-LO        = 57
+   ..
+"24-Hour On Day" = DAY-SCHEDULE-PD
+   TYPE             = FLAG
+   VALUES           = ( 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+         1, 1, 1, 1, 1, 1 )
+   ..
+"Cool Reset Sch" = DAY-SCHEDULE-PD
+   TYPE             = RESET-TEMP
+   OUTSIDE-HI       = 65
+   OUTSIDE-LO       = 50
+   SUPPLY-HI        = 65
+   SUPPLY-LO        = 57
+   ..
+"Always Off DS" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF
+   VALUES           = ( 0 )
+   ..
+
+$ ---------------------------------------------------------
+$              Week Schedules
+$ ---------------------------------------------------------
+
+"Occ Week" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "Occ WD", "Occ WD", "Occ WD", "Occ WD", "Occ WD", 
+         "Occ SAT", "Occ SUNHOL", "Occ SUNHOL" )
+   ..
+"Occ Weekhi" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "Occ WDhi", "Occ WDhi", "Occ WDhi", "Occ WDhi", 
+         "Occ WDhi", "Occ WDhi", "Occ SUNHOL", "Occ SUNHOL" )
+   ..
+"Occ Weeklo" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "Occ WDlo", "Occ WDlo", "Occ WDlo", "Occ WDlo", 
+         "Occ WDlo", "Occ SUNHOL", "Occ SUNHOL", "Occ SUNHOL" )
+   ..
+"Lght Week" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "Lght WD", "Lght WD", "Lght WD", "Lght WD", "Lght WD", 
+         "Lght SAT", "Lght SUNHOL", "Lght SUNHOL" )
+   ..
+"Lght Weekhi" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "Lght WDhi", "Lght WDhi", "Lght WDhi", "Lght WDhi", 
+         "Lght WDhi", "Lght WDhi", "Lght SUNHOL", "Lght SUNHOL" )
+   ..
+"Lght Weeklo" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "Lght WDlo", "Lght WDlo", "Lght WDlo", "Lght WDlo", 
+         "Lght WDlo", "Lght SUNHOL", "Lght SUNHOL", "Lght SUNHOL" )
+   ..
+"Eqp Week" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "Eqp WD", "Eqp WD", "Eqp WD", "Eqp WD", "Eqp WD", 
+         "Eqp SAT", "Eqp SUNHOL", "Eqp SUNHOL" )
+   ..
+"Eqp Weekhi" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "Eqp WDhi", "Eqp WDhi", "Eqp WDhi", "Eqp WDhi", 
+         "Eqp WDhi", "Eqp WDhi", "Eqp SUNHOL", "Eqp SUNHOL" )
+   ..
+"Eqp Weeklo" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "Eqp WDlo", "Eqp WDlo", "Eqp WDlo", "Eqp WDlo", 
+         "Eqp WDlo", "Eqp SUNHOL", "Eqp SUNHOL", "Eqp SUNHOL" )
+   ..
+"DHW Week" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "DHW WD", "DHW WD", "DHW WD", "DHW WD", "DHW WD", 
+         "DHW WEH", "DHW WEH", "DHW WEH" )
+   ..
+"Inf Week" = WEEK-SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   DAY-SCHEDULES    = ( "Inf WD", "Inf WD", "Inf WD", "Inf WD", "Inf WD", 
+         "Inf SAT", "Inf SUNHOL", "Inf SUNHOL" )
+   ..
+"Max Solar Week" = WEEK-SCHEDULE-PD
+   TYPE             = RADIATION
+   DAY-SCHEDULES    = ( "Max Solar Day", "Max Solar Day", "Max Solar Day", 
+         "Max Solar Day", "Max Solar Day", "Max Solar Day", "Max Solar Day", 
+         "Max Solar Day" )
+   ..
+"Shading Week" = WEEK-SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   DAY-SCHEDULES    = ( "Shading Day", "Shading Day", "Shading Day", 
+         "Shading Day", "Shading Day", "Shading Day", "Shading Day", 
+         "Shading Day" )
+   ..
+"Open Shade Week" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "Open Shade Day", "Open Shade Day", "Open Shade Day", 
+         "Open Shade Day", "Open Shade Day", "Open Shade Day", 
+         "Open Shade Day", "Open Shade Day" )
+   ..
+"Vis Trans Week" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "Vis Trans Day", "Vis Trans Day", "Vis Trans Day", 
+         "Vis Trans Day", "Vis Trans Day", "Vis Trans Day", "Vis Trans Day", 
+         "Vis Trans Day" )
+   ..
+"Always On Week" = WEEK-SCHEDULE-PD
+   TYPE             = ON/OFF
+   DAY-SCHEDULES    = ( "Always On Day", "Always On Day", "Always On Day", 
+         "Always On Day", "Always On Day", "Always On Day", "Always On Day", 
+         "Always On Day" )
+   ..
+"Fan Op Week" = WEEK-SCHEDULE-PD
+   TYPE             = ON/OFF/FLAG
+   DAY-SCHEDULES    = ( "Fan Op WD", "Fan Op WD", "Fan Op WD", "Fan Op WD", 
+         "Fan Op WD", "Fan Op SAT", "Fan Op SUNHOL", "Fan Op SUNHOL" )
+   ..
+"Heat Week Sched" = WEEK-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   DAY-SCHEDULES    = ( "Heat Weekday Sched", "Heat Weekday Sched", 
+         "Heat Weekday Sched", "Heat Weekday Sched", "Heat Weekday Sched", 
+         "Heat Weekend Sched", "Heat Weekend Sched", "Heat Weekend Sched" )
+   ..
+"Cool-Off Week Sched" = WEEK-SCHEDULE-PD
+   TYPE             = ON/OFF/TEMP
+   DAY-SCHEDULES    = ( "Cool-Off Day Sched", "Cool-Off Day Sched", 
+         "Cool-Off Day Sched", "Cool-Off Day Sched", "Cool-Off Day Sched", 
+         "Cool-Off Day Sched", "Cool-Off Day Sched", "Cool-Off Day Sched" )
+   ..
+"Cool Week Sched" = WEEK-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   DAY-SCHEDULES    = ( "Cool Weekday Sched", "Cool Weekday Sched", 
+         "Cool Weekday Sched", "Cool Weekday Sched", "Cool Weekday Sched", 
+         "Cool Weekend Sched", "Cool Weekend Sched", "Cool Weekend Sched" )
+   ..
+"Cool Reset Week Sched" = WEEK-SCHEDULE-PD
+   TYPE             = RESET-TEMP
+   DAY-SCHEDULES    = ( "SA Reset 1", "SA Reset 1", "SA Reset 1", 
+         "SA Reset 1", "SA Reset 1", "SA Reset 1", "SA Reset 1", 
+         "SA Reset 1" )
+   ..
+"24-Hour On Week" = WEEK-SCHEDULE-PD
+   TYPE             = FLAG
+   DAY-SCHEDULES    = ( "24-Hour On Day", "24-Hour On Day", "24-Hour On Day", 
+         "24-Hour On Day", "24-Hour On Day", "24-Hour On Day", 
+         "24-Hour On Day", "24-Hour On Day" )
+   ..
+"Always Off" = WEEK-SCHEDULE-PD
+   TYPE             = ON/OFF
+   DAY-SCHEDULES    = ( "Always On Day" )
+   ..
+
+$ ---------------------------------------------------------
+$              Annual Schedules
+$ ---------------------------------------------------------
+
+"Occupancy" = SCHEDULE-PD
+   TYPE             = FRACTION
+   MONTH            = ( 2, 4, 7, 8, 12 )
+   DAY              = ( 19, 17, 31, 31, 31 )
+   WEEK-SCHEDULES   = ( "Occ Week", "Occ Weekhi", "Occ Week", "Occ Weeklo", 
+         "Occ Week" )
+   ..
+"Lights" = SCHEDULE-PD
+   TYPE             = FRACTION
+   MONTH            = ( 2, 4, 7, 8, 12 )
+   DAY              = ( 19, 17, 31, 31, 31 )
+   WEEK-SCHEDULES   = ( "Lght Week", "Lght Weekhi", "Lght Week", 
+         "Lght Weeklo", "Lght Week" )
+   ..
+"Equipment" = SCHEDULE-PD
+   TYPE             = FRACTION
+   MONTH            = ( 2, 4, 7, 8, 12 )
+   DAY              = ( 19, 17, 31, 31, 31 )
+   WEEK-SCHEDULES   = ( "Eqp Week", "Eqp Weekhi", "Eqp Week", "Eqp Weeklo", 
+         "Eqp Week" )
+   ..
+"DHW Use" = SCHEDULE-PD
+   TYPE             = FRACTION
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "DHW Week" )
+   ..
+"Infiltration" = SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Inf Week" )
+   ..
+"Max Solar Sched" = SCHEDULE-PD
+   TYPE             = RADIATION
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Max Solar Week" )
+   ..
+"Shading Sched" = SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Shading Week" )
+   ..
+"Open Shade Sched" = SCHEDULE-PD
+   TYPE             = FRACTION
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Open Shade Week" )
+   ..
+"Vis Trans Sched" = SCHEDULE-PD
+   TYPE             = FRACTION
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Vis Trans Week" )
+   ..
+"Always On Sched" = SCHEDULE-PD
+   TYPE             = ON/OFF
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Always On Week" )
+   ..
+"Fan Operation" = SCHEDULE-PD
+   TYPE             = ON/OFF/FLAG
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Fan Op Week" )
+   ..
+"Heat Schedule" = SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Heat Week Sched" )
+   ..
+"Cool-Off Schedule" = SCHEDULE-PD
+   TYPE             = ON/OFF/TEMP
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Cool-Off Week Sched" )
+   ..
+"Heat-Off Schedule" = SCHEDULE-PD
+   TYPE             = ON/OFF/TEMP
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Cool-Off Week Sched" )
+   ..
+"Cool Schedule" = SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Cool Week Sched" )
+   ..
+"Cool Reset Sched" = SCHEDULE-PD
+   TYPE             = RESET-TEMP
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Cool Reset Week Sched" )
+   ..
+"24-Hour On Sched" = SCHEDULE-PD
+   TYPE             = FLAG
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "24-Hour On Week" )
+   ..
+"Hourly Output" = SCHEDULE-PD
+   TYPE             = ON/OFF
+   MONTH            = ( 1, 6, 7, 12 )
+   DAY              = ( 7, 30, 7, 31 )
+   WEEK-SCHEDULES   = ( "Always On Week", "Always Off", "Always On Week", 
+         "Always Off" )
+   ..
+
+
+$ ---------------------------------------------------------
+$              Polygons
+$ ---------------------------------------------------------
+
+"Low-Flr-Poly" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 170, 0 )
+   V3               = ( 170, 120 )
+   V4               = ( 120, 120 )
+   V5               = ( 72, 120 )
+   V6               = ( 0, 120 )
+   ..
+"Up-Flr-Poly" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 170, 0 )
+   V3               = ( 170, 110 )
+   V4               = ( 120, 110 )
+   V5               = ( 120, 120 )
+   V6               = ( 72, 120 )
+   V7               = ( 72, 100 )
+   V8               = ( 0, 100 )
+   ..
+"Low-South-Poly" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 170, 0 )
+   V3               = ( 145, 25 )
+   V4               = ( 25, 25 )
+   ..
+"Low-EW-Poly" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 120, 0 )
+   V3               = ( 95, 25 )
+   V4               = ( 25, 25 )
+   ..
+"Low-NW-Poly" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 72, 0 )
+   V3               = ( 47, 25 )
+   V4               = ( 0, 25 )
+   ..
+"Low-NE-Poly" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 50, 0 )
+   V3               = ( 50, 25 )
+   V4               = ( 25, 25 )
+   ..
+"Elevator-Poly" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 48, 0 )
+   V3               = ( 48, 60 )
+   V4               = ( 0, 60 )
+   ..
+"Up-East-Poly" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 110, 0 )
+   V3               = ( 85, 25 )
+   V4               = ( 25, 25 )
+   ..
+"Up-West-Poly" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 100, 0 )
+   V3               = ( 75, 25 )
+   V4               = ( 25, 25 )
+   ..
+"Up-elev-poly" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 48, 0 )
+   V3               = ( 48, 50 )
+   V4               = ( 48, 60 )
+   V5               = ( 0, 60 )
+   V6               = ( 0, 40 )
+   ..
+"up-core-poly" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 120, 0 )
+   V3               = ( 120, 60 )
+   V4               = ( 95, 60 )
+   V5               = ( 95, 35 )
+   V6               = ( 47, 35 )
+   V7               = ( 47, 50 )
+   V8               = ( 0, 50 )
+   ..
+"low-int-poly" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 120, 0 )
+   V3               = ( 120, 70 )
+   V4               = ( 95, 70 )
+   V5               = ( 95, 35 )
+   V6               = ( 47, 35 )
+   V7               = ( 47, 70 )
+   V8               = ( 0, 70 )
+   ..
+"Upper-Plenum" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 170, 0 )
+   V3               = ( 170, 110 )
+   V4               = ( 120, 110 )
+   V5               = ( 120, 60 )
+   V6               = ( 72, 60 )
+   V7               = ( 72, 100 )
+   V8               = ( 0, 100 )
+   ..
+"lower-plenum" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 170, 0 )
+   V3               = ( 170, 120 )
+   V4               = ( 120, 120 )
+   V5               = ( 120, 60 )
+   V6               = ( 72, 60 )
+   V7               = ( 72, 120 )
+   V8               = ( 0, 120 )
+   ..
+
+
+$ ---------------------------------------------------------
+$              Wall Parameters
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Fixed and Building Shades
+$ ---------------------------------------------------------
+
+
+"Bldg Shade 1" = BUILDING-SHADE  
+   X                = 200
+   Y                = -70
+   HEIGHT           = 524
+   WIDTH            = 200
+   ..
+"Bldg Shade 2" = BUILDING-SHADE  
+   X                = -70
+   Y                = -70
+   HEIGHT           = 300
+   WIDTH            = 150
+   ..
+"Bldg Shade 3" = BUILDING-SHADE  
+   X                = -70
+   Y                = -70
+   HEIGHT           = 300
+   WIDTH            = 150
+   AZIMUTH          = 270
+   ..
+"Bldg Shade 4" = BUILDING-SHADE  
+   X                = -70
+   Y                = 170
+   HEIGHT           = 368
+   WIDTH            = 170
+   AZIMUTH          = 270
+   ..
+"Bldg Shade 5" = BUILDING-SHADE  
+   X                = 190
+   Y                = 120
+   HEIGHT           = 520
+   WIDTH            = 120
+   AZIMUTH          = 270
+   ..
+
+
+$ ---------------------------------------------------------
+$              Misc Cost Related Objects
+$ ---------------------------------------------------------
+
+
+
+BASELINE        
+   DISCOUNT-RATE    = 10
+   ..
+
+
+$ *********************************************************
+$ **                                                     **
+$ **      Floors / Spaces / Walls / Windows / Doors      **
+$ **                                                     **
+$ *********************************************************
+
+SET-DEFAULT FOR FLOOR           
+   SHAPE            = NO-SHAPE
+   FLOOR-HEIGHT     = 12
+   ..
+
+SET-DEFAULT FOR SPACE           
+   SHAPE            = POLYGON
+   FLOOR-WEIGHT     = 70
+   PEOPLE-SCHEDULE  = "Occupancy"
+   LIGHTING-SCHEDUL = ( "Lights" )
+   EQUIP-SCHEDULE   = ( "Equipment" )
+   INF-METHOD       = AIR-CHANGE
+   PEOPLE-HEAT-GAIN = 390
+   LIGHTING-W/AREA  = ( 1.3 )
+   EQUIPMENT-W/AREA = ( 0.75 )
+   AREA/PERSON      = 140
+   ..
+
+SET-DEFAULT FOR WINDOW          
+   SHADING-SCHEDULE = "Shading Sched"
+   FRAME-WIDTH      = 0.1667
+   X                = {PARENT("WIDTH")/2 - LOCAL("WIDTH")/2}
+   Y                = {PARENT("HEIGHT")/2 - LOCAL("HEIGHT")/2}
+   MAX-SOLAR-SCH    = "Max Solar Sched"
+   SUN-CTRL-PROB    = 0.5
+   OPEN-SHADE-SCH   = "Open Shade Sched"
+   FRAME-CONDUCT    = 0.812
+   ..
+
+"Basement" = FLOOR           
+   MULTIPLIER       = 1
+   Z                = -20
+   SHAPE            = BOX
+   FLOOR-HEIGHT     = 20
+   WIDTH            = 170
+   DEPTH            = 120
+   ..
+"Bsmt" = SPACE           
+   HEIGHT           = 20
+   SHAPE            = BOX
+   WIDTH            = 170
+   DEPTH            = 120
+   LIGHTING-W/AREA  = ( 0.7 )
+   AREA/PERSON      = 1400
+   ..
+"bsmt-uw1" = UNDERGROUND-WALL
+   CONSTRUCTION     = "Cons Ungrd Wall"
+   LOCATION         = LEFT
+   ..
+"bsmt-uw2" = UNDERGROUND-WALL
+   CONSTRUCTION     = "Cons Ungrd Wall"
+   LOCATION         = RIGHT
+   ..
+"bsmt-uw3" = UNDERGROUND-WALL
+   CONSTRUCTION     = "Cons Ungrd Wall"
+   LOCATION         = FRONT
+   ..
+"bsmt-uw-4" = UNDERGROUND-WALL
+   CONSTRUCTION     = "Cons Ungrd Wall"
+   LOCATION         = BACK
+   ..
+"AHU-1-Flr" = FLOOR           
+   MULTIPLIER       = 1
+   Z                = 0
+   SHAPE            = BOX
+   FLOOR-HEIGHT     = 20
+   WIDTH            = 170
+   DEPTH            = 120
+   ..
+"1-South" = SPACE           
+   HEIGHT           = {#PA("exht1")}
+   POLYGON          = "Low-South-Poly"
+   ..
+"1-s-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   HEIGHT           = {#PA("exht1")}
+   LOCATION         = SPACE-V1
+   ..
+"1-s-win1" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 7
+   HEIGHT           = 12
+   WIDTH            = 8.5
+   ..
+"1-south-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "2-South"
+   CONSTRUCTION     = "Cons Int Floor"
+   LOCATION         = TOP
+   ..
+"1-east" = SPACE           
+   X                = 170
+   AZIMUTH          = 270
+   HEIGHT           = {#PA("exht1")}
+   POLYGON          = "Low-EW-Poly"
+   ..
+"1-e-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"1-east-ceiling" = INTERIOR-WALL   
+   NEXT-TO          = "2-east"
+   CONSTRUCTION     = "Cons Int Floor"
+   LOCATION         = TOP
+   ..
+"1-ne" = SPACE           
+   X                = 170
+   Y                = 120
+   AZIMUTH          = 180
+   HEIGHT           = {#PA("exht1")}
+   POLYGON          = "Low-NE-Poly"
+   ..
+"1-ne-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"1-ne-ceiling" = INTERIOR-WALL   
+   NEXT-TO          = "2-ne"
+   CONSTRUCTION     = "Cons Int Floor"
+   LOCATION         = TOP
+   ..
+"1-elev" = SPACE           
+   X                = 72
+   Y                = 60
+   HEIGHT           = {#PA("exht1")}
+   ZONE-TYPE        = UNCONDITIONED
+   NUMBER-OF-PEOPLE = 0
+   LIGHTING-W/AREA  = ( 0 )
+   EQUIPMENT-W/AREA = ( 0 )
+   POLYGON          = "Elevator-Poly"
+   ..
+"1-el-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V3
+   ..
+"1-elev-ceiling" = INTERIOR-WALL   
+   NEXT-TO          = "2-elev"
+   CONSTRUCTION     = "Cons Int Floor"
+   LOCATION         = TOP
+   ..
+"1-nw" = SPACE           
+   X                = 72
+   Y                = 120
+   AZIMUTH          = 180
+   HEIGHT           = {#PA("exht1")}
+   INF-SCHEDULE     = "Infiltration"
+   AREA/PERSON      = 140
+   POLYGON          = "Low-NW-Poly"
+   ..
+"1-nw-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"1-nw-ceiling" = INTERIOR-WALL   
+   NEXT-TO          = "2-nw"
+   CONSTRUCTION     = "Cons Int Floor"
+   LOCATION         = TOP
+   ..
+"1-west" = SPACE           
+   Y                = 120
+   AZIMUTH          = 90
+   HEIGHT           = {#PA("exht1")}
+   POLYGON          = "Low-EW-Poly"
+   ..
+"1-w-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"1-w-win1" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 6
+   HEIGHT           = 12
+   WIDTH            = 14.5
+   ..
+"1-west-ceiling" = INTERIOR-WALL   
+   NEXT-TO          = "2-west"
+   CONSTRUCTION     = "Cons Int Floor"
+   LOCATION         = TOP
+   ..
+"1-core" = SPACE           
+   X                = 25
+   Y                = 25
+   HEIGHT           = {#PA("exht1")}
+   POLYGON          = "low-int-poly"
+   ..
+"1-core-ceiling" = INTERIOR-WALL   
+   NEXT-TO          = "2-core"
+   CONSTRUCTION     = "Cons Int Floor"
+   LOCATION         = TOP
+   ..
+"AHU-2-Flrs" = FLOOR           
+   MULTIPLIER       = 3
+   Z                = {#PA("exht2") + #PA("plenht") + #PA("exht1")}
+   ..
+"2-South" = SPACE           
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Low-South-Poly"
+   ..
+"2-s-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   HEIGHT           = {#PA("exht2")}
+   LOCATION         = SPACE-V1
+   ..
+"2-s-win1" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 7
+   HEIGHT           = 6
+   WIDTH            = 18.5
+   ..
+"2-s-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "2-plen"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"2-east" = SPACE           
+   X                = 170
+   AZIMUTH          = 270
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Low-EW-Poly"
+   ..
+"2-e-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"2-east-win1" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 6
+   HEIGHT           = 6
+   WIDTH            = 14.5
+   ..
+"2-e-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "2-plen"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"2-ne" = SPACE           
+   X                = 170
+   Y                = 120
+   AZIMUTH          = 180
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Low-NE-Poly"
+   ..
+"2-ne-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"2-ne-win1" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 2
+   HEIGHT           = 6
+   WIDTH            = 18.5
+   ..
+"2-ne-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "2-plen"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"2-elev" = SPACE           
+   X                = 72
+   Y                = 60
+   HEIGHT           = {#PA("exht2")+#PA("plenht")}
+   ZONE-TYPE        = UNCONDITIONED
+   NUMBER-OF-PEOPLE = 0
+   LIGHTING-W/AREA  = ( 0 )
+   EQUIPMENT-W/AREA = ( 0 )
+   POLYGON          = "Elevator-Poly"
+   ..
+"2-el-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V3
+   ..
+"2-el-ceil" = INTERIOR-WALL   
+   CONSTRUCTION     = "Cons Int Floor"
+   INT-WALL-TYPE    = ADIABATIC
+   LOCATION         = TOP
+   ..
+"2-nw" = SPACE           
+   X                = 72
+   Y                = 120
+   AZIMUTH          = 180
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Low-NW-Poly"
+   ..
+"2-nw-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"2-nw-win1" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 3
+   HEIGHT           = 6
+   WIDTH            = 18.5
+   ..
+"2-nw-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "2-plen"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"2-west" = SPACE           
+   Y                = 120
+   AZIMUTH          = 90
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Low-EW-Poly"
+   ..
+"2-w-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"2-w-win1" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 6
+   HEIGHT           = 6
+   WIDTH            = 14.5
+   ..
+"2-w-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "2-plen"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"2-core" = SPACE           
+   X                = 25
+   Y                = 25
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "low-int-poly"
+   ..
+"2-int-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "2-plen"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"2-plen" = SPACE           
+   Z                = {#PA("exht2")}
+   HEIGHT           = {#PA("plenht")}
+   ZONE-TYPE        = UNCONDITIONED
+   NUMBER-OF-PEOPLE = 0
+   LIGHTING-W/AREA  = ( 0 )
+   EQUIPMENT-W/AREA = ( 0 )
+   POLYGON          = "Low-Flr-Poly"
+   ..
+"2-plen-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"2-plen-ex2" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V2
+   ..
+"2-plen=ex3" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V5
+   ..
+"2-plen-3" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V3
+   ..
+"2-plen-5" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V6
+   ..
+"2-plen-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "2-plen"
+   CONSTRUCTION     = "Cons Int Floor"
+   LOCATION         = TOP
+   POLYGON          = "lower-plenum"
+   ..
+"AHU-3-Flrs" = FLOOR           
+   MULTIPLIER       = 3
+   Z                = {#PA("exht2") * 4 + #PA("plenht") * 4 + #PA("exht1")}
+   ..
+"3-South" = SPACE           
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Low-South-Poly"
+   ..
+"3-s-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   HEIGHT           = {#PA("exht2")}
+   LOCATION         = SPACE-V1
+   ..
+"3-s-win1" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 7
+   HEIGHT           = 6
+   WIDTH            = 18.5
+   ..
+"3-s-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "3-plen"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"3-east" = SPACE           
+   X                = 170
+   AZIMUTH          = 270
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Low-EW-Poly"
+   ..
+"3-e-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"3-east-win1" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 6
+   HEIGHT           = 6
+   WIDTH            = 14.5
+   ..
+"3-e-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "3-plen"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"3-ne" = SPACE           
+   X                = 170
+   Y                = 120
+   AZIMUTH          = 180
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Low-NE-Poly"
+   ..
+"3-ne-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"3-ne-win1" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 2
+   HEIGHT           = 6
+   WIDTH            = 18.5
+   ..
+"3-ne-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "3-plen"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"3-elev" = SPACE           
+   X                = 72
+   Y                = 60
+   HEIGHT           = {#PA("exht2")+#PA("plenht")}
+   ZONE-TYPE        = UNCONDITIONED
+   NUMBER-OF-PEOPLE = 0
+   LIGHTING-W/AREA  = ( 0 )
+   EQUIPMENT-W/AREA = ( 0 )
+   POLYGON          = "Elevator-Poly"
+   ..
+"3-el-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V3
+   ..
+"3-el-ceil" = INTERIOR-WALL   
+   CONSTRUCTION     = "Cons Int Floor"
+   INT-WALL-TYPE    = ADIABATIC
+   X                = 0
+   Y                = 0
+   LOCATION         = TOP
+   ..
+"3-nw" = SPACE           
+   X                = 72
+   Y                = 120
+   AZIMUTH          = 180
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Low-NW-Poly"
+   ..
+"3-nw-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"3-nw-win1" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 3
+   HEIGHT           = 6
+   WIDTH            = 18.5
+   ..
+"3-nw-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "3-plen"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"3-west" = SPACE           
+   Y                = 120
+   AZIMUTH          = 90
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Low-EW-Poly"
+   ..
+"3-w-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"3-w-win1" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 6
+   HEIGHT           = 6
+   WIDTH            = 14.5
+   ..
+"3-w-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "3-plen"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"3-core" = SPACE           
+   X                = 25
+   Y                = 25
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "low-int-poly"
+   ..
+"3-int-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "3-plen"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"3-plen" = SPACE           
+   Z                = {#PA("exht2")}
+   HEIGHT           = {#PA("plenht")}
+   ZONE-TYPE        = UNCONDITIONED
+   NUMBER-OF-PEOPLE = 0
+   LIGHTING-W/AREA  = ( 0 )
+   EQUIPMENT-W/AREA = ( 0 )
+   POLYGON          = "Low-Flr-Poly"
+   ..
+"3-plen-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"3-plen-ex2" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V2
+   ..
+"3-plen=ex3" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V5
+   ..
+"3-plen-3" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V3
+   ..
+"3-plen-5" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V6
+   ..
+"3-plen-ceiling" = INTERIOR-WALL   
+   NEXT-TO          = "3-plen"
+   CONSTRUCTION     = "Cons Int Floor"
+   LOCATION         = TOP
+   POLYGON          = "lower-plenum"
+   ..
+"AHU-4-Flrs" = FLOOR           
+   MULTIPLIER       = 3
+   Z                = {#PA("exht2") * 7 + #PA("plenht") * 7 + #PA("exht1")}
+   ..
+"4-South" = SPACE           
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Low-South-Poly"
+   ..
+"4-s-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   HEIGHT           = {#PA("exht2")}
+   LOCATION         = SPACE-V1
+   ..
+"4-s-win1" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 7
+   HEIGHT           = 6
+   WIDTH            = 18.5
+   ..
+"4-s-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "4-plen"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"4-east" = SPACE           
+   X                = 170
+   AZIMUTH          = 270
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Low-EW-Poly"
+   ..
+"4-e-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"4-east-win1" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 6
+   HEIGHT           = 6
+   WIDTH            = 14.5
+   ..
+"4-e-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "4-plen"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"4-ne" = SPACE           
+   X                = 170
+   Y                = 120
+   AZIMUTH          = 180
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Low-NE-Poly"
+   ..
+"4-ne-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"4-ne-win1" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 2
+   HEIGHT           = 6
+   WIDTH            = 18.5
+   ..
+"4-ne-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "4-plen"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"4-elev" = SPACE           
+   X                = 72
+   Y                = 60
+   HEIGHT           = {#PA("exht2")+#PA("plenht")}
+   ZONE-TYPE        = UNCONDITIONED
+   NUMBER-OF-PEOPLE = 0
+   LIGHTING-W/AREA  = ( 0 )
+   EQUIPMENT-W/AREA = ( 0 )
+   POLYGON          = "Elevator-Poly"
+   ..
+"4-el-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V3
+   ..
+"4-el-ceil" = INTERIOR-WALL   
+   CONSTRUCTION     = "Cons Int Floor"
+   INT-WALL-TYPE    = ADIABATIC
+   X                = 0
+   Y                = 0
+   LOCATION         = TOP
+   ..
+"4-nw" = SPACE           
+   X                = 72
+   Y                = 120
+   AZIMUTH          = 180
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Low-NW-Poly"
+   ..
+"4-nw-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"4-nw-win1" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 3
+   HEIGHT           = 6
+   WIDTH            = 18.5
+   ..
+"4-nw-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "4-plen"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"4-west" = SPACE           
+   Y                = 120
+   AZIMUTH          = 90
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Low-EW-Poly"
+   ..
+"4-w-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"4-w-win1" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 6
+   HEIGHT           = 6
+   WIDTH            = 14.5
+   ..
+"4-w-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "4-plen"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"4-core" = SPACE           
+   X                = 25
+   Y                = 25
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "low-int-poly"
+   ..
+"4-int-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "4-plen"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"4-plen" = SPACE           
+   Z                = {#PA("exht2")}
+   HEIGHT           = {#PA("plenht")}
+   ZONE-TYPE        = UNCONDITIONED
+   NUMBER-OF-PEOPLE = 0
+   LIGHTING-W/AREA  = ( 0 )
+   EQUIPMENT-W/AREA = ( 0 )
+   POLYGON          = "Low-Flr-Poly"
+   ..
+"4-plen-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"4-plen-ex2" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V2
+   ..
+"4-plen=ex3" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V5
+   ..
+"4-plen-3" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V3
+   ..
+"4-plen-5" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V6
+   ..
+"4-plen-ceiling" = INTERIOR-WALL   
+   NEXT-TO          = "4-plen"
+   CONSTRUCTION     = "Cons Int Floor"
+   LOCATION         = TOP
+   POLYGON          = "lower-plenum"
+   ..
+"AHU-5-Flrs" = FLOOR           
+   MULTIPLIER       = 3
+   Z                = {#PA("exht2") * 10 + #PA("plenht") * 10 + #PA("exht1")}
+   ..
+"5-South" = SPACE           
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Low-South-Poly"
+   ..
+"5-s-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   HEIGHT           = {#PA("exht2")}
+   LOCATION         = SPACE-V1
+   ..
+"5-s-win1" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 7
+   HEIGHT           = 6
+   WIDTH            = 18.5
+   ..
+"5-s-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "5-plen"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"5-east" = SPACE           
+   X                = 170
+   AZIMUTH          = 270
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Low-EW-Poly"
+   ..
+"5-e-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"5-east-win1" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 6
+   HEIGHT           = 6
+   WIDTH            = 14.5
+   ..
+"5-e-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "5-plen"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"5-ne" = SPACE           
+   X                = 170
+   Y                = 120
+   AZIMUTH          = 180
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Low-NE-Poly"
+   ..
+"5-ne-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"5-ne-win1" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 2
+   HEIGHT           = 6
+   WIDTH            = 18.5
+   ..
+"5-ne-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "5-plen"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"5-elev" = SPACE           
+   X                = 72
+   Y                = 60
+   HEIGHT           = {#PA("exht2")+#PA("plenht")}
+   ZONE-TYPE        = UNCONDITIONED
+   NUMBER-OF-PEOPLE = 0
+   LIGHTING-W/AREA  = ( 0 )
+   EQUIPMENT-W/AREA = ( 0 )
+   POLYGON          = "Elevator-Poly"
+   ..
+"5-el-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V3
+   ..
+"5-el-ceil" = INTERIOR-WALL   
+   CONSTRUCTION     = "Cons Int Floor"
+   INT-WALL-TYPE    = ADIABATIC
+   X                = 0
+   Y                = 0
+   LOCATION         = TOP
+   ..
+"5-nw" = SPACE           
+   X                = 72
+   Y                = 120
+   AZIMUTH          = 180
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Low-NW-Poly"
+   ..
+"5-nw-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"5-nw-win1" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 3
+   HEIGHT           = 6
+   WIDTH            = 18.5
+   ..
+"5-nw-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "5-plen"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"5-west" = SPACE           
+   Y                = 120
+   AZIMUTH          = 90
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Low-EW-Poly"
+   ..
+"5-w-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"5-w-win1" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 6
+   HEIGHT           = 6
+   WIDTH            = 14.5
+   ..
+"5-w-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "5-plen"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"5-core" = SPACE           
+   X                = 25
+   Y                = 25
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "low-int-poly"
+   ..
+"5-int-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "5-plen"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"5-plen" = SPACE           
+   Z                = {#PA("exht2")}
+   HEIGHT           = {#PA("plenht")}
+   ZONE-TYPE        = UNCONDITIONED
+   NUMBER-OF-PEOPLE = 0
+   LIGHTING-W/AREA  = ( 0 )
+   EQUIPMENT-W/AREA = ( 0 )
+   POLYGON          = "Low-Flr-Poly"
+   ..
+"5-plen-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"5-plen-ex2" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V2
+   ..
+"5-plen=ex3" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V5
+   ..
+"5-plen-3" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V3
+   ..
+"5-plen-5" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V6
+   ..
+"5-plen-ceiling" = INTERIOR-WALL   
+   NEXT-TO          = "5-plen"
+   CONSTRUCTION     = "Cons Int Floor"
+   LOCATION         = TOP
+   POLYGON          = "lower-plenum"
+   ..
+"AHU-6-a-Flr" = FLOOR           
+   MULTIPLIER       = 1
+   Z                = {#PA("exht2") * 12 + #PA("plenht") * 12 + #PA("exht1")}
+   ..
+"6a-South" = SPACE           
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Low-South-Poly"
+   ..
+"6a-s-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   HEIGHT           = {#PA("exht2")}
+   LOCATION         = SPACE-V1
+   ..
+"6a-s-win1" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 7
+   HEIGHT           = 6
+   WIDTH            = 18.5
+   ..
+"6a-s-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "6a-plen"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"6a-east" = SPACE           
+   X                = 170
+   AZIMUTH          = 270
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Low-EW-Poly"
+   ..
+"6a-e-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"6a-east-win1" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 6
+   HEIGHT           = 6
+   WIDTH            = 14.5
+   ..
+"6a-e-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "6a-plen"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"6a-ne" = SPACE           
+   X                = 170
+   Y                = 120
+   AZIMUTH          = 180
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Low-NE-Poly"
+   ..
+"6a-ne-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"6a-ne-win1" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 2
+   HEIGHT           = 6
+   WIDTH            = 18.5
+   ..
+"6a-ne-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "6a-plen"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"6a-elev" = SPACE           
+   X                = 72
+   Y                = 60
+   HEIGHT           = {#PA("exht2")+#PA("plenht")}
+   ZONE-TYPE        = UNCONDITIONED
+   NUMBER-OF-PEOPLE = 0
+   LIGHTING-W/AREA  = ( 0 )
+   EQUIPMENT-W/AREA = ( 0 )
+   POLYGON          = "Elevator-Poly"
+   ..
+"6a-el-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V3
+   ..
+"6a-el-ceil" = INTERIOR-WALL   
+   CONSTRUCTION     = "Cons Int Floor"
+   INT-WALL-TYPE    = ADIABATIC
+   X                = 0
+   Y                = 0
+   LOCATION         = TOP
+   ..
+"6a-nw" = SPACE           
+   X                = 72
+   Y                = 120
+   AZIMUTH          = 180
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Low-NW-Poly"
+   ..
+"6a-nw-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"6a-nw-win1" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 3
+   HEIGHT           = 6
+   WIDTH            = 18.5
+   ..
+"6a-nw-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "6a-plen"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"6a-west" = SPACE           
+   Y                = 120
+   AZIMUTH          = 90
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Low-EW-Poly"
+   ..
+"6a-w-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"6a-w-win1" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 6
+   HEIGHT           = 6
+   WIDTH            = 14.5
+   ..
+"6a-w-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "6a-plen"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"6a-core" = SPACE           
+   X                = 25
+   Y                = 25
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "low-int-poly"
+   ..
+"6a-int-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "6a-plen"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"6a-plen" = SPACE           
+   Z                = {#PA("exht2")}
+   HEIGHT           = {#PA("plenht")}
+   ZONE-TYPE        = UNCONDITIONED
+   NUMBER-OF-PEOPLE = 0
+   LIGHTING-W/AREA  = ( 0 )
+   EQUIPMENT-W/AREA = ( 0 )
+   POLYGON          = "Low-Flr-Poly"
+   ..
+"6a-plen-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"6a-plen-ex2" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V2
+   ..
+"6a-plen=ex3" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V5
+   ..
+"6a-plen-3" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V3
+   ..
+"6a-plen-5" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V6
+   ..
+"6a-plen-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "6a-plen"
+   CONSTRUCTION     = "Cons Int Floor"
+   LOCATION         = TOP
+   POLYGON          = "lower-plenum"
+   ..
+"AHU-6-b-Flr" = FLOOR           
+   MULTIPLIER       = 1
+   Z                = {#PA("exht2") * 12 + #PA("plenht") * 12 + #PA("exht1")}
+   ..
+"6b-South" = SPACE           
+   Z                = {#PA("exht2") + #PA("plenht")}
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Low-South-Poly"
+   ..
+"6b-s-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   HEIGHT           = {#PA("exht2")}
+   LOCATION         = SPACE-V1
+   ..
+"6b-s-win1" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 7
+   HEIGHT           = 6
+   WIDTH            = 18.5
+   ..
+"6b-s-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "6b-plen"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"6b-east" = SPACE           
+   X                = 170
+   Z                = {#PA("exht2") + #PA("plenht")}
+   AZIMUTH          = 270
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Low-EW-Poly"
+   ..
+"6b-e-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"6b-east-win1" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 6
+   HEIGHT           = 6
+   WIDTH            = 14.5
+   ..
+"6b-e-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "6b-plen"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"6b-ne" = SPACE           
+   X                = 170
+   Y                = 120
+   Z                = {#PA("exht2") + #PA("plenht")}
+   AZIMUTH          = 180
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Low-NE-Poly"
+   ..
+"6b-ne-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"6b-ne-win1" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 2
+   HEIGHT           = 6
+   WIDTH            = 18.5
+   ..
+"6b-ne-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "6b-plen"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"6b-elev" = SPACE           
+   X                = 72
+   Y                = 60
+   Z                = {#PA("exht2") + #PA("plenht")}
+   HEIGHT           = {#PA("exht2")+#PA("plenht")}
+   ZONE-TYPE        = UNCONDITIONED
+   NUMBER-OF-PEOPLE = 0
+   LIGHTING-W/AREA  = ( 0 )
+   EQUIPMENT-W/AREA = ( 0 )
+   POLYGON          = "Elevator-Poly"
+   ..
+"6b-el-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V3
+   ..
+"6b-el-ceil" = INTERIOR-WALL   
+   CONSTRUCTION     = "Cons Int Floor"
+   INT-WALL-TYPE    = ADIABATIC
+   X                = 0
+   Y                = 0
+   LOCATION         = TOP
+   ..
+"6b-nw" = SPACE           
+   X                = 72
+   Y                = 120
+   Z                = {#PA("exht2") + #PA("plenht")}
+   AZIMUTH          = 180
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Low-NW-Poly"
+   ..
+"6b-nw-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"6b-nw-win1" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 3
+   HEIGHT           = 6
+   WIDTH            = 18.5
+   ..
+"6b-nw-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "6b-plen"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"6b-west" = SPACE           
+   Y                = 120
+   Z                = {#PA("exht2") + #PA("plenht")}
+   AZIMUTH          = 90
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Low-EW-Poly"
+   ..
+"6b-w-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"6b-w-win1" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 6
+   HEIGHT           = 6
+   WIDTH            = 14.5
+   ..
+"6b-w-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "6b-plen"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"6b-core" = SPACE           
+   X                = 25
+   Y                = 25
+   Z                = {#PA("exht2") + #PA("plenht")}
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "low-int-poly"
+   ..
+"6b-int-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "6b-plen"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"6b-plen" = SPACE           
+   Z                = {#PA("exht2") * 2 + #PA("plenht")}
+   HEIGHT           = {#PA("plenht")}
+   ZONE-TYPE        = UNCONDITIONED
+   NUMBER-OF-PEOPLE = 0
+   LIGHTING-W/AREA  = ( 0 )
+   EQUIPMENT-W/AREA = ( 0 )
+   POLYGON          = "Low-Flr-Poly"
+   ..
+"6b-plen-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"6b-plen-ex2" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V2
+   ..
+"6b-plen=ex3" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V5
+   ..
+"6b-plen-3" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V3
+   ..
+"6b-plen-5" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V6
+   ..
+"6b-plen-roof1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Roof"
+   Z                = {#PA("plenht")}
+   HEIGHT           = 10
+   TILT             = 0
+   LOCATION         = SPACE-V3
+   ..
+"6b-plen-roof2" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Roof"
+   X                = 72
+   Z                = {#PA("plenht")}
+   HEIGHT           = 20
+   WIDTH            = 72
+   TILT             = 0
+   LOCATION         = SPACE-V3
+   ..
+"6b-plen-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "6b-plen"
+   CONSTRUCTION     = "Cons Int Floor"
+   LOCATION         = TOP
+   POLYGON          = "Upper-Plenum"
+   ..
+"AHU-7-flrs" = FLOOR           
+   MULTIPLIER       = 3
+   Z                = 
+{#PA("exht2") * 15.5 + #PA("plenht") * 15.5+#PA("exht1")}
+   ..
+"7-south" = SPACE           
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Low-South-Poly"
+   ..
+"7-s-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"7-win1" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 7
+   HEIGHT           = 6
+   WIDTH            = 18.5
+   ..
+"7-s-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "7-plenum"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"7-east" = SPACE           
+   X                = 170
+   Y                = 0
+   AZIMUTH          = 270
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Up-East-Poly"
+   ..
+"7-e-x1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"7-win2" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 5
+   HEIGHT           = 6
+   WIDTH            = 14.5
+   ..
+"7-e-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "7-plenum"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"7-east-1" = INTERIOR-WALL   
+   NEXT-TO          = "7-south"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V4
+   ..
+"7-ne" = SPACE           
+   X                = 170
+   Y                = 110
+   AZIMUTH          = 180
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Low-NE-Poly"
+   ..
+"7-NE-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"7-win3" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 2
+   HEIGHT           = 6
+   WIDTH            = 18.5
+   ..
+"7-NE-cel" = INTERIOR-WALL   
+   NEXT-TO          = "7-plenum"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"7-ne-1" = INTERIOR-WALL   
+   NEXT-TO          = "7-east"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V4
+   ..
+"7-ne-2" = INTERIOR-WALL   
+   NEXT-TO          = "7-elev"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V2
+   ..
+"7-nw" = SPACE           
+   X                = 72
+   Y                = 100
+   AZIMUTH          = 180
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Low-NW-Poly"
+   ..
+"7-nw-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"7-win4" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 3
+   HEIGHT           = 6
+   WIDTH            = 18.5
+   ..
+"7-nw-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "7-plenum"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"7-nw-1" = INTERIOR-WALL   
+   NEXT-TO          = "7-west"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V2
+   ..
+"7-nw-2" = INTERIOR-WALL   
+   NEXT-TO          = "7-elev"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V4
+   ..
+"7-west" = SPACE           
+   Y                = 100
+   AZIMUTH          = 90
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Up-West-Poly"
+   ..
+"7-w-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"7-win5" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 5
+   HEIGHT           = 6
+   WIDTH            = 14.5
+   ..
+"7-w-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "7-plenum"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"7-west-1" = INTERIOR-WALL   
+   NEXT-TO          = "7-south"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V2
+   ..
+"7-elev" = SPACE           
+   X                = 72
+   Y                = 60
+   HEIGHT           = {#PA("exht2")+#PA("plenht")}
+   ZONE-TYPE        = UNCONDITIONED
+   NUMBER-OF-PEOPLE = 0
+   LIGHTING-W/AREA  = ( 0 )
+   EQUIPMENT-W/AREA = ( 0 )
+   POLYGON          = "Up-elev-poly"
+   ..
+"7-elev-east" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   HEIGHT           = {#PA("exht2")+#PA("plenht")}
+   LOCATION         = SPACE-V3
+   ..
+"7-elev-ex2" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   HEIGHT           = {#PA("exht2")+#PA("plenht")}
+   LOCATION         = SPACE-V4
+   ..
+"7-elev-ex3" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   HEIGHT           = {#PA("exht2")+#PA("plenht")}
+   LOCATION         = SPACE-V5
+   ..
+"7-elev-ceiling" = INTERIOR-WALL   
+   NEXT-TO          = "7-elev"
+   CONSTRUCTION     = "Cons Int Floor"
+   LOCATION         = TOP
+   ..
+"7-core" = SPACE           
+   X                = 25
+   Y                = 25
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "up-core-poly"
+   ..
+"7-int-1" = INTERIOR-WALL   
+   NEXT-TO          = "7-south"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V1
+   ..
+"7-int-2" = INTERIOR-WALL   
+   NEXT-TO          = "7-east"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V2
+   ..
+"7-int-3" = INTERIOR-WALL   
+   NEXT-TO          = "7-ne"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V3
+   ..
+"7-int-4" = INTERIOR-WALL   
+   NEXT-TO          = "7-elev"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V4
+   ..
+"7-int-5" = INTERIOR-WALL   
+   NEXT-TO          = "7-elev"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V5
+   ..
+"7-int-6" = INTERIOR-WALL   
+   NEXT-TO          = "7-elev"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V6
+   ..
+"7-int-7" = INTERIOR-WALL   
+   NEXT-TO          = "7-nw"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V7
+   ..
+"7-int-8" = INTERIOR-WALL   
+   NEXT-TO          = "7-west"
+   CONSTRUCTION     = "Cons Int Wall"
+   INT-WALL-TYPE    = ADIABATIC
+   LOCATION         = SPACE-V8
+   ..
+"7-core-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "7-plenum"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"7-plenum" = SPACE           
+   Z                = {#PA("exht2")}
+   HEIGHT           = {#PA("plenht")}
+   ZONE-TYPE        = UNCONDITIONED
+   NUMBER-OF-PEOPLE = 0
+   LIGHTING-W/AREA  = ( 0 )
+   EQUIPMENT-W/AREA = ( 0 )
+   POLYGON          = "Up-Flr-Poly"
+   ..
+"7-plen-1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"7-plen-2" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V2
+   ..
+"7-plen-3" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V3
+   ..
+"7-plen-4" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V7
+   ..
+"7-plen-6" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V8
+   ..
+"7-plen-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "7-plenum"
+   CONSTRUCTION     = "Cons Int Floor"
+   LOCATION         = TOP
+   POLYGON          = "Upper-Plenum"
+   ..
+"AHU-8-flrs" = FLOOR           
+   MULTIPLIER       = 3
+   Z                = {#PA("exht2") * 19 + #PA("plenht") * 19 + #PA("exht1")}
+   ..
+"8-south" = SPACE           
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Low-South-Poly"
+   ..
+"8-s-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"8-win1" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 7
+   HEIGHT           = 6
+   WIDTH            = 18.5
+   ..
+"8-s-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "8-plenum"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"8-east" = SPACE           
+   X                = 170
+   Y                = 0
+   AZIMUTH          = 270
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Up-East-Poly"
+   ..
+"8-e-x1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"8-win2" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 5
+   HEIGHT           = 6
+   WIDTH            = 14.5
+   ..
+"8-e-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "8-plenum"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"8-east-1" = INTERIOR-WALL   
+   NEXT-TO          = "8-south"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V4
+   ..
+"8-ne" = SPACE           
+   X                = 170
+   Y                = 110
+   AZIMUTH          = 180
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Low-NE-Poly"
+   ..
+"8-NE-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"8-win3" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 2
+   HEIGHT           = 6
+   WIDTH            = 18.5
+   ..
+"8-NE-cel" = INTERIOR-WALL   
+   NEXT-TO          = "8-plenum"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"8-ne-1" = INTERIOR-WALL   
+   NEXT-TO          = "8-east"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V4
+   ..
+"8-ne-2" = INTERIOR-WALL   
+   NEXT-TO          = "8-elev"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V2
+   ..
+"8-nw" = SPACE           
+   X                = 72
+   Y                = 100
+   AZIMUTH          = 180
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Low-NW-Poly"
+   ..
+"8-nw-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"8-win4" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 3
+   HEIGHT           = 6
+   WIDTH            = 18.5
+   ..
+"8-nw-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "8-plenum"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"8-nw-1" = INTERIOR-WALL   
+   NEXT-TO          = "8-west"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V2
+   ..
+"8-nw-2" = INTERIOR-WALL   
+   NEXT-TO          = "8-elev"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V4
+   ..
+"8-west" = SPACE           
+   Y                = 100
+   AZIMUTH          = 90
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Up-West-Poly"
+   ..
+"8-w-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"8-win5" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 5
+   HEIGHT           = 6
+   WIDTH            = 14.5
+   ..
+"8-w-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "8-plenum"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"8-west-1" = INTERIOR-WALL   
+   NEXT-TO          = "8-south"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V2
+   ..
+"8-elev" = SPACE           
+   X                = 72
+   Y                = 60
+   HEIGHT           = {#PA("exht2")+#PA("plenht")}
+   ZONE-TYPE        = UNCONDITIONED
+   NUMBER-OF-PEOPLE = 0
+   LIGHTING-W/AREA  = ( 0 )
+   EQUIPMENT-W/AREA = ( 0 )
+   POLYGON          = "Up-elev-poly"
+   ..
+"8-elev-east" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   HEIGHT           = {#PA("exht2")+#PA("plenht")}
+   LOCATION         = SPACE-V3
+   ..
+"8-elev-ex2" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   HEIGHT           = {#PA("exht2")+#PA("plenht")}
+   LOCATION         = SPACE-V4
+   ..
+"8-elev-ex3" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   HEIGHT           = {#PA("exht2")+#PA("plenht")}
+   LOCATION         = SPACE-V5
+   ..
+"8-elev-ceiling" = INTERIOR-WALL   
+   NEXT-TO          = "8-elev"
+   CONSTRUCTION     = "Cons Int Floor"
+   LOCATION         = TOP
+   ..
+"8-core" = SPACE           
+   X                = 25
+   Y                = 25
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "up-core-poly"
+   ..
+"8-int-1" = INTERIOR-WALL   
+   NEXT-TO          = "8-south"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V1
+   ..
+"8-int-2" = INTERIOR-WALL   
+   NEXT-TO          = "8-east"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V2
+   ..
+"8-int-3" = INTERIOR-WALL   
+   NEXT-TO          = "8-ne"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V3
+   ..
+"8-int-4" = INTERIOR-WALL   
+   NEXT-TO          = "8-elev"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V4
+   ..
+"8-int-5" = INTERIOR-WALL   
+   NEXT-TO          = "8-elev"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V5
+   ..
+"8-int-6" = INTERIOR-WALL   
+   NEXT-TO          = "8-elev"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V6
+   ..
+"8-int-7" = INTERIOR-WALL   
+   NEXT-TO          = "8-nw"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V7
+   ..
+"8-int-8" = INTERIOR-WALL   
+   NEXT-TO          = "8-west"
+   CONSTRUCTION     = "Cons Int Wall"
+   INT-WALL-TYPE    = ADIABATIC
+   LOCATION         = SPACE-V8
+   ..
+"8-core-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "8-plenum"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"8-plenum" = SPACE           
+   Z                = {#PA("exht2")}
+   HEIGHT           = {#PA("plenht")}
+   ZONE-TYPE        = UNCONDITIONED
+   NUMBER-OF-PEOPLE = 0
+   LIGHTING-W/AREA  = ( 0 )
+   EQUIPMENT-W/AREA = ( 0 )
+   POLYGON          = "Up-Flr-Poly"
+   ..
+"8-plen-1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"8-plen-2" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V2
+   ..
+"8-plen-3" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V3
+   ..
+"8-plen-4" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V7
+   ..
+"8-plen-6" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V8
+   ..
+"8-plen-ceil" = INTERIOR-WALL   
+   CONSTRUCTION     = "Cons Int Floor"
+   INT-WALL-TYPE    = ADIABATIC
+   LOCATION         = TOP
+   POLYGON          = "Upper-Plenum"
+   ..
+"AHU-9-a-flr" = FLOOR           
+   MULTIPLIER       = 1
+   Z                = {#PA("exht2") * 21 + #PA("plenht") * 21 + #PA("exht1")}
+   ..
+"9a-south" = SPACE           
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Low-South-Poly"
+   ..
+"9a-s-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"9a-win1" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 7
+   HEIGHT           = 6
+   WIDTH            = 18.5
+   ..
+"9a-s-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "9a-plenum"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"9a-east" = SPACE           
+   X                = 170
+   Y                = 0
+   AZIMUTH          = 270
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Up-East-Poly"
+   ..
+"9a-e-x1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"9a-win2" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 5
+   HEIGHT           = 6
+   WIDTH            = 14.5
+   ..
+"9a-e-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "9a-plenum"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"9a-east-1" = INTERIOR-WALL   
+   NEXT-TO          = "9a-south"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V4
+   ..
+"9a-ne" = SPACE           
+   X                = 170
+   Y                = 110
+   AZIMUTH          = 180
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Low-NE-Poly"
+   ..
+"9a-NE-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"9a-win3" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 2
+   HEIGHT           = 6
+   WIDTH            = 18.5
+   ..
+"9a-NE-cel" = INTERIOR-WALL   
+   NEXT-TO          = "9a-plenum"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"9a-ne-1" = INTERIOR-WALL   
+   NEXT-TO          = "9a-east"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V4
+   ..
+"9a-ne-2" = INTERIOR-WALL   
+   NEXT-TO          = "9a-elev"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V2
+   ..
+"9a-nw" = SPACE           
+   X                = 72
+   Y                = 100
+   AZIMUTH          = 180
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Low-NW-Poly"
+   ..
+"9a-nw-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"9a-win4" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 3
+   HEIGHT           = 6
+   WIDTH            = 18.5
+   ..
+"9a-nw-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "9a-plenum"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"9a-nw-1" = INTERIOR-WALL   
+   NEXT-TO          = "9a-west"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V2
+   ..
+"9a-nw-2" = INTERIOR-WALL   
+   NEXT-TO          = "9a-elev"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V4
+   ..
+"9a-west" = SPACE           
+   Y                = 100
+   AZIMUTH          = 90
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Up-West-Poly"
+   ..
+"9a-w-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"9a-win5" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 5
+   HEIGHT           = 6
+   WIDTH            = 14.5
+   ..
+"9a-w-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "9a-plenum"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"9a-west-1" = INTERIOR-WALL   
+   NEXT-TO          = "9a-south"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V2
+   ..
+"9a-elev" = SPACE           
+   X                = 72
+   Y                = 60
+   HEIGHT           = {#PA("exht2")+#PA("plenht")}
+   ZONE-TYPE        = UNCONDITIONED
+   NUMBER-OF-PEOPLE = 0
+   LIGHTING-W/AREA  = ( 0 )
+   EQUIPMENT-W/AREA = ( 0 )
+   POLYGON          = "Up-elev-poly"
+   ..
+"9a-elev-east" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   HEIGHT           = {#PA("exht2")+#PA("plenht")}
+   LOCATION         = SPACE-V3
+   ..
+"9a-elev-ex2" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   HEIGHT           = {#PA("exht2")+#PA("plenht")}
+   LOCATION         = SPACE-V4
+   ..
+"9a-elev-ex3" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   HEIGHT           = {#PA("exht2")+#PA("plenht")}
+   LOCATION         = SPACE-V5
+   ..
+"9a-elev-ceiling" = INTERIOR-WALL   
+   NEXT-TO          = "9a-elev"
+   CONSTRUCTION     = "Cons Int Floor"
+   LOCATION         = TOP
+   ..
+"9a-core" = SPACE           
+   X                = 25
+   Y                = 25
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "up-core-poly"
+   ..
+"9a-int-1" = INTERIOR-WALL   
+   NEXT-TO          = "9a-south"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V1
+   ..
+"9a-int-2" = INTERIOR-WALL   
+   NEXT-TO          = "9a-east"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V2
+   ..
+"9a-int-3" = INTERIOR-WALL   
+   NEXT-TO          = "9a-ne"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V3
+   ..
+"9a-int-4" = INTERIOR-WALL   
+   NEXT-TO          = "9a-elev"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V4
+   ..
+"9a-int-5" = INTERIOR-WALL   
+   NEXT-TO          = "9a-elev"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V5
+   ..
+"9a-int-6" = INTERIOR-WALL   
+   NEXT-TO          = "9a-elev"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V6
+   ..
+"9a-int-7" = INTERIOR-WALL   
+   NEXT-TO          = "9a-nw"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V7
+   ..
+"9a-int-8" = INTERIOR-WALL   
+   NEXT-TO          = "9a-west"
+   CONSTRUCTION     = "Cons Int Wall"
+   INT-WALL-TYPE    = ADIABATIC
+   LOCATION         = SPACE-V8
+   ..
+"9a-core-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "9a-plenum"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"9a-plenum" = SPACE           
+   Z                = {#PA("exht2")}
+   HEIGHT           = {#PA("plenht")}
+   ZONE-TYPE        = UNCONDITIONED
+   NUMBER-OF-PEOPLE = 0
+   LIGHTING-W/AREA  = ( 0 )
+   EQUIPMENT-W/AREA = ( 0 )
+   POLYGON          = "Up-Flr-Poly"
+   ..
+"9a-plen-1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"9a-plen-2" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V2
+   ..
+"9a-plen-3" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V3
+   ..
+"9a-plen-4" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V7
+   ..
+"9a-plen-6" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V8
+   ..
+"9a-plen-ceil" = INTERIOR-WALL   
+   CONSTRUCTION     = "Cons Int Floor"
+   INT-WALL-TYPE    = ADIABATIC
+   LOCATION         = TOP
+   POLYGON          = "Upper-Plenum"
+   ..
+"AHU-9-b-flr" = FLOOR           
+   MULTIPLIER       = 1
+   Z                = {#PA("exht2") * 21 + #PA("plenht") * 21 + #PA("exht1")}
+   ..
+"9b-south" = SPACE           
+   Z                = {#PA("exht2")+#PA("plenht")}
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Low-South-Poly"
+   ..
+"9b-s-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"9b-win1" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 7
+   HEIGHT           = 6
+   WIDTH            = 18.5
+   ..
+"9b-s-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "9b-plenum"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"9b-east" = SPACE           
+   X                = 170
+   Y                = 0
+   Z                = {#PA("exht2")+#PA("plenht")}
+   AZIMUTH          = 270
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Up-East-Poly"
+   ..
+"9b-e-x1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"9b-win2" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 5
+   HEIGHT           = 6
+   WIDTH            = 14.5
+   ..
+"9b-e-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "9b-plenum"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"9b-east-1" = INTERIOR-WALL   
+   NEXT-TO          = "9b-south"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V4
+   ..
+"9b-ne" = SPACE           
+   X                = 170
+   Y                = 110
+   Z                = {#PA("exht2") + #PA("plenht")}
+   AZIMUTH          = 180
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Low-NE-Poly"
+   ..
+"9b-NE-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"9b-win3" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 2
+   HEIGHT           = 6
+   WIDTH            = 18.5
+   ..
+"9b-NE-cel" = INTERIOR-WALL   
+   NEXT-TO          = "9b-plenum"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"9b-ne-1" = INTERIOR-WALL   
+   NEXT-TO          = "9b-east"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V4
+   ..
+"9b-ne-2" = INTERIOR-WALL   
+   NEXT-TO          = "9b-elev"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V2
+   ..
+"9b-nw" = SPACE           
+   X                = 72
+   Y                = 100
+   Z                = {#PA("exht2") + #PA("plenht")}
+   AZIMUTH          = 180
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Low-NW-Poly"
+   ..
+"9b-nw-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"9b-win4" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 3
+   HEIGHT           = 6
+   WIDTH            = 18.5
+   ..
+"9b-nw-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "9b-plenum"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"9b-nw-1" = INTERIOR-WALL   
+   NEXT-TO          = "9b-west"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V2
+   ..
+"9b-nw-2" = INTERIOR-WALL   
+   NEXT-TO          = "9b-elev"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V4
+   ..
+"9b-west" = SPACE           
+   Y                = 100
+   Z                = {#PA("exht2") + #PA("plenht")}
+   AZIMUTH          = 90
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "Up-West-Poly"
+   ..
+"9b-w-ex1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"9b-win5" = WINDOW          
+   GLASS-TYPE       = "Clear Single"
+   MULTIPLIER       = 5
+   HEIGHT           = 6
+   WIDTH            = 14.5
+   ..
+"9b-w-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "9b-plenum"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   ..
+"9b-west-1" = INTERIOR-WALL   
+   NEXT-TO          = "9b-south"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V2
+   ..
+"9b-elev" = SPACE           
+   X                = 72
+   Y                = 60
+   Z                = {#PA("exht2") + #PA("plenht")}
+   HEIGHT           = {#PA("exht2")+#PA("plenht")}
+   ZONE-TYPE        = UNCONDITIONED
+   NUMBER-OF-PEOPLE = 0
+   LIGHTING-W/AREA  = ( 0 )
+   EQUIPMENT-W/AREA = ( 0 )
+   POLYGON          = "Up-elev-poly"
+   ..
+"9b-elev-east" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   HEIGHT           = {#PA("exht2")+#PA("plenht")}
+   LOCATION         = SPACE-V3
+   ..
+"9b-elev-ex2" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   HEIGHT           = {#PA("exht2")+#PA("plenht")}
+   LOCATION         = SPACE-V4
+   ..
+"9b-elev-ex3" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   HEIGHT           = {#PA("exht2")+#PA("plenht")}
+   LOCATION         = SPACE-V5
+   ..
+"9b-elev-ceiling" = INTERIOR-WALL   
+   NEXT-TO          = "9b-elev"
+   CONSTRUCTION     = "Cons Int Floor"
+   LOCATION         = TOP
+   ..
+"9b-core" = SPACE           
+   X                = 25
+   Y                = 25
+   Z                = {#PA("exht2") + #PA("plenht")}
+   HEIGHT           = {#PA("exht2")}
+   POLYGON          = "up-core-poly"
+   ..
+"9b-int-1" = INTERIOR-WALL   
+   NEXT-TO          = "9b-south"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V1
+   ..
+"9b-int-2" = INTERIOR-WALL   
+   NEXT-TO          = "9b-east"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V2
+   ..
+"9b-int-3" = INTERIOR-WALL   
+   NEXT-TO          = "9b-ne"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V3
+   ..
+"9b-int-4" = INTERIOR-WALL   
+   NEXT-TO          = "9b-elev"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V4
+   ..
+"9b-int-5" = INTERIOR-WALL   
+   NEXT-TO          = "9b-elev"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V5
+   ..
+"9b-int-6" = INTERIOR-WALL   
+   NEXT-TO          = "9b-elev"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V6
+   ..
+"9b-int-7" = INTERIOR-WALL   
+   NEXT-TO          = "9b-nw"
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = SPACE-V7
+   ..
+"9b-int-8" = INTERIOR-WALL   
+   NEXT-TO          = "9b-west"
+   CONSTRUCTION     = "Cons Int Wall"
+   INT-WALL-TYPE    = ADIABATIC
+   LOCATION         = SPACE-V8
+   ..
+"9b-core-ceil" = INTERIOR-WALL   
+   NEXT-TO          = "9b-plenum"
+   CONSTRUCTION     = "Cons Ceiling"
+   INT-WALL-TYPE    = ADIABATIC
+   LOCATION         = TOP
+   ..
+"9b-plenum" = SPACE           
+   Z                = {#PA("exht2") * 2 + #PA("plenht")}
+   HEIGHT           = {#PA("plenht")}
+   ZONE-TYPE        = UNCONDITIONED
+   NUMBER-OF-PEOPLE = 0
+   LIGHTING-W/AREA  = ( 0 )
+   EQUIPMENT-W/AREA = ( 0 )
+   POLYGON          = "Up-Flr-Poly"
+   ..
+"9b-plen-1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"9b-plen-2" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V2
+   ..
+"9b-plen-3" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V3
+   ..
+"9b-plen-4" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V7
+   ..
+"9b-plen-6" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V8
+   ..
+"9b-plen-ceil" = INTERIOR-WALL   
+   CONSTRUCTION     = "Cons Floor"
+   INT-WALL-TYPE    = ADIABATIC
+   LOCATION         = TOP
+   POLYGON          = "Upper-Plenum"
+   ..
+"AHU-9-c-flr" = FLOOR           
+   MULTIPLIER       = 1
+   Z                = {#PA("exht2") * 21 + #PA("plenht") * 21 + #PA("exht1")}
+   ..
+"9c-mechrm" = SPACE           
+   Z                = {#PA("exht2") * 2 + #PA("plenht") * 2}
+   HEIGHT           = {#PA("exht3")}
+   ZONE-TYPE        = UNCONDITIONED
+   NUMBER-OF-PEOPLE = 0
+   LIGHTING-W/AREA  = ( 0.7 )
+   EQUIPMENT-W/AREA = ( 0.5 )
+   POLYGON          = "Up-Flr-Poly"
+   ..
+"9c-plen-1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V1
+   ..
+"9c-plen-2" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V2
+   ..
+"9c-plen-3" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V3
+   ..
+"9c-plen-4" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V7
+   ..
+"9c-plen-6" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V8
+   ..
+"9c-plen-roof" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Roof"
+   LOCATION         = TOP
+   ..
+"9c-mechrm-ext6" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V4
+   ..
+"9c-mechrm-ext7" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V5
+   ..
+"92-mechrm-ext8" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = SPACE-V6
+   ..
+
+
+$ *********************************************************
+$ **                                                     **
+$ **              Electric & Fuel Meters                 **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$              Electric Meters
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Fuel Meters
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Master Meters
+$ ---------------------------------------------------------
+
+MASTER-METERS   
+   MSTR-ELEC-METER  = "EM1"
+   MSTR-FUEL-METER  = "FM1"
+   ..
+
+
+$ *********************************************************
+$ **                                                     **
+$ **      HVAC Circulation Loops / Plant Equipment       **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$              Curve Fits
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Pumps
+$ ---------------------------------------------------------
+
+"Lower Flrs CHW Pump" = PUMP            
+   ..
+"Upper Flrs CHW Pump" = PUMP            
+   FLOW             = 2495
+   HEAD             = 155
+   ..
+"Lower Flrs Twr Pump" = PUMP            
+   ..
+"Upper Flrs Twr Pump" = PUMP            
+   FLOW             = 1850
+   NUMBER           = 2
+   HEAD             = 70
+   ..
+"Hot Water Pump" = PUMP            
+   ..
+
+
+$ ---------------------------------------------------------
+$              Circulation Loops
+$ ---------------------------------------------------------
+
+"Upper Flrs CHW Loop" = CIRCULATION-LOOP
+   TYPE             = CHW
+   PIPE-HEAD        = 60
+   LOOP-OPERATION   = DEMAND
+   COOL-SETPT-T     = 45
+   ..
+"Lower Flrs CHW Loop" = CIRCULATION-LOOP
+   TYPE             = CHW
+   LOOP-OPERATION   = DEMAND
+   COOL-SETPT-T     = 45
+   ..
+"Upper Flrs Twr Loop" = CIRCULATION-LOOP
+   TYPE             = CW
+   LOOP-PUMP        = "Upper Flrs Twr Pump"
+   ..
+"Lower Flrs Twr Loop" = CIRCULATION-LOOP
+   TYPE             = CW
+   ..
+"ReHeat To Zones Loop" = CIRCULATION-LOOP
+   TYPE             = HW
+   SIZING-OPTION    = SECONDARY
+   LOOP-PUMP        = "Hot Water Pump"
+   PROCESS-FLOW     = {1200 / 7.5 / 60}
+   PROCESS-SCH      = "Equipment"
+   ..
+
+
+$ ---------------------------------------------------------
+$              Chillers
+$ ---------------------------------------------------------
+
+"York 615 ton" = CHILLER         
+   TYPE             = ELEC-OPEN-CENT
+   CAPACITY         = 7.38
+   ELEC-INPUT-RATIO = {0.82 * 3412 / 12000}
+   START-UP-TIME    = 0
+   CHW-LOOP         = "Upper Flrs CHW Loop"
+   CHW-PUMP         = "Upper Flrs CHW Pump"
+   CONDENSER-TYPE   = WATER-COOLED
+   CW-LOOP          = "Upper Flrs Twr Loop"
+   ..
+"Unknown Recip" = CHILLER         
+   TYPE             = ELEC-HERM-REC
+   CAPACITY         = 1.08
+   ELEC-INPUT-RATIO = {0.92 * 3412 / 12000}
+   START-UP-TIME    = 0
+   CHW-LOOP         = "Lower Flrs CHW Loop"
+   CHW-PUMP         = "Lower Flrs CHW Pump"
+   CONDENSER-TYPE   = WATER-COOLED
+   CW-LOOP          = "Lower Flrs Twr Loop"
+   CW-PUMP          = "Lower Flrs Twr Pump"
+   ..
+
+
+$ ---------------------------------------------------------
+$              Boilers
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Domestic Water Heaters
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Heat Rejection
+$ ---------------------------------------------------------
+
+"Oversized Tower" = HEAT-REJECTION  
+   TYPE             = OPEN-TWR
+   CAPACITY         = 15
+   NUMBER-OF-CELLS  = 1
+   ELEC-INPUT-RATIO = 0.005
+   PAN-HEATER-LOOP  = "ReHeat To Zones Loop"
+   DESIGN-APPROACH  = 16
+   DESIGN-WETBULB   = 69
+   CW-LOOP          = "Lower Flrs Twr Loop"
+   ..
+"Upper Flrs Tower" = HEAT-REJECTION  
+   TYPE             = OPEN-TWR
+   CAPACITY         = 10.8
+   NUMBER-OF-CELLS  = 1
+   ELEC-INPUT-RATIO = 0.006
+   PAN-HEATER-LOOP  = "ReHeat To Zones Loop"
+   DESIGN-APPROACH  = 16
+   DESIGN-WETBULB   = 69
+   CW-LOOP          = "Upper Flrs Twr Loop"
+   ..
+
+
+$ ---------------------------------------------------------
+$              Tower Free Cooling
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Electric Generators
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Thermal Storage
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Heat Exchangers
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Ground Loop Heat Exchangers
+$ ---------------------------------------------------------
+
+
+
+$ *********************************************************
+$ **                                                     **
+$ **            Steam & Chilled Water Meters             **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$              Steam Meters
+$ ---------------------------------------------------------
+
+"Steam Meter 1" = STEAM-METER     
+   ENERGY/UNIT      = 1160
+   UNIT-INDEX       = 21
+   DEM-UNIT-INDEX   = 11
+   CIRCULATION-LOOP = "ReHeat To Zones Loop"
+   ..
+
+
+$ ---------------------------------------------------------
+$              Chilled Water Meters
+$ ---------------------------------------------------------
+
+
+
+$ *********************************************************
+$ **                                                     **
+$ **               HVAC Systems / Zones                  **
+$ **                                                     **
+$ *********************************************************
+
+SET-DEFAULT FOR ZONE            
+   TYPE = CONDITIONED
+   OA-FLOW/PER      = 10
+   HEAT-TEMP-SCH    = "Heat Schedule"
+   COOL-TEMP-SCH    = "Cool Schedule"
+   HW-LOOP          = "ReHeat To Zones Loop"
+   ..
+
+"HVAC System 1" = SYSTEM          
+   TYPE             = VAVS
+   HEAT-SOURCE      = HOT-WATER
+   HEATING-SCHEDULE = "Always On Sched"
+   COOLING-SCHEDULE = "Always On Sched"
+   COOL-RESET-SCH   = "Cool Reset Sched"
+   COOL-CONTROL     = RESET
+   ECONO-LOW-LIMIT  = 40
+   SUPPLY-FLOW      = 23700
+   RETURN-FLOW      = 18500
+   FAN-SCHEDULE     = "Fan Operation"
+   SUPPLY-STATIC    = 2
+   SUPPLY-EFF       = 0.55
+   RETURN-STATIC    = 1.5
+   RETURN-EFF       = 0.55
+   REHEAT-DELTA-T   = 50
+   HW-LOOP          = "ReHeat To Zones Loop"
+   CHW-COIL-DT      = 10
+   CHW-LOOP         = "Lower Flrs CHW Loop"
+   ..
+"HVAC Zone 0" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "Bsmt"
+   ..
+"HVAC Zone 1" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "1-east"
+   ..
+"HVAC Zone 2" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "1-South"
+   ..
+"HVAC Zone 3" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "1-ne"
+   ..
+"HVAC Zone 4" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "1-nw"
+   ..
+"HVAC Zone 5" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "1-west"
+   ..
+"HVAC Zone 6" = ZONE            
+   TYPE             = CONDITIONED
+   EXHAUST-FLOW     = 5200
+   SPACE            = "1-core"
+   ..
+"HVAC Zone 7" = ZONE            
+   TYPE             = UNCONDITIONED
+   SPACE            = "1-elev"
+   ..
+"HVAC System 2" = SYSTEM          
+   TYPE             = RHFS
+   HEAT-SOURCE      = HOT-WATER
+   HEATING-SCHEDULE = "Always On Sched"
+   COOLING-SCHEDULE = "Always On Sched"
+   COOL-RESET-SCH   = "Cool Reset Sched"
+   COOL-CONTROL     = RESET
+   ECONO-LOW-LIMIT  = 40
+   SUPPLY-FLOW      = 50000
+   RETURN-FLOW      = 47000
+   FAN-SCHEDULE     = "Fan Operation"
+   SUPPLY-STATIC    = 3.5
+   SUPPLY-EFF       = 0.55
+   RETURN-STATIC    = 2
+   RETURN-EFF       = 0.55
+   HW-LOOP          = "ReHeat To Zones Loop"
+   CHW-COIL-DT      = 10
+   CHW-LOOP         = "Upper Flrs CHW Loop"
+   ..
+"HVAC Zone 8" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "2-South"
+   ..
+"HVAC Zone 9" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "2-east"
+   ..
+"HVAC Zone 10" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "2-ne"
+   ..
+"HVAC Zone 11" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "2-nw"
+   ..
+"HVAC Zone 12" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "2-west"
+   ..
+"HVAC Zone 13" = ZONE            
+   TYPE             = CONDITIONED
+   EXHAUST-FLOW     = 1000
+   SPACE            = "2-core"
+   ..
+"HVAC Zone 14" = ZONE            
+   TYPE             = UNCONDITIONED
+   SPACE            = "2-plen"
+   ..
+"HVAC Zone 15" = ZONE            
+   TYPE             = UNCONDITIONED
+   SPACE            = "2-elev"
+   ..
+"HVAC System 3" = SYSTEM          
+   TYPE             = RHFS
+   HEAT-SOURCE      = HOT-WATER
+   HEATING-SCHEDULE = "Always On Sched"
+   COOLING-SCHEDULE = "Always On Sched"
+   COOL-RESET-SCH   = "Cool Reset Sched"
+   COOL-CONTROL     = RESET
+   ECONO-LOW-LIMIT  = 40
+   SUPPLY-FLOW      = 50000
+   RETURN-FLOW      = 47000
+   FAN-SCHEDULE     = "Fan Operation"
+   SUPPLY-STATIC    = 3.5
+   SUPPLY-EFF       = 0.55
+   RETURN-STATIC    = 2
+   RETURN-EFF       = 0.55
+   HW-LOOP          = "ReHeat To Zones Loop"
+   CHW-LOOP         = "Upper Flrs CHW Loop"
+   ..
+"HVAC Zone 16" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "3-South"
+   ..
+"HVAC Zone 17" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "3-east"
+   ..
+"HVAC Zone 18" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "3-ne"
+   ..
+"HVAC Zone 19" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "3-nw"
+   ..
+"HVAC Zone 20" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "3-west"
+   ..
+"HVAC Zone 21" = ZONE            
+   TYPE             = CONDITIONED
+   EXHAUST-FLOW     = 1000
+   SPACE            = "3-core"
+   ..
+"HVAC Zone 22" = ZONE            
+   TYPE             = UNCONDITIONED
+   SPACE            = "3-plen"
+   ..
+"HVAC Zone 23" = ZONE            
+   TYPE             = UNCONDITIONED
+   SPACE            = "3-elev"
+   ..
+"HVAC System 4" = SYSTEM          
+   TYPE             = RHFS
+   HEAT-SOURCE      = HOT-WATER
+   HEATING-SCHEDULE = "Always On Sched"
+   COOLING-SCHEDULE = "Always On Sched"
+   COOL-RESET-SCH   = "Cool Reset Sched"
+   COOL-CONTROL     = RESET
+   ECONO-LOW-LIMIT  = 40
+   SUPPLY-FLOW      = 50000
+   RETURN-FLOW      = 47000
+   FAN-SCHEDULE     = "Fan Operation"
+   SUPPLY-STATIC    = 3.5
+   SUPPLY-EFF       = 0.55
+   RETURN-STATIC    = 2
+   RETURN-EFF       = 0.55
+   HW-LOOP          = "ReHeat To Zones Loop"
+   CHW-LOOP         = "Upper Flrs CHW Loop"
+   ..
+"HVAC Zone 24" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "4-South"
+   ..
+"HVAC Zone 25" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "4-east"
+   ..
+"HVAC Zone 26" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "4-ne"
+   ..
+"HVAC Zone 27" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "4-nw"
+   ..
+"HVAC Zone 28" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "4-west"
+   ..
+"HVAC Zone 29" = ZONE            
+   TYPE             = CONDITIONED
+   EXHAUST-FLOW     = 1000
+   SPACE            = "4-core"
+   ..
+"HVAC Zone 30" = ZONE            
+   TYPE             = UNCONDITIONED
+   SPACE            = "4-plen"
+   ..
+"HVAC Zone 31" = ZONE            
+   TYPE             = UNCONDITIONED
+   SPACE            = "4-elev"
+   ..
+"HVAC System 5" = SYSTEM 
+   TYPE             = RHFS
+   HEAT-SOURCE      = HOT-WATER         
+   HEATING-SCHEDULE = "Always On Sched"
+   COOLING-SCHEDULE = "Always On Sched"
+   COOL-RESET-SCH   = "Cool Reset Sched"
+   COOL-CONTROL     = RESET
+   ECONO-LOW-LIMIT  = 40
+   SUPPLY-FLOW      = 50000
+   RETURN-FLOW      = 47000
+   FAN-SCHEDULE     = "Fan Operation"
+   SUPPLY-STATIC    = 3.5
+   SUPPLY-EFF       = 0.55
+   RETURN-STATIC    = 2
+   RETURN-EFF       = 0.55
+   HW-LOOP          = "ReHeat To Zones Loop"
+   CHW-LOOP         = "Upper Flrs CHW Loop"
+   ..
+"HVAC Zone 32" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "5-South"
+   ..
+"HVAC Zone 33" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "5-east"
+   ..
+"HVAC Zone 34" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "5-ne"
+   ..
+"HVAC Zone 35" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "5-nw"
+   ..
+"HVAC Zone 36" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "5-west"
+   ..
+"HVAC Zone 37" = ZONE            
+   TYPE             = CONDITIONED
+   EXHAUST-FLOW     = 1000
+   SPACE            = "5-core"
+   ..
+"HVAC Zone 38" = ZONE            
+   TYPE             = UNCONDITIONED
+   SPACE            = "5-plen"
+   ..
+"HVAC Zone 39" = ZONE            
+   TYPE             = UNCONDITIONED
+   SPACE            = "5-elev"
+   ..
+"HVAC System 6" = SYSTEM          
+   TYPE             = RHFS
+   HEAT-SOURCE      = HOT-WATER
+   HEATING-SCHEDULE = "Always On Sched"
+   COOLING-SCHEDULE = "Always On Sched"
+   COOL-RESET-SCH   = "Cool Reset Sched"
+   COOL-CONTROL     = RESET
+   ECONO-LOW-LIMIT  = 40
+   SUPPLY-FLOW      = 35000
+   RETURN-FLOW      = 31500
+   FAN-SCHEDULE     = "Fan Operation"
+   SUPPLY-STATIC    = 2
+   SUPPLY-EFF       = 0.55
+   RETURN-STATIC    = 1.25
+   RETURN-EFF       = 0.55
+   HW-LOOP          = "ReHeat To Zones Loop"
+   CHW-LOOP         = "Upper Flrs CHW Loop"
+   ..
+"HVAC Zone 40" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "6a-South"
+   ..
+"HVAC Zone 41" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "6a-east"
+   ..
+"HVAC Zone 42" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "6a-ne"
+   ..
+"HVAC Zone 43" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "6a-nw"
+   ..
+"HVAC Zone 44" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "6a-west"
+   ..
+"HVAC Zone 45" = ZONE            
+   TYPE             = CONDITIONED
+   EXHAUST-FLOW     = 1750
+   SPACE            = "6a-core"
+   ..
+"HVAC Zone 46" = ZONE            
+   TYPE             = UNCONDITIONED
+   SPACE            = "6a-plen"
+   ..
+"HVAC Zone 47" = ZONE            
+   TYPE             = UNCONDITIONED
+   SPACE            = "6a-elev"
+   ..
+"HVAC Zone 48" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "6b-South"
+   ..
+"HVAC Zone 49" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "6b-east"
+   ..
+"HVAC Zone 50" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "6b-ne"
+   ..
+"HVAC Zone 51" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "6b-nw"
+   ..
+"HVAC Zone 52" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "6b-west"
+   ..
+"HVAC Zone 53" = ZONE            
+   TYPE             = CONDITIONED
+   EXHAUST-FLOW     = 1750
+   SPACE            = "6b-core"
+   ..
+"HVAC Zone 54" = ZONE            
+   TYPE             = UNCONDITIONED
+   SPACE            = "6b-plen"
+   ..
+"HVAC Zone 55" = ZONE            
+   TYPE             = UNCONDITIONED
+   SPACE            = "6b-elev"
+   ..
+"HVAC System 7" = SYSTEM          
+   TYPE             = RHFS
+   HEAT-SOURCE      = HOT-WATER
+   HEATING-SCHEDULE = "Always On Sched"
+   COOLING-SCHEDULE = "Always On Sched"
+   COOL-RESET-SCH   = "Cool Reset Sched"
+   COOL-CONTROL     = RESET
+   ECONO-LOW-LIMIT  = 40
+   SUPPLY-FLOW      = 48400
+   RETURN-FLOW      = 40000
+   FAN-SCHEDULE     = "Fan Operation"
+   SUPPLY-STATIC    = 2.5
+   SUPPLY-EFF       = 0.55
+   RETURN-STATIC    = 1.75
+   RETURN-EFF       = 0.55
+   HW-LOOP          = "ReHeat To Zones Loop"
+   CHW-LOOP         = "Upper Flrs CHW Loop"
+   ..
+"HVAC Zone 56" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "7-south"
+   ..
+"HVAC Zone 57" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "7-east"
+   ..
+"HVAC Zone 58" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "7-ne"
+   ..
+"HVAC Zone 59" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "7-nw"
+   ..
+"HVAC Zone 60" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "7-west"
+   ..
+"HVAC Zone 61" = ZONE            
+   TYPE             = CONDITIONED
+   EXHAUST-FLOW     = 2100
+   SPACE            = "7-core"
+   ..
+"HVAC Zone 62" = ZONE            
+   TYPE             = UNCONDITIONED
+   SPACE            = "7-plenum"
+   ..
+"HVAC Zone 63" = ZONE            
+   TYPE             = UNCONDITIONED
+   SPACE            = "7-elev"
+   ..
+"HVAC System 8" = SYSTEM          
+   TYPE             = RHFS
+   HEAT-SOURCE      = HOT-WATER
+   HEATING-SCHEDULE = "Always On Sched"
+   COOLING-SCHEDULE = "Always On Sched"
+   COOL-RESET-SCH   = "Cool Reset Sched"
+   COOL-CONTROL     = RESET
+   ECONO-LOW-LIMIT  = 40
+   SUPPLY-FLOW      = 36300
+   RETURN-FLOW      = 30000
+   FAN-SCHEDULE     = "Fan Operation"
+   SUPPLY-STATIC    = 2.5
+   SUPPLY-EFF       = 0.55
+   RETURN-STATIC    = 1.5
+   RETURN-EFF       = 0.55
+   HW-LOOP          = "ReHeat To Zones Loop"
+   CHW-LOOP         = "Upper Flrs CHW Loop"
+   ..
+"HVAC Zone 64" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "8-south"
+   ..
+"HVAC Zone 65" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "8-east"
+   ..
+"HVAC Zone 66" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "8-ne"
+   ..
+"HVAC Zone 67" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "8-nw"
+   ..
+"HVAC Zone 68" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "8-west"
+   ..
+"HVAC Zone 69" = ZONE            
+   TYPE             = CONDITIONED
+   EXHAUST-FLOW     = 2100
+   SPACE            = "8-core"
+   ..
+"HVAC Zone 70" = ZONE            
+   TYPE             = UNCONDITIONED
+   SPACE            = "8-plenum"
+   ..
+"HVAC Zone 71" = ZONE            
+   TYPE             = UNCONDITIONED
+   SPACE            = "8-elev"
+   ..
+"HVAC System 9" = SYSTEM          
+   TYPE             = RHFS
+   HEAT-SOURCE      = HOT-WATER
+   HEATING-SCHEDULE = "Always On Sched"
+   COOLING-SCHEDULE = "Always On Sched"
+   COOL-RESET-SCH   = "Cool Reset Sched"
+   COOL-CONTROL     = RESET
+   ECONO-LOW-LIMIT  = 40
+   SUPPLY-FLOW      = 36300
+   RETURN-FLOW      = 30000
+   FAN-SCHEDULE     = "Fan Operation"
+   SUPPLY-STATIC    = 2.5
+   SUPPLY-EFF       = 0.55
+   RETURN-STATIC    = 1.5
+   RETURN-EFF       = 0.55
+   HW-LOOP          = "ReHeat To Zones Loop"
+   CHW-LOOP         = "Upper Flrs CHW Loop"
+   ..
+"HVAC Zone 72" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "9a-south"
+   ..
+"HVAC Zone 73" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "9a-east"
+   ..
+"HVAC Zone 74" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "9a-ne"
+   ..
+"HVAC Zone 75" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "9a-nw"
+   ..
+"HVAC Zone 76" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "9a-west"
+   ..
+"HVAC Zone 77" = ZONE            
+   TYPE             = CONDITIONED
+   EXHAUST-FLOW     = 2100
+   SPACE            = "9a-core"
+   ..
+"HVAC Zone 78" = ZONE            
+   TYPE             = UNCONDITIONED
+   SPACE            = "9a-plenum"
+   ..
+"HVAC Zone 79" = ZONE            
+   TYPE             = UNCONDITIONED
+   SPACE            = "9a-elev"
+   ..
+"HVAC Zone 80" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "9b-south"
+   ..
+"HVAC Zone 81" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "9b-east"
+   ..
+"HVAC Zone 82" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "9b-ne"
+   ..
+"HVAC Zone 83" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "9b-nw"
+   ..
+"HVAC Zone 84" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "9b-west"
+   ..
+"HVAC Zone 85" = ZONE            
+   TYPE             = CONDITIONED
+   EXHAUST-FLOW     = 2100
+   SPACE            = "9b-core"
+   ..
+"HVAC Zone 86" = ZONE            
+   TYPE             = UNCONDITIONED
+   SPACE            = "9b-plenum"
+   ..
+"HVAC Zone 87" = ZONE            
+   TYPE             = UNCONDITIONED
+   SPACE            = "9b-elev"
+   ..
+"HVAC Zone 88" = ZONE            
+   TYPE             = UNCONDITIONED
+   SPACE            = "9c-mechrm"
+   ..
+
+
+$ *********************************************************
+$ **                                                     **
+$ **                Metering & Misc HVAC                 **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$              Equipment Controls
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Load Management
+$ ---------------------------------------------------------
+
+
+
+$ *********************************************************
+$ **                                                     **
+$ **                    Utility Rates                    **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$              Ratchets
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Block Charges
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Utility Rates
+$ ---------------------------------------------------------
+
+
+
+$ *********************************************************
+$ **                                                     **
+$ **                 Output Reporting                    **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$              Loads Non-Hourly Reporting
+$ ---------------------------------------------------------
+
+LOADS-REPORT    
+   VERIFICATION     = ( LV-A )
+   SUMMARY          = ( ALL-SUMMARY )
+   ..
+
+
+$ ---------------------------------------------------------
+$              Systems Non-Hourly Reporting
+$ ---------------------------------------------------------
+
+SYSTEMS-REPORT  
+   VERIFICATION     = ( SV-A )
+   SUMMARY          = ( ALL-SUMMARY )
+   ..
+
+
+$ ---------------------------------------------------------
+$              Plant Non-Hourly Reporting
+$ ---------------------------------------------------------
+
+PLANT-REPORT    
+   VERIFICATION     = ( ALL-VERIFICATION )
+   SUMMARY          = ( ALL-SUMMARY )
+   ..
+
+
+$ ---------------------------------------------------------
+$              Economics Non-Hourly Reporting
+$ ---------------------------------------------------------
+
+"Default ECONOMICS-REPORT" = ECONOMICS-REPORT
+   ..
+
+
+$ ---------------------------------------------------------
+$              Hourly Reporting
+$ ---------------------------------------------------------
+
+"Report Block 1" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "EM1"
+   VARIABLE-LIST    = ( 1, 3, 4, 5, 7, 8, 20 )
+   ..
+"Report Block 2" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "Steam Meter 1"
+   VARIABLE-LIST    = ( 1, 2, 3, 4, 5, 6, 7, 8, 11, 20 )
+   ..
+
+"Hourly Report 1" = HOURLY-REPORT   
+   REPORT-SCHEDULE  = "Always On Sched"
+   REPORT-BLOCK     = ( "Report Block 1", "Report Block 2" )
+   ..
+
+
+$ ---------------------------------------------------------
+$              THE END
+$ ---------------------------------------------------------
+
+END ..
+COMPUTE ..
+STOP ..

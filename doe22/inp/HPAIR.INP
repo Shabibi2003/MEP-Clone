@@ -1,0 +1,1306 @@
+INPUT ..
+
+
+$ ---------------------------------------------------------
+$              Abort, Diagnostics
+$ ---------------------------------------------------------
+
+
+
+
+$ ---------------------------------------------------------
+$              Global Parameters
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Title, Run Periods, Design Days, Holidays
+$ ---------------------------------------------------------
+
+TITLE           
+   LINE-1           = *PowerDOE Default Minimum Project*
+   ..
+
+"Run Period 1" = RUN-PERIOD-PD
+   BEGIN-YEAR       = 1997
+   END-YEAR         = 1997
+   ..
+
+"Los Angeles 1%" = DESIGN-DAY      
+   TYPE             = COOLING
+   DRYBULB-HIGH     = 83
+   DRYBULB-RANGE    = 15
+   WETBULB-AT-HIGH  = 68
+   WIND-DIR         = WSW
+   ..
+"Los Angeles 99%" = DESIGN-DAY      
+   TYPE             = HEATING
+   DRYBULB-HIGH     = 41
+   WIND-DIR         = E
+   ..
+
+
+
+$ ---------------------------------------------------------
+$              Site and Building Data
+$ ---------------------------------------------------------
+
+SITE-PARAMETERS 
+   ALTITUDE         = 500
+   DAYLIGHT-SAVINGS = YES
+   ..
+
+BUILD-PARAMETERS
+   AZIMUTH          = 0
+   GROSS-AREA       = 4800
+   ..
+
+
+
+$ ---------------------------------------------------------
+$              Materials / Layers / Constructions
+$ ---------------------------------------------------------
+
+"Mat Clg Batt R30" = MATERIAL        
+   TYPE             = RESISTANCE
+   RESISTANCE       = 30
+   ..
+"Mat Wall batt R16" = MATERIAL        
+   TYPE             = RESISTANCE
+   RESISTANCE       = 16
+   ..
+"Dirt" = MATERIAL        
+   TYPE             = PROPERTIES
+   THICKNESS        = 2
+   CONDUCTIVITY     = 0.5
+   DENSITY          = 100
+   SPECIFIC-HEAT    = 0.25
+   ..
+
+"Lay Roof w/o Batt" = LAYERS          
+   INSIDE-FILM-RES  = 0.92
+   MATERIAL         = ( "ClayTile Paver 3/8in (CT11)", "Plywd 1/2in (PW03)", 
+        "Air Lay >4in Horiz (AL33)" )
+   ..
+"Lay Roof w batt" = LAYERS          
+   INSIDE-FILM-RES  = 0.92
+   MATERIAL         = ( "ClayTile Paver 3/8in (CT11)", "Plywd 1/2in (PW03)",
+        "Air Lay >4in Horiz (AL33)", "Mat Clg Batt R30", "GypBd 5/8in (GP02)" )
+   ..
+"Lay 8in CMU" = LAYERS          
+   MATERIAL         = ( "Dirt", "CMU HW 8in ConcFill (CB12)",
+        "Polystyrene 1.25in (IN34)", "GypBd 1/2in (GP01)" )
+   ..
+"Lay 6in Frame" = LAYERS          
+   MATERIAL         = ( "Stucco 1in (SC01)", "GypBd 1/2in (GP01)",
+        "Mat Wall batt R16", "GypBd 1/2in (GP01)" )
+   ..
+"Lay Floor" = LAYERS          
+   INSIDE-FILM-RES  = 0.61
+   MATERIAL         = ( "Dirt", "Conc HW 140lb 6in (CC04)", 
+        "GypBd 5/8in (GP02)" )
+   ..
+"Lay Door" = LAYERS          
+   MATERIAL         = ( "Wood Sft 1.5in (WD02)" )
+   ..
+
+"Cons Clg" = CONSTRUCTION    
+   TYPE             = U-VALUE
+   U-VALUE          = 0.033
+   ..
+"Cons Roof w/o Batt" = CONSTRUCTION    
+   TYPE             = LAYERS
+   ABSORPTANCE      = 0.5
+   ROUGHNESS        = 1
+   LAYERS           = "Lay Roof w/o Batt"
+   ..
+"Cons Roof w Batt" = CONSTRUCTION    
+   TYPE             = LAYERS
+   ABSORPTANCE      = 0.5
+   ROUGHNESS        = 1
+   LAYERS           = "Lay Roof w batt"
+   ..
+"Cons 8in CMU" = CONSTRUCTION    
+   TYPE             = LAYERS
+   ABSORPTANCE      = 0.65
+   ROUGHNESS        = 2
+   LAYERS           = "Lay 8in CMU"
+   ..
+"Cons 6in Frame" = CONSTRUCTION    
+   TYPE             = LAYERS
+   ABSORPTANCE      = 0.65
+   ROUGHNESS        = 2
+   LAYERS           = "Lay 6in Frame"
+   ..
+"Cons Floor" = CONSTRUCTION    
+   TYPE             = LAYERS
+   LAYERS           = "Lay Floor"
+   ..
+"Cons Air Wall" = CONSTRUCTION    
+   TYPE             = U-VALUE
+   U-VALUE          = 1.5
+   ..
+"Cons Int Wall 1" = CONSTRUCTION    
+   TYPE             = U-VALUE
+   U-VALUE          = 0.388
+   ..
+"Cons Int Wall 2" = CONSTRUCTION    
+   TYPE             = U-VALUE
+   U-VALUE          = 0.074
+   ..
+"Cons Door" = CONSTRUCTION    
+   TYPE             = LAYERS
+   LAYERS           = "Lay Door"
+   ..
+
+
+$ ---------------------------------------------------------
+$              Glass Types
+$ ---------------------------------------------------------
+
+"Dbl Bronze 2" = GLASS-TYPE      
+   TYPE             = GLASS-TYPE-CODE
+   GLASS-TYPE-CODE  = "2201"
+   ..
+"Dbl Bronze 1" = GLASS-TYPE      
+   TYPE             = GLASS-TYPE-CODE
+   GLASS-TYPE-CODE  = "2201"
+   SHADING-COEF     = 0.42
+   GLASS-CONDUCT    = 0.84
+   VIS-TRANS        = 0.33
+   ..
+"Dbl Reflective" = GLASS-TYPE      
+   TYPE             = GLASS-TYPE-CODE
+   GLASS-TYPE-CODE  = "2401"
+   ..
+"Sgl w LoE Film" = GLASS-TYPE      
+   TYPE             = GLASS-TYPE-CODE
+   GLASS-TYPE-CODE  = "1600"
+   ..
+
+
+$ ---------------------------------------------------------
+$              Window Layers
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Lamps / Luminaries / Lighting Systems
+$ ---------------------------------------------------------
+
+
+
+
+
+$ ---------------------------------------------------------
+$              Day Schedules
+$ ---------------------------------------------------------
+
+"Always On Day" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF
+   VALUES           = ( 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+         1, 1, 1, 1, 1, 1 )
+   ..
+"Sch 001: OFFICE LIGHTING WD" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.05, 0.05, 0.05, 0.05, 0.05, 0.1, 0.1, 0.3, 0.9, 0.9, 
+         0.9, 0.9, 0.8, 0.9, 0.9, 0.9, 0.9, 0.5, 0.3, 0.3, 0.2, 0.2, 0.1, 
+         0.05 )
+   ..
+"Sch 001: OFFICE LIGHTING SAT" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.1, 0.1, 0.3, 
+         0.3, 0.3, 0.3, 0.15, 0.15, 0.15, 0.15, 0.15, 0.05, 0.05, 0.05, 0.05, 
+         0.05, 0.05, 0.05 )
+   ..
+"Sch 001: OFFICE LIGHTING WEH" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 
+         0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 
+         0.05, 0.05, 0.05, 0.05 )
+   ..
+"Sch 002: OFFICE OCCUPANCY WD" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0, 0, 0, 0, 0, 0, 0.1, 0.2, 0.95, 0.95, 0.95, 0.95, 
+         0.5, 0.95, 0.95, 0.95, 0.95, 0.3, 0.1, 0.1, 0.1, 0.1, 0.05, 0.05 )
+   ..
+"Sch 002: OFFICE OCCUPANCY SAT" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0, 0, 0, 0, 0, 0, 0.1, 0.1, 0.3, 0.3, 0.3, 0.3, 0.1, 
+         0.1, 0.1, 0.1, 0.1, 0.05, 0.05, 0, 0, 0, 0, 0 )
+   ..
+"Sch 002: OFFICE OCCUPANCY WEH" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0, 0, 0, 0, 0, 0, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 
+         0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0, 0, 0, 0, 0, 0 )
+   ..
+"Sch 003: OFFICE DHW WD" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0, 0, 0, 0, 0, 0, 0.1, 0.2, 0.35, 0.4, 0.4, 0.5, 0.6, 
+         0.55, 0.35, 0.35, 0.45, 0.25, 0.2, 0.15, 0.15, 0.1, 0, 0 )
+   ..
+"Sch 003: OFFICE DHW SAT" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0, 0, 0, 0, 0, 0, 0.1, 0.1, 0.15, 0.2, 0.2, 0.25, 0.2, 
+         0.2, 0.15, 0.15, 0.15, 0.1, 0.05, 0, 0, 0, 0, 0 )
+   ..
+"Sch 003: OFFICE DHW WEH" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0, 0, 0, 0, 0, 0, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 
+         0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0, 0, 0, 0, 0, 0 )
+   ..
+"Fans WD" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF
+   VALUES           = ( 0, &D, &D, &D, &D, &D, 1, &D, &D, &D, &D, &D, &D, &D, 
+         &D, &D, &D, &D, &D, &D, &D, 0 )
+   ..
+"Fans Sat" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF
+   VALUES           = ( 0, &D, &D, &D, &D, &D, 1, &D, &D, &D, &D, &D, &D, &D, 
+         &D, &D, &D, &D, 0 )
+   ..
+"Fans Off" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF
+   VALUES           = ( 0 )
+   ..
+"Heating Setpoint" = DAY-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   VALUES           = ( 60, 60, 60, 60, 60, 60, 70, 70, 70, 70, 70, 70, 70, 
+         70, 70, 70, 70, 70, 70, 70, 70, 70, 60, 60 )
+   ..
+"Cooling Setpoint" = DAY-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   VALUES           = ( 85, 85, 85, 85, 85, 85, 74, 74, 74, 74, 74, 74, 74, 
+         74, 74, 74, 74, 74, 74, 74, 74, 74, 85, 85 )
+   ..
+
+$ ---------------------------------------------------------
+$              Week Schedules
+$ ---------------------------------------------------------
+
+"Always On Week" = WEEK-SCHEDULE-PD
+   TYPE             = ON/OFF
+   DAY-SCHEDULES    = ( "Always On Day", "Always On Day" )
+   ..
+"Sch 001: OFFICE LIGHTING WK" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "Sch 001: OFFICE LIGHTING WD", 
+         "Sch 001: OFFICE LIGHTING WD", "Sch 001: OFFICE LIGHTING WD", 
+         "Sch 001: OFFICE LIGHTING WD", "Sch 001: OFFICE LIGHTING WD", 
+         "Sch 001: OFFICE LIGHTING SAT", "Sch 001: OFFICE LIGHTING WEH", 
+         "Sch 001: OFFICE LIGHTING WEH", "Sch 001: OFFICE LIGHTING WD", 
+         "Sch 001: OFFICE LIGHTING WD" )
+   ..
+"Sch 002: OFFICE OCCUPANCY WK" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "Sch 002: OFFICE OCCUPANCY WD", 
+         "Sch 002: OFFICE OCCUPANCY WD", "Sch 002: OFFICE OCCUPANCY WD", 
+         "Sch 002: OFFICE OCCUPANCY WD", "Sch 002: OFFICE OCCUPANCY WD", 
+         "Sch 002: OFFICE OCCUPANCY SAT", "Sch 002: OFFICE OCCUPANCY WEH", 
+         "Sch 002: OFFICE OCCUPANCY WEH", "Sch 002: OFFICE OCCUPANCY WD", 
+         "Sch 002: OFFICE OCCUPANCY WD" )
+   ..
+"Sch 003: OFFICE DHW WK" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "Sch 003: OFFICE DHW WD", "Sch 003: OFFICE DHW WD", 
+         "Sch 003: OFFICE DHW WD", "Sch 003: OFFICE DHW WD", 
+         "Sch 003: OFFICE DHW WD", "Sch 003: OFFICE DHW SAT", 
+         "Sch 003: OFFICE DHW WEH", "Sch 003: OFFICE DHW WEH", 
+         "Sch 003: OFFICE DHW WD", "Sch 003: OFFICE DHW WD" )
+   ..
+"Fans Week" = WEEK-SCHEDULE-PD
+   TYPE             = ON/OFF
+   DAY-SCHEDULES    = ( "Fans WD" )
+   ..
+"Heating T-Stat Week" = WEEK-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   DAY-SCHEDULES    = ( "Heating Setpoint", "Heating Setpoint", 
+         "Heating Setpoint", "Heating Setpoint", "Heating Setpoint", 
+         "Heating Setpoint", "Heating Setpoint", "Heating Setpoint" )
+   ..
+"Cooling T-Stat Week" = WEEK-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   DAY-SCHEDULES    = ( "Cooling Setpoint", "Cooling Setpoint", 
+         "Cooling Setpoint", "Cooling Setpoint", "Cooling Setpoint", 
+         "Cooling Setpoint", "Cooling Setpoint", "Cooling Setpoint" )
+   ..
+
+$ ---------------------------------------------------------
+$              Annual Schedules
+$ ---------------------------------------------------------
+
+"Always On Sched" = SCHEDULE-PD
+   TYPE             = ON/OFF
+   GROUP            = ZONE-LOADS
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Always On Week" )
+   ..
+"Sch 001: OFFICE LIGHTING" = SCHEDULE-PD
+   TYPE             = FRACTION
+   GROUP            = ZONE-LOADS
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Sch 001: OFFICE LIGHTING WK" )
+   ..
+"Sch 002: OFFICE OCCUPANCY" = SCHEDULE-PD
+   TYPE             = FRACTION
+   GROUP            = ZONE-LOADS
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Sch 002: OFFICE OCCUPANCY WK" )
+   ..
+"Sch 003: OFFICE DHW" = SCHEDULE-PD
+   TYPE             = FRACTION
+   GROUP            = ZONE-LOADS
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Sch 003: OFFICE DHW WK" )
+   ..
+"Fan Sch" = SCHEDULE-PD
+   TYPE             = ON/OFF
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Fans Week" )
+   ..
+"Heat T-Stat" = SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Heating T-Stat Week" )
+   ..
+"Cool T-Stat" = SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Cooling T-Stat Week" )
+   ..
+
+
+$ ---------------------------------------------------------
+$              Polygons
+$ ---------------------------------------------------------
+
+"Default FlrPoly" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 100, 0 )
+   V3               = ( 100, 100 )
+   V4               = ( 0, 100 )
+   ..
+"Default LongTrapPoly" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 100, 0 )
+   V3               = ( 75, 25 )
+   V4               = ( 25, 25 )
+   ..
+"Default ShortTrapPoly" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 80, 0 )
+   V3               = ( 55, 25 )
+   V4               = ( 25, 25 )
+   ..
+"Bldg Foot Print" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 75, 0 )
+   V3               = ( 75, 34 )
+   V4               = ( 0, 34 )
+   ..
+"34x34 Zone" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 34, 0 )
+   V3               = ( 34, 34 )
+   V4               = ( 0, 34 )
+   ..
+"15x34" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 15, 0 )
+   V3               = ( 15, 34 )
+   V4               = ( 0, 34 )
+   ..
+"26x27" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 26, 0 )
+   V3               = ( 26, 27 )
+   V4               = ( 0, 27 )
+   ..
+"Large Attic Roof" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 85, 0 )
+   V3               = ( 63, 23.5 )
+   V4               = ( 22, 23.5 )
+   ..
+"Attic Foot Print" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 85, 0 )
+   V3               = ( 85, 44 )
+   V4               = ( 0, 44 )
+   ..
+"Small Attic Roof" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 44, 0 )
+   V3               = ( 22, 24 )
+   ..
+
+
+$ ---------------------------------------------------------
+$              Wall Parameters
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Fixed and Building Shades
+$ ---------------------------------------------------------
+
+
+
+
+$ ---------------------------------------------------------
+$              Misc Cost Related Objects
+$ ---------------------------------------------------------
+
+
+
+BASELINE        
+   ..
+
+
+$ *********************************************************
+$ **                                                     **
+$ **      Floors / Spaces / Walls / Windows / Doors      **
+$ **                                                     **
+$ *********************************************************
+
+SET-DEFAULT FOR SPACE           
+   LIGHTING-SCHEDUL = ( "Sch 001: OFFICE LIGHTING" )
+   EQUIP-SCHEDULE   = ( "Sch 001: OFFICE LIGHTING" )
+   PEOPLE-HEAT-GAIN = 400
+   LIGHTING-W/AREA  = ( 3.8 )
+   EQUIPMENT-W/AREA = ( 1 )
+   AREA/PERSON      = 300
+   ..
+
+SET-DEFAULT FOR WINDOW          
+   GLASS-TYPE       = "Dbl Bronze 2"
+   FRAME-WIDTH      = 0.25
+   HEIGHT           = 4
+   ..
+
+"North Bldg" = FLOOR           
+   X                = 0
+   Y                = 45
+   Z                = 0
+   AZIMUTH          = 0
+   POLYGON          = "Bldg Foot Print"
+   SHAPE            = POLYGON
+   FLOOR-HEIGHT     = 10
+   SPACE-HEIGHT     = 9
+   ..
+"NE Zone 1" = SPACE           
+   X                = 41
+   SHAPE            = POLYGON
+   FLOOR-WEIGHT     = 70
+   TEMPERATURE      = ( 74, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 )
+   PEOPLE-SCHEDULE  = "Sch 002: OFFICE OCCUPANCY"
+   POLYGON          = "34x34 Zone"
+   ..
+"South Wall Z1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons 6in Frame"
+   LOCATION         = FRONT
+   ..
+"South Window 1 Z1" = WINDOW          
+   X                = 22
+   Y                = 4
+   WIDTH            = 11
+   ..
+"South Window 2 Z1" = WINDOW          
+   X                = 11
+   HEIGHT           = 7.5
+   WIDTH            = 4.5
+   ..
+"South Door Z1" = DOOR            
+   CONSTRUCTION     = "Cons Door"
+   X                = 8
+   Y                = 0
+   HEIGHT           = 8
+   WIDTH            = 3
+   ..
+"East Wall Z1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons 8in CMU"
+   LOCATION         = RIGHT
+   ..
+"East Window Z1" = WINDOW          
+   Y                = 4
+   WIDTH            = 33.5
+   ..
+"North Wall Z1" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons 8in CMU"
+   LOCATION         = BACK
+   ..
+"North Window Z1" = WINDOW          
+   Y                = 4
+   WIDTH            = 33.5
+   ..
+"Int Wall 1 Z1" = INTERIOR-WALL   
+   NEXT-TO          = "N Zone 2"
+   CONSTRUCTION     = "Cons Int Wall 2"
+   LOCATION         = LEFT
+   ..
+"Interior Wall 3" = INTERIOR-WALL   
+   NEXT-TO          = "Attic Zone North"
+   CONSTRUCTION     = "Cons Clg"
+   LOCATION         = TOP
+   ..
+"Undrgrnd Floor 1" = UNDERGROUND-WALL
+   CONSTRUCTION     = "Cons Floor"
+   LOCATION         = BOTTOM
+   ..
+"N Zone 2" = SPACE           
+   X                = 26
+   SHAPE            = POLYGON
+   POLYGON          = "15x34"
+   ..
+"South Wall Z2" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons 6in Frame"
+   LOCATION         = FRONT
+   ..
+"South Window 2 Z2" = WINDOW          
+   X                = 3.5
+   Y                = 0
+   HEIGHT           = 6.5
+   WIDTH            = 4.5
+   ..
+"South Window 1 Z2" = WINDOW          
+   X                = 11
+   HEIGHT           = 6.5
+   WIDTH            = 2.5
+   ..
+"South Door Z2" = DOOR            
+   CONSTRUCTION     = "Cons Door"
+   X                = 0.5
+   Y                = 0
+   HEIGHT           = 7
+   WIDTH            = 3
+   ..
+"North Wall Z2" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons 8in CMU"
+   LOCATION         = BACK
+   ..
+"North Window Z2" = WINDOW          
+   Y                = 4
+   WIDTH            = 14.5
+   ..
+"West Wall Z2" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons 6in Frame"
+   Y                = 7
+   WIDTH            = 7
+   LOCATION         = LEFT
+   ..
+"Interior Wall 2" = INTERIOR-WALL   
+   NEXT-TO          = "NW Zone 3"
+   CONSTRUCTION     = "Cons Int Wall 2"
+   WIDTH            = 27
+   LOCATION         = LEFT
+   ..
+"Interior Wall 4" = INTERIOR-WALL   
+   NEXT-TO          = "Attic Zone North"
+   CONSTRUCTION     = "Cons Clg"
+   LOCATION         = TOP
+   ..
+"Undrgrnd Floor 2" = UNDERGROUND-WALL
+   CONSTRUCTION     = "Cons Floor"
+   LOCATION         = BOTTOM
+   ..
+"NW Zone 3" = SPACE           
+   Y                = 7
+   SHAPE            = POLYGON
+   POLYGON          = "26x27"
+   ..
+"South Wall Z3" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons 6in Frame"
+   LOCATION         = FRONT
+   ..
+"South Window 3 Z3" = WINDOW          
+   X                = 5
+   Y                = 0
+   HEIGHT           = 6.5
+   WIDTH            = 4.5
+   ..
+"South Window 2 Z3" = WINDOW          
+   LIKE = "South Window 1 Z2"
+   X                = 15
+   ..
+"South Window 1 Z3" = WINDOW          
+   LIKE = "South Window 1 Z2"
+   X                = 20
+   ..
+"South Door Z3" = DOOR            
+   CONSTRUCTION     = "Cons Door"
+   X                = 2
+   Y                = 0
+   HEIGHT           = 7
+   WIDTH            = 3
+   ..
+"North Wall Z3" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons 8in CMU"
+   LOCATION         = BACK
+   ..
+"North Window Z3" = WINDOW          
+   X                = 0.5
+   Y                = 4
+   WIDTH            = 12
+   ..
+"West Wall Z3" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons 6in Frame"
+   LOCATION         = LEFT
+   ..
+"West Window Z3" = WINDOW          
+   Y                = 4
+   WIDTH            = 26.5
+   ..
+"Interior Wall 5" = INTERIOR-WALL   
+   NEXT-TO          = "Attic Zone North"
+   CONSTRUCTION     = "Cons Clg"
+   LOCATION         = TOP
+   ..
+"Undrgrnd Floor 3" = UNDERGROUND-WALL
+   CONSTRUCTION     = "Cons Floor"
+   LOCATION         = BOTTOM
+   ..
+"Attic Zone North" = SPACE           
+   X                = -5
+   Y                = -5
+   Z                = 9
+   HEIGHT           = 4
+   SHAPE            = POLYGON
+   ZONE-TYPE        = UNCONDITIONED
+   LIGHTING-W/AREA  = ( 0 )
+   EQUIPMENT-W/AREA = ( 0 )
+   POLYGON          = "Attic Foot Print"
+   ..
+"South Roof North Bldg" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Roof w/o Batt"
+   Z                = 0
+   TILT             = 20
+   LOCATION         = TOP
+   POLYGON          = "Large Attic Roof"
+   SHADING-SURFACE  = YES
+   ..
+"North Roof North Bldg" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Roof w/o Batt"
+   X                = 85
+   Y                = 44
+   Z                = 0
+   AZIMUTH          = 0
+   TILT             = 20
+   LOCATION         = TOP
+   POLYGON          = "Large Attic Roof"
+   SHADING-SURFACE  = YES
+   ..
+"East Roof North Bldg" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Roof w/o Batt"
+   X                = 85
+   Z                = 0
+   AZIMUTH          = 90
+   TILT             = 20
+   LOCATION         = TOP
+   POLYGON          = "Small Attic Roof"
+   SHADING-SURFACE  = YES
+   ..
+"West Roof North Bldg" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Roof w/o Batt"
+   Y                = 44
+   Z                = 0
+   AZIMUTH          = -90
+   TILT             = 20
+   LOCATION         = TOP
+   POLYGON          = "Small Attic Roof"
+   SHADING-SURFACE  = YES
+   ..
+"South Bldg" = FLOOR           
+   POLYGON          = "Bldg Foot Print"
+   SHAPE            = POLYGON
+   FLOOR-HEIGHT     = 9
+   SPACE-HEIGHT     = 9
+   ..
+"SE Zone 4" = SPACE           
+   X                = 41
+   SHAPE            = POLYGON
+   FLOOR-WEIGHT     = 70
+   TEMPERATURE      = ( 74, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 )
+   PEOPLE-SCHEDULE  = "Sch 002: OFFICE OCCUPANCY"
+   POLYGON          = "34x34 Zone"
+   ..
+"South Wall Z4" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons 6in Frame"
+   LOCATION         = FRONT
+   ..
+"South Window Z4" = WINDOW          
+   Y                = 4
+   WIDTH            = 33.5
+   ..
+"East Wall Z4" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons 8in CMU"
+   LOCATION         = RIGHT
+   ..
+"East Window Z4" = WINDOW          
+   Y                = 4
+   WIDTH            = 33.5
+   ..
+"North Wall Z4" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons 8in CMU"
+   LOCATION         = BACK
+   ..
+"North Window 1 Z4" = WINDOW          
+   LIKE = "South Window 1 Z1"
+   X                = 1
+   ..
+"North Window 2 Z4" = WINDOW          
+   LIKE = "South Window 2 Z1"
+   X                = 18.5
+   ..
+"North Door Z4" = DOOR            
+   LIKE = "South Door Z1"
+   X                = 23
+   ..
+"Int Wall 1 Z4" = INTERIOR-WALL   
+   NEXT-TO          = "S Zone 5"
+   CONSTRUCTION     = "Cons Int Wall 2"
+   LOCATION         = LEFT
+   ..
+"Interior Wall 3b" = INTERIOR-WALL   
+   NEXT-TO          = "Attic Zone South"
+   CONSTRUCTION     = "Cons Clg"
+   LOCATION         = TOP
+   ..
+"Undrgrnd Floor 1b" = UNDERGROUND-WALL
+   CONSTRUCTION     = "Cons Floor"
+   LOCATION         = BOTTOM
+   ..
+"S Zone 5" = SPACE           
+   X                = 26
+   SHAPE            = POLYGON
+   POLYGON          = "15x34"
+   ..
+"South Wall Z5" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons 6in Frame"
+   LOCATION         = FRONT
+   ..
+"South Window Z5" = WINDOW          
+   Y                = 4
+   WIDTH            = 14.5
+   ..
+"North Wall Z5" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons 8in CMU"
+   LOCATION         = BACK
+   ..
+"North Window Z5" = WINDOW          
+   LIKE = "South Window 2 Z2"
+   X                = 7
+   Y                = 0
+   ..
+"North Window 1 Z5" = WINDOW          
+   LIKE = "South Window 1 Z2"
+   X                = 1.5
+   ..
+"North Door Z5" = DOOR            
+   LIKE = "South Door Z2"
+   X                = 12
+   ..
+"West Wall Z5" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons 6in Frame"
+   Y                = 34
+   WIDTH            = 7
+   LOCATION         = LEFT
+   ..
+"Interior Wall 2b" = INTERIOR-WALL   
+   NEXT-TO          = "SW Zone 6"
+   CONSTRUCTION     = "Cons Int Wall 2"
+   Y                = 27
+   WIDTH            = 27
+   LOCATION         = LEFT
+   ..
+"Interior Wall 4b" = INTERIOR-WALL   
+   NEXT-TO          = "Attic Zone South"
+   CONSTRUCTION     = "Cons Clg"
+   LOCATION         = TOP
+   ..
+"Undrgrnd Floor 2b" = UNDERGROUND-WALL
+   CONSTRUCTION     = "Cons Floor"
+   LOCATION         = BOTTOM
+   ..
+"SW Zone 6" = SPACE           
+   SHAPE            = POLYGON
+   POLYGON          = "26x27"
+   ..
+"South Wall Z6" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons 6in Frame"
+   LOCATION         = FRONT
+   ..
+"South Window Z6" = WINDOW          
+   Y                = 4
+   WIDTH            = 25.5
+   ..
+"North Wall Z6" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons 8in CMU"
+   LOCATION         = BACK
+   ..
+"North Window 3 Z6" = WINDOW          
+   LIKE = "South Window 3 Z3"
+   X                = 16
+   Y                = 0
+   ..
+"North Window 2 Z6" = WINDOW          
+   LIKE = "South Window 2 Z3"
+   X                = 8.5
+   ..
+"North Window 1 Z6" = WINDOW          
+   LIKE = "South Window 1 Z3"
+   X                = 3.5
+   WIDTH            = 2.5
+   ..
+"North Door Z6" = DOOR            
+   LIKE = "South Door Z3"
+   X                = 21
+   ..
+"West Wall Z6" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons 6in Frame"
+   LOCATION         = LEFT
+   ..
+"West Window Z6" = WINDOW          
+   Y                = 4
+   WIDTH            = 26.5
+   ..
+"Interior Wall 5b" = INTERIOR-WALL   
+   NEXT-TO          = "Attic Zone South"
+   CONSTRUCTION     = "Cons Clg"
+   LOCATION         = TOP
+   ..
+"Undrgrnd Floor 3b" = UNDERGROUND-WALL
+   CONSTRUCTION     = "Cons Floor"
+   LOCATION         = BOTTOM
+   ..
+"Attic Zone South" = SPACE           
+   X                = -5
+   Y                = -5
+   Z                = 9
+   HEIGHT           = 4
+   SHAPE            = POLYGON
+   ZONE-TYPE        = UNCONDITIONED
+   LIGHTING-W/AREA  = ( 0 )
+   EQUIPMENT-W/AREA = ( 0 )
+   POLYGON          = "Attic Foot Print"
+   ..
+"South Roof South Bldg" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Roof w/o Batt"
+   Z                = 0
+   TILT             = 20
+   LOCATION         = TOP
+   POLYGON          = "Large Attic Roof"
+   SHADING-SURFACE  = YES
+   ..
+"North Roof South Bldg" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Roof w/o Batt"
+   X                = 85
+   Y                = 44
+   Z                = 0
+   AZIMUTH          = 0
+   TILT             = 20
+   LOCATION         = TOP
+   POLYGON          = "Large Attic Roof"
+   SHADING-SURFACE  = YES
+   ..
+"East Roof South Bldg" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Roof w/o Batt"
+   X                = 85
+   Z                = 0
+   AZIMUTH          = 90
+   TILT             = 20
+   LOCATION         = TOP
+   POLYGON          = "Small Attic Roof"
+   SHADING-SURFACE  = YES
+   ..
+"West Roof South Bldg" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Roof w/o Batt"
+   Y                = 44
+   Z                = 0
+   AZIMUTH          = -90
+   TILT             = 20
+   LOCATION         = TOP
+   POLYGON          = "Small Attic Roof"
+   SHADING-SURFACE  = YES
+   ..
+
+
+$ *********************************************************
+$ **                                                     **
+$ **              Electric & Fuel Meters                 **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$              Electric Meters
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Fuel Meters
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Master Meters
+$ ---------------------------------------------------------
+
+MASTER-METERS   
+   MSTR-ELEC-METER  = "EM1"
+   MSTR-FUEL-METER  = "FM1"
+   ..
+
+
+$ *********************************************************
+$ **                                                     **
+$ **      HVAC Circulation Loops / Plant Equipment       **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$              Curve Fits
+$ ---------------------------------------------------------
+
+DIAGNOSTIC COMMENTS  ..
+
+"2pipe Pump" = PUMP            
+$   CAP-CTRL         = VAR-SPEED-PUMP
+   ..
+$"Condenser Pump" = PUMP            
+$  CAP-CTRL         = VAR-SPEED-PUMP
+   ..
+$"HX Pump" = PUMP            
+$   ..
+
+$ ---------------------------------------------------------
+$              Circulation Loops
+$ ---------------------------------------------------------
+
+"2pipe Loop" = CIRCULATION-LOOP
+   TYPE             = PIPE2
+   SUBTYPE          = PRIMARY
+   LOOP-OPERATION   = SNAP
+   SNAP-T           = 70.
+   SNAP-LOCN        = ZONE
+   SNAP-ZONE        = "NE HVAC Zone 1"
+   LOOP-PUMP        = "2pipe Pump"
+   HEAD-SENSOR-LOCN = AT-COILS
+   ..
+$"Condenser Loop" = CIRCULATION-LOOP
+$   TYPE             = CW
+$   SUBTYPE          = PRIMARY
+$   FLUID-VOLUME     = 1
+$   LOOP-OPERATION   = DEMAND
+$   LOOP-PUMP        = "Condenser Pump"
+$   ..
+
+
+$ ---------------------------------------------------------
+$              Chillers
+$ ---------------------------------------------------------
+
+"Chiller 1" = CHILLER         
+   TYPE             = HEAT-PUMP
+   CONDENSER-TYPE   = AIR-COOLED
+   CHW-LOOP         = "2pipe Loop"
+$   CW-LOOP          = "Condenser Loop"
+$   CW-FLOW-CTRL     = VARIABLE-FLOW
+   ..
+
+
+$ ---------------------------------------------------------
+$              Boilers
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Domestic Water Heaters
+$ ---------------------------------------------------------
+
+
+$ ---------------------------------------------------------
+$              Heat Rejection
+$ ---------------------------------------------------------
+
+$"Cooling Tower 1" = HEAT-REJECTION  
+$   TYPE             = OPEN-TWR&HX
+$   CW-LOOP          = "Condenser Loop"
+$   CW-PUMP          = "HX Pump"
+$   CW-HX            = "Heat Exchanger 3"
+$   ..
+
+
+$ ---------------------------------------------------------
+$              Heat Exchangers
+$ ---------------------------------------------------------
+
+"Heat Exchanger 2" = HEAT-EXCHANGER  
+   TYPE             = WATER-TO-AIR
+   ..
+"Heat Exchanger 3" = HEAT-EXCHANGER  
+   TYPE             = WATER-TO-WATER
+   ..
+
+
+$ ---------------------------------------------------------
+$              Ground Loop Heat Exchangers
+$ ---------------------------------------------------------
+
+
+
+$ *********************************************************
+$ **                                                     **
+$ **            Steam & Chilled Water Meters             **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$              Steam Meters
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Chilled Water Meters
+$ ---------------------------------------------------------
+
+
+
+$ *********************************************************
+$ **                                                     **
+$ **               HVAC Systems / Zones                  **
+$ **                                                     **
+$ *********************************************************
+
+
+"HVAC System 1" = SYSTEM          
+   TYPE             = FC
+   FAN-SCHEDULE     = "Fan Sch"
+   HEAT-SOURCE      = HOT-WATER
+   MAX-SUPPLY-T     = 100
+   MIN-SUPPLY-T     = 60
+   NIGHT-CYCLE-CTRL = CYCLE-ON-ANY
+   HW-VALVE-TYPE    = TWO-WAY
+   HW-LOOP          = "2pipe Loop"
+   CHW-VALVE-TYPE   = TWO-WAY
+   CHW-LOOP         = "2pipe Loop"
+   ..
+
+"NE HVAC Zone 1" = ZONE            
+   TYPE             = CONDITIONED
+   OA-FLOW/PER      = 15
+   DESIGN-HEAT-T    = 70
+   HEAT-TEMP-SCH    = "Heat T-Stat"
+   DESIGN-COOL-T    = 74
+   COOL-TEMP-SCH    = "Cool T-Stat"
+   SPACE            = "NE Zone 1"
+   ..
+"Attic HVAC Z North" = ZONE            
+   TYPE             = UNCONDITIONED
+   SPACE            = "Attic Zone North"
+   ..
+"N HVAC Zone 2" = ZONE            
+   TYPE             = CONDITIONED
+   OA-FLOW/PER      = 15
+   DESIGN-HEAT-T    = 70
+   HEAT-TEMP-SCH    = "Heat T-Stat"
+   DESIGN-COOL-T    = 74
+   COOL-TEMP-SCH    = "Cool T-Stat"
+   SPACE            = "N Zone 2"
+   ..
+"NW HVAC Zone 3" = ZONE            
+   TYPE             = CONDITIONED
+   OA-FLOW/PER      = 15
+   DESIGN-HEAT-T    = 70
+   HEAT-TEMP-SCH    = "Heat T-Stat"
+   DESIGN-COOL-T    = 74
+   COOL-TEMP-SCH    = "Cool T-Stat"
+   SPACE            = "NW Zone 3"
+   ..
+"SE HVAC Zone 4" = ZONE            
+   TYPE             = CONDITIONED
+   OA-FLOW/PER      = 15
+   DESIGN-HEAT-T    = 70
+   HEAT-TEMP-SCH    = "Heat T-Stat"
+   DESIGN-COOL-T    = 74
+   COOL-TEMP-SCH    = "Cool T-Stat"
+   SPACE            = "SE Zone 4"
+   ..
+"Attic HVAC Z South" = ZONE            
+   TYPE             = UNCONDITIONED
+   SPACE            = "Attic Zone South"
+   ..
+"S HVAC Zone 5" = ZONE            
+   TYPE             = CONDITIONED
+   OA-FLOW/PER      = 15
+   DESIGN-HEAT-T    = 70
+   HEAT-TEMP-SCH    = "Heat T-Stat"
+   DESIGN-COOL-T    = 74
+   COOL-TEMP-SCH    = "Cool T-Stat"
+   SPACE            = "S Zone 5"
+   ..
+"SW HVAC Zone 6" = ZONE            
+   TYPE             = CONDITIONED
+   OA-FLOW/PER      = 15
+   DESIGN-HEAT-T    = 70
+   HEAT-TEMP-SCH    = "Heat T-Stat"
+   DESIGN-COOL-T    = 74
+   COOL-TEMP-SCH    = "Cool T-Stat"
+   SPACE            = "SW Zone 6"
+   ..
+
+
+$ *********************************************************
+$ **                                                     **
+$ **                Metering & Misc HVAC                 **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$              Equipment Controls
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Load Management
+$ ---------------------------------------------------------
+
+
+
+$ *********************************************************
+$ **                                                     **
+$ **                    Utility Rates                    **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$              Ratchets
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Block Charges
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Utility Rates
+$ ---------------------------------------------------------
+
+
+
+$ *********************************************************
+$ **                                                     **
+$ **                 Output Reporting                    **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$              Loads Non-Hourly Reporting
+$ ---------------------------------------------------------
+
+LOADS-REPORT    
+   VERIFICATION     = ( ALL-VERIFICATION )
+   SUMMARY          = ( ALL-SUMMARY )
+   ..
+
+
+$ ---------------------------------------------------------
+$              Systems Non-Hourly Reporting
+$ ---------------------------------------------------------
+
+SYSTEMS-REPORT  
+   VERIFICATION     = ( ALL-VERIFICATION )
+   SUMMARY          = ( ALL-SUMMARY )
+   ..
+
+
+$ ---------------------------------------------------------
+$              Plant Non-Hourly Reporting
+$ ---------------------------------------------------------
+
+PLANT-REPORT    
+   VERIFICATION     = ( ALL-VERIFICATION )
+   SUMMARY          = ( ALL-SUMMARY )
+   ..
+
+
+$ ---------------------------------------------------------
+$              Economics Non-Hourly Reporting
+$ ---------------------------------------------------------
+
+ECONOMICS-REPORT
+   VERIFICATION     = ( ALL-VERIFICATION )
+   SUMMARY          = ( ALL-SUMMARY )
+   ..
+
+
+$ ---------------------------------------------------------
+$              Hourly Reporting
+$ ---------------------------------------------------------
+
+
+"HR-DAY-ON" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF
+   VALUES           = ( 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+         1, 1, 1, 1, 1, 1 )
+   ..
+"HR-DAY-OFF" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF
+   VALUES           = ( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+         0, 0, 0, 0, 0, 0 )
+   ..
+"HR-WK-ON" = WEEK-SCHEDULE-PD
+   TYPE             = ON/OFF
+   DAY-SCHEDULES    = ( "HR-DAY-ON", "HR-DAY-ON", "HR-DAY-ON", "HR-DAY-ON", 
+         "HR-DAY-ON", "HR-DAY-ON", "HR-DAY-ON", "HR-DAY-ON" )
+   ..
+"HR-WK-OFF" = WEEK-SCHEDULE-PD
+   TYPE             = ON/OFF
+   DAY-SCHEDULES    = ( "HR-DAY-OFF", "HR-DAY-OFF", "HR-DAY-OFF", 
+         "HR-DAY-OFF", "HR-DAY-OFF", "HR-DAY-OFF", "HR-DAY-OFF", 
+         "HR-DAY-OFF" )
+   ..
+"HR-SCH" = SCHEDULE-PD
+   TYPE             = ON/OFF
+   MONTH            = ( 2, 2,  6,  6, 12 )
+   DAY              = ( 8, 9, 20, 21, 31 )
+   WEEK-SCHEDULES   = ( "HR-WK-OFF", "HR-WK-ON", "HR-WK-OFF", "HR-WK-ON", 
+         "HR-WK-OFF" )
+   ..
+
+
+"RB Chiller" = REPORT-BLOCK
+   VARIABLE-TYPE    = "Chiller 1"
+   VARIABLE-LIST    = (1,2,4,5,6,7,8,9,10,11,12)
+   ..
+
+$"The Report" = HOURLY-REPORT   
+$   REPORT-SCHEDULE  = "Always On Sched"
+$   REPORT-BLOCK     = ( "RB Chiller" )
+$   ..
+
+
+
+$ ---------------------------------------------------------
+$              THE END
+$ ---------------------------------------------------------
+
+END ..
+COMPUTE ..
+STOP ..

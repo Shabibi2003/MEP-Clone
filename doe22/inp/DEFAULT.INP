@@ -1,0 +1,109 @@
+INPUT ..
+LIST COMMENTS ..
+TITLE          
+   LINE-1          =*PowerDOE Default Minimum Project*
+   ..
+
+"Entire Year" = RUN-PERIOD-PD   
+   BEGIN-MONTH     =1
+   BEGIN-DAY       =1
+   BEGIN-YEAR      =1996
+   END-MONTH       =12
+   END-DAY         =31
+   END-YEAR        =1996
+   ..
+
+"Default CDD" = DESIGN-DAY      
+   TYPE            =COOLING
+   DRYBULB-HIGH    =95
+   DRYBULB-RANGE   =20
+   WETBULB-AT-HIGH =70
+   ..
+"Default HDD" = DESIGN-DAY      
+   TYPE            =HEATING
+   DRYBULB-HIGH    =40
+   ..
+
+SITE-PARAMETERS 
+   ..
+
+BUILD-PARAMETERS
+   ..
+
+"Default LongTrapPoly" = POLYGON         
+   V1              =(0,0)
+   V2              =(100,0)
+   V3              =(75,25)
+   V4              =(25,25)
+   ..
+"Default ShortTrapPoly" = POLYGON         
+   V1              =(0,0)
+   V2              =(80,0)
+   V3              =(55,25)
+   V4              =(25,25)
+   ..
+
+BASELINE        
+   ..
+
+"Default Floor" = FLOOR           
+   SHAPE           = POLYGON
+   FLOOR-HEIGHT    = 12
+   POLYGON         ="Default Polygon SQUARE"
+   ..
+"Default Space" = SPACE           
+   SHAPE           = POLYGON
+   LOCATION        =FLOOR-V2
+   POLYGON         ="Default LongTrapPoly"
+   ..
+"Default Wall" = EXTERIOR-WALL   
+   CONSTRUCTION    ="Default Construction U-VALUE"
+   LOCATION        =SPACE-V1
+   ..
+"Default Window" = WINDOW          
+   GLASS-TYPE      ="Default Glass GTC 1000"
+   Y               =3
+   HEIGHT          ={(#P("HEIGHT")-3.0)*0.6}
+   WIDTH           ={#P("WIDTH")*.75}
+   ..
+
+
+MASTER-METERS   
+ MSTR-ELEC-METER   EM1
+ MSTR-FUEL-METER   FM1
+   ..
+
+
+"Default Air Handler" = SYSTEM          
+   TYPE             = PSZ
+   CONTROL-ZONE     = "Def Zone"
+   ..
+"Def Zone" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "Default Space"
+   ..
+
+
+LOADS-REPORT    
+   VERIFICATION    =(ALL-VERIFICATION)
+   SUMMARY         =(ALL-SUMMARY)         $ DUMP-OPTIONS (DEBUG) 
+   ..
+
+SYSTEMS-REPORT  
+   VERIFICATION    =(ALL-VERIFICATION)
+   SUMMARY         =(ALL-SUMMARY)         $ DUMP-OPTIONS (DEBUG) 
+   ..
+
+PLANT-REPORT    
+   VERIFICATION    =(ALL-VERIFICATION)
+   SUMMARY         =(ALL-SUMMARY)         $ DUMP-OPTIONS (DEBUG) 
+   ..
+
+ECONOMICS-REPORT
+   VERIFICATION    =(ALL-VERIFICATION)
+   SUMMARY         =(ALL-SUMMARY)        $  DUMP-OPTIONS (DEBUG) 
+   ..
+
+END ..
+COMPUTE ..
+STOP ..

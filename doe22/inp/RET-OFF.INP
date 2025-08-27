@@ -1,0 +1,2167 @@
+INPUT ..
+
+
+$ ---------------------------------------------------------
+$              Abort, Diagnostics
+$ ---------------------------------------------------------
+
+
+
+
+$ ---------------------------------------------------------
+$              Global Parameters
+$ ---------------------------------------------------------
+
+PARAMETER
+   "Param 1"      = 10  ..
+PARAMETER
+   "Param 2"      = 20  ..
+PARAMETER
+   "Param 3"      = "CRACK"  ..
+PARAMETER
+   "Param 4"      = "AIR-CHANGE"  ..
+PARAMETER
+   "Param 5"      = "ELECTRIC"  ..
+PARAMETER
+   "Param 6"      = "GAS"  ..
+
+
+$ ---------------------------------------------------------
+$              Title, Run Periods, Design Days, Holidays
+$ ---------------------------------------------------------
+
+TITLE           
+   LINE-1           = *Main Facility*
+   ..
+
+"Entire Year" = RUN-PERIOD-PD
+   BEGIN-MONTH      = 1
+   BEGIN-DAY        = 1
+   BEGIN-YEAR       = 1996
+   END-MONTH        = 12
+   END-DAY          = 31
+   END-YEAR         = 1996
+   ..
+
+"Cooling Design Day" = DESIGN-DAY      
+   TYPE             = COOLING
+   DRYBULB-HIGH     = 89
+   DRYBULB-RANGE    = 20
+   WETBULB-AT-HIGH  = 70
+   ..
+"Heating Design Day" = DESIGN-DAY      
+   TYPE             = HEATING
+   DRYBULB-HIGH     = 40
+   ..
+
+
+
+$ ---------------------------------------------------------
+$              Site and Building Data
+$ ---------------------------------------------------------
+
+"SITE-PARAMETERS 1" = SITE-PARAMETERS 
+   ALTITUDE         = 1112
+   ..
+
+"BUILD-PARAMETERS 1" = BUILD-PARAMETERS
+   AZIMUTH          = 0
+   GROSS-AREA       = 24000
+   ..
+
+
+
+$ ---------------------------------------------------------
+$              Materials / Layers / Constructions
+$ ---------------------------------------------------------
+
+"Mat 2ft Gnd" = MATERIAL        
+   TYPE             = PROPERTIES
+   THICKNESS        = 2
+   CONDUCTIVITY     = 0.5
+   DENSITY          = 100
+   SPECIFIC-HEAT    = 0.25
+   ..
+"Mat R11M" = MATERIAL        
+   TYPE             = RESISTANCE
+   RESISTANCE       = 5.5
+   ..
+"Mat R19W" = MATERIAL        
+   TYPE             = RESISTANCE
+   RESISTANCE       = 12.28
+   ..
+
+"Lay Int Wall" = LAYERS          
+   INSIDE-FILM-RES  = 0.76
+   MATERIAL         = ( "GypBd 5/8in (GP02)", "Air Lay <4in Vert (AL21)", 
+         "GypBd 5/8in (GP02)" )
+   ..
+"Lay Floor" = LAYERS          
+   MATERIAL         = ( "Mat 2ft Gnd", "Conc HW 140lb 4in (CC14)", 
+         "Carpet & Rubber Pad (CP02)" )
+   THICKNESS        = ( 2, 0.333, 0.042 )
+   ..
+"Lay WACON" = LAYERS          
+   MATERIAL         = ( "Conc LW 80lb 6in (CC25)", "Air Lay <4in Vert (AL21)", 
+         "Mat R11M", "GypBd 5/8in (GP02)" )
+   THICKNESS        = ( 0.5, 0.052, 0, 0.052 )
+   ..
+"Lay Roof" = LAYERS          
+   MATERIAL         = ( "Gravel 1in (RG02)", "Blt-Up Roof 3/8in (BR01)", 
+         "Mat R19W", "MinBd 2in R-6.9 (IN23)", "Plywd 3/4in (PW05)", 
+         "Air Lay >4in Horiz (AL33)", "AcousTile 3/4in (AC03)" )
+   THICKNESS        = ( 0.083, 0.0313, 0.25, 0.167, 0.0623, 0.35, 0.0623 )
+   ..
+
+"Cons Floor" = CONSTRUCTION    
+   TYPE             = LAYERS
+   LAYERS           = "Lay Floor"
+   ..
+"Cons Perim Wall" = CONSTRUCTION    
+   TYPE             = LAYERS
+   LAYERS           = "ASH Wall-6 lay"
+   ..
+"Cons Roof" = CONSTRUCTION    
+   TYPE             = LAYERS
+   LAYERS           = "Lay Roof"
+   ..
+"Cons Ceiling" = CONSTRUCTION    
+   TYPE             = U-VALUE
+   U-VALUE          = 0.5
+   ..
+"Cons Int Wall" = CONSTRUCTION    
+   TYPE             = LAYERS
+   LAYERS           = "Lay Int Wall"
+   ..
+"Cons Air Wall" = CONSTRUCTION    
+   TYPE             = U-VALUE
+   U-VALUE          = 1.3
+   ..
+"Cons Door" = CONSTRUCTION    
+   TYPE             = U-VALUE
+   U-VALUE          = 0.59
+   ..
+
+
+$ ---------------------------------------------------------
+$              Glass Types
+$ ---------------------------------------------------------
+
+"Lib 1205 - Grey" = GLASS-TYPE      
+   TYPE             = GLASS-TYPE-CODE
+   GLASS-TYPE-CODE  = "1205"
+   ..
+"Lib 1404 - Ref-A-M" = GLASS-TYPE      
+   TYPE             = GLASS-TYPE-CODE
+   GLASS-TYPE-CODE  = "1404"
+   ..
+"Lib 2823 - Elec Ref Col" = GLASS-TYPE      
+   TYPE             = GLASS-TYPE-CODE
+   GLASS-TYPE-CODE  = "2823"
+   ..
+"Lib 2840 - Low-E Elec" = GLASS-TYPE      
+   TYPE             = GLASS-TYPE-CODE
+   GLASS-TYPE-CODE  = "2840"
+   ..
+"Lib 3603 - Low-E Clear" = GLASS-TYPE      
+   TYPE             = GLASS-TYPE-CODE
+   GLASS-TYPE-CODE  = "3603"
+   ..
+"Lib 3664 - Low-E Film" = GLASS-TYPE      
+   TYPE             = GLASS-TYPE-CODE
+   GLASS-TYPE-CODE  = "3664"
+   ..
+
+
+$ ---------------------------------------------------------
+$              Window Layers
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Lamps / Luminaries / Lighting Systems
+$ ---------------------------------------------------------
+
+
+"Parabolic-Troffer-2X4-4-Lamp" = LUMINAIRE-TYPE  
+   LIBRARY-ENTRY "Parabolic-Troffer-2X4-4-Lamp"
+   ACCEPT-LAMP-SIZE = T-48-IN
+   LUM-MAINT-CAT    = LUM-MAINT-IV
+   ..
+
+"Test Lighting System" = LIGHTING-SYSTEM 
+   LUMINAIRE-TYPE   = "Parabolic-Troffer-2X4-4-Lamp"
+   LAMP-TYPE        = "F32T8/ES-Rap"
+   LTG-CALC-METHOD  = LUMINAIRE-LAMP
+   BALLAST-TYPE     = ELEC-RAP-START
+   ..
+"Test #2 Lighting System" = LIGHTING-SYSTEM 
+   LUMINAIRE-TYPE   = "Troffer-2X4-3-Lamp"
+   LAMP-TYPE        = "F32T8/ES-Rap"
+   LTG-CALC-METHOD  = LUMINAIRE-LAMP
+   BALLAST-TYPE     = MAGN-ENERGY-EFF
+   LUMINAIRE-CONFIG = RECESS-STATIC
+   ..
+"Test #3 Lighting System" = LIGHTING-SYSTEM 
+   LTG-CALC-METHOD  = LUMENS-POWER
+   COEF-OF-UTIL     = 0.7
+   TOT-LAMP-LUMENS  = 1000
+   TOT-POWER-INPUT  = 100
+   ..
+"Test #4 Lighting System" = LIGHTING-SYSTEM 
+   LUMINAIRE-TYPE   = "Surf/Susp-Parabolic-2X4-3-Lamp"
+   LAMP-TYPE        = "F32T8/ES-Rap"
+   LTG-CALC-METHOD  = LUMINAIRE-LAMP
+   BALLAST-TYPE     = MAGN-ENERGY-EFF
+   LUMINAIRE-CONFIG = SUSPEND-OPEN
+   ..
+
+
+$ ---------------------------------------------------------
+$              Day Schedules
+$ ---------------------------------------------------------
+
+"Ret Occ WD Norm" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0, 0, 0, 0, 0, 0, 0, 0.13, 0.25, 0.63, 0.63, 0.88, 
+         0.88, 0.88, 0.88, 1, 0.88, 0.63, 0.38, 0.38, 0, 0, 0, 0 )
+   ..
+"Ret Occ WEH Norm" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0, 0, 0, 0, 0, 0, 0, 0, 0.13, 0.25, 0.63, 0.75, 0.92, 
+         0.92, 0.92, 1, 1, 0.75, 0.63, 0.38, 0.38, 0, 0, 0 )
+   ..
+"Ret Occ Day Dec" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0, 0, 0, 0, 0, 0, 0, 0.13, 0.25, 0.63, 0.63, 0.88, 
+         0.88, 0.88, 1, 1, 1, 1, 1, 0.63, 0.63, 0.38, 0, 0 )
+   ..
+"Ret Lght WD Nrm" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.25, 0.38, 
+         0.7, 0.94, 0.98, 1, 0.98, 0.94, 0.94, 0.94, 0.94, 0.59, 0.32, 0.15, 
+         0.15, 0.15, 0.15 )
+   ..
+"Ret Lght WEH Nrm" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.25, 
+         0.4, 0.6, 0.9, 1, 0.98, 0.96, 0.94, 0.94, 0.94, 0.63, 0.57, 0.45, 
+         0.15, 0.15, 0.15 )
+   ..
+"Ret Lght Day Dec" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.25, 0.32, 0.63, 
+         0.87, 1, 1, 1, 1, 0.99, 0.94, 0.92, 0.92, 0.9, 0.63, 0.4, 0.2, 0.2 )
+   ..
+"Ret Eqp WD Norm" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.23, 0.32, 
+         0.58, 0.83, 1, 1, 1, 0.97, 0.92, 0.88, 0.86, 0.54, 0.33, 0.15, 0.15, 
+         0.15, 0.15 )
+   ..
+"Ret Eqp WEH Norm" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.3, 
+         0.4, 0.6, 0.83, 0.97, 0.95, 0.9, 0.82, 0.73, 0.65, 0.52, 0.4, 0.33, 
+         0.15, 0.15, 0.15 )
+   ..
+"Ret Eqp Day Dec" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.21, 0.21, 0.21, 0.21, 0.21, 0.21, 0.21, 0.25, 0.32, 
+         0.58, 0.83, 1, 1, 0.99, 0.97, 0.91, 0.88, 0.86, 0.79, 0.67, 0.58, 
+         0.34, 0.21, 0.21 )
+   ..
+"Ret Inf Day Norm" = DAY-SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   VALUES           = ( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+         0, 0, 0, 0, 0, 0 )
+   ..
+"Off Occup WD" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0, 0, 0, 0, 0, 0, 0.35, 0.85, 0.95, 0.95, 0.95, 0.78, 
+         0.78, 0.95, 0.95, 0.95, 0.88, 0.36, 0, 0, 0, 0, 0, 0 )
+   ..
+"Off Occup WE-H" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0, 0, 0, 0, 0, 0, 0, 0, 0.13, 0.25, 0.43, 0.45, 0.42, 
+         0.32, 0.22, 0, 0, 0, 0, 0, 0, 0, 0, 0 )
+   ..
+"Off Light WD" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.45, 0.82, 0.9, 0.9, 
+         0.9, 0.85, 0.85, 0.9, 0.9, 0.9, 0.86, 0.5, 0.1, 0.1, 0.1, 0.1, 0.1, 
+         0.1 )
+   ..
+"Off Light WE-H" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.25, 0.4, 
+         0.45, 0.53, 0.52, 0.42, 0.3, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 
+         0.1 )
+   ..
+"Off Equip WD" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.23, 0.32, 
+         0.58, 0.83, 1, 1, 0.99, 0.96, 0.91, 0.88, 0.86, 0.54, 0.33, 0.15, 
+         0.15, 0.15, 0.15 )
+   ..
+"Off Equip WE-H" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.2, 
+         0.3, 0.31, 0.3, 0.32, 0.19, 0.19, 0.15, 0.15, 0.15, 0.15, 0.15, 
+         0.15, 0.15, 0.15, 0.15 )
+   ..
+"Off Infil WD" = DAY-SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   VALUES           = ( 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 
+         1, 1, 1, 1, 1, 1 )
+   ..
+"Off Infil WE-H" = DAY-SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   VALUES           = ( 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+         1, 1, 1, 1, 1, 1 )
+   ..
+"Max Solar Day" = DAY-SCHEDULE-PD
+   TYPE             = RADIATION
+   VALUES           = ( 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 
+         30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30 )
+   ..
+"Shading Day" = DAY-SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   VALUES           = ( 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 
+         0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8 )
+   ..
+"Open Shade Day" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 
+         0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 
+         0.75, 0.75, 0.75, 0.75 )
+   ..
+"Vis Trans Day" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 
+         0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8 )
+   ..
+"Always On Day" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF
+   VALUES           = ( 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+         1, 1, 1, 1, 1, 1 )
+   ..
+"Fan Operation Weekday" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF/FLAG
+   VALUES           = ( 0, 0, 0, 0, 0, 0, -999, -999, 1, 1, 1, 1, 1, 1, 1, 1, 
+         1, 1, 0, 0, 0, 0, 0, 0 )
+   ..
+"Fan Operation Weekend" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF/FLAG
+   VALUES           = ( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+         0, 0, 0, 0, 0, 0 )
+   ..
+"Heat Weekday Sched" = DAY-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   VALUES           = ( 55, &D, &D, &D, &D, &D, &D, &D, 70, &D, &D, &D, &D, 
+         &D, &D, &D, &D, &D, 55 )
+   ..
+"Heat Weekend Sched" = DAY-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   VALUES           = ( 55 )
+   ..
+"Cool-Off Day Sched" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF/TEMP
+   VALUES           = ( 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 
+         60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60 )
+   ..
+"Cool Weekday Sched" = DAY-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   VALUES           = ( 85, &D, &D, &D, &D, &D, &D, &D, 78, &D, &D, &D, &D, 
+         &D, &D, &D, &D, &D, 85 )
+   ..
+"Cool Weekend Sched" = DAY-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   VALUES           = ( 90 )
+   ..
+"Day Reset 1" = DAY-SCHEDULE-PD
+   TYPE             = RESET-TEMP
+   OUTSIDE-HI       = 75
+   OUTSIDE-LO       = 30
+   SUPPLY-HI        = 65
+   SUPPLY-LO        = 60
+   ..
+"WD Winter TOU8" = DAY-SCHEDULE-PD
+   TYPE             = FLAG
+   VALUES           = ( 1.1, 1.1, 1.1, 1.1, 1.1, 1.1, 1.1, 1.1, 1.2, 1.2, 1.2, 
+         1.2, 1.2, 1.2, 1.2, 1.2, 1.2, 1.2, 1.2, 1.2, 1.2, 1.1, 1.1, 1.1 )
+   ..
+"WEH Winter TOU8" = DAY-SCHEDULE-PD
+   TYPE             = FLAG
+   VALUES           = ( 1.1, 1.1, 1.1, 1.1, 1.1, 1.1, 1.1, 1.1, 1.1, 1.1, 1.1, 
+         1.1, 1.1, 1.1, 1.1, 1.1, 1.1, 1.1, 1.1, 1.1, 1.1, 1.1, 1.1, 1.1 )
+   ..
+"WD Summer TOU8" = DAY-SCHEDULE-PD
+   TYPE             = FLAG
+   VALUES           = ( 2.1, 2.1, 2.1, 2.1, 2.1, 2.1, 2.1, 2.1, 2.2, 2.2, 2.2, 
+         2.2, 2.3, 2.3, 2.3, 2.3, 2.3, 2.3, 2.2, 2.2, 2.2, 2.2, 2.2, 2.1 )
+   ..
+"WEH Summer TOU8" = DAY-SCHEDULE-PD
+   TYPE             = FLAG
+   VALUES           = ( 2.1, 2.1, 2.1, 2.1, 2.1, 2.1, 2.1, 2.1, 2.1, 2.1, 2.1, 
+         2.1, 2.1, 2.1, 2.1, 2.1, 2.1, 2.1, 2.1, 2.1, 2.1, 2.1, 2.1, 2.1 )
+   ..
+"24-Hour On Day" = DAY-SCHEDULE-PD
+   TYPE             = FLAG
+   VALUES           = ( 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+         1, 1, 1, 1, 1, 1 )
+   ..
+
+$ ---------------------------------------------------------
+$              Week Schedules
+$ ---------------------------------------------------------
+
+"Ret Occ Week Nrm" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "Ret Occ WD Norm", "Ret Occ WD Norm", 
+         "Ret Occ WD Norm", "Ret Occ WD Norm", "Ret Occ WD Norm", 
+         "Ret Occ WEH Norm", "Ret Occ WEH Norm", "Ret Occ WEH Norm" )
+   ..
+"Ret Occ Week Dec" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "Ret Occ Day Dec", "Ret Occ Day Dec", 
+         "Ret Occ Day Dec", "Ret Occ Day Dec", "Ret Occ Day Dec", 
+         "Ret Occ Day Dec", "Ret Occ Day Dec", "Ret Occ Day Dec" )
+   ..
+"Ret Lght Wk Nrm" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "Ret Lght WD Nrm", "Ret Lght WD Nrm", 
+         "Ret Lght WD Nrm", "Ret Lght WD Nrm", "Ret Lght WD Nrm", 
+         "Ret Lght WEH Nrm", "Ret Lght WEH Nrm", "Ret Lght WEH Nrm" )
+   ..
+"Ret Lght Wk Dec" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "Ret Lght Day Dec", "Ret Lght Day Dec", 
+         "Ret Lght Day Dec", "Ret Lght Day Dec", "Ret Lght Day Dec", 
+         "Ret Lght Day Dec", "Ret Lght Day Dec", "Ret Lght Day Dec" )
+   ..
+"Ret Eqp Wk Norm" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "Ret Eqp WD Norm", "Ret Eqp WD Norm", 
+         "Ret Eqp WD Norm", "Ret Eqp WD Norm", "Ret Eqp WD Norm", 
+         "Ret Eqp WEH Norm", "Ret Eqp WEH Norm", "Ret Eqp WEH Norm" )
+   ..
+"Ret Eqp Wk Dec" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "Ret Eqp Day Dec", "Ret Eqp Day Dec", 
+         "Ret Eqp Day Dec", "Ret Eqp Day Dec", "Ret Eqp Day Dec", 
+         "Ret Eqp Day Dec", "Ret Eqp Day Dec", "Ret Eqp Day Dec" )
+   ..
+"Ret Inf Wk Norm" = WEEK-SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   DAY-SCHEDULES    = ( "Ret Inf Day Norm", "Ret Inf Day Norm", 
+         "Ret Inf Day Norm", "Ret Inf Day Norm", "Ret Inf Day Norm", 
+         "Ret Inf Day Norm", "Ret Inf Day Norm", "Ret Inf Day Norm" )
+   ..
+"Off Occup Week" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "Off Occup WD", "Off Occup WD", "Off Occup WD", 
+         "Off Occup WD", "Off Occup WD", "Off Occup WE-H", "Off Occup WE-H", 
+         "Off Occup WE-H" )
+   ..
+"Off Light Week" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "Off Light WD", "Off Light WD", "Off Light WD", 
+         "Off Light WD", "Off Light WD", "Off Light WE-H", "Off Light WE-H", 
+         "Off Light WE-H" )
+   ..
+"Off Equip Week" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "Off Equip WD", "Off Equip WD", "Off Equip WD", 
+         "Off Equip WD", "Off Equip WD", "Off Equip WE-H", "Off Equip WE-H", 
+         "Off Equip WE-H" )
+   ..
+"Off Infil Week" = WEEK-SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   DAY-SCHEDULES    = ( "Off Infil WD", "Off Infil WD", "Off Infil WD", 
+         "Off Infil WD", "Off Infil WD", "Off Infil WE-H", "Off Infil WE-H", 
+         "Off Infil WE-H" )
+   ..
+"Max Solar Week" = WEEK-SCHEDULE-PD
+   TYPE             = RADIATION
+   DAY-SCHEDULES    = ( "Max Solar Day", "Max Solar Day", "Max Solar Day", 
+         "Max Solar Day", "Max Solar Day", "Max Solar Day", "Max Solar Day", 
+         "Max Solar Day" )
+   ..
+"Shading Week" = WEEK-SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   DAY-SCHEDULES    = ( "Shading Day", "Shading Day", "Shading Day", 
+         "Shading Day", "Shading Day", "Shading Day", "Shading Day", 
+         "Shading Day" )
+   ..
+"Open Shade Week" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "Open Shade Day", "Open Shade Day", "Open Shade Day", 
+         "Open Shade Day", "Open Shade Day", "Open Shade Day", 
+         "Open Shade Day", "Open Shade Day" )
+   ..
+"Vis Trans Week" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "Vis Trans Day", "Vis Trans Day", "Vis Trans Day", 
+         "Vis Trans Day", "Vis Trans Day", "Vis Trans Day", "Vis Trans Day", 
+         "Vis Trans Day" )
+   ..
+"Always On Week" = WEEK-SCHEDULE-PD
+   TYPE             = ON/OFF
+   DAY-SCHEDULES    = ( "Always On Day", "Always On Day", "Always On Day", 
+         "Always On Day", "Always On Day", "Always On Day", "Always On Day", 
+         "Always On Day" )
+   ..
+"Fan Operation Week" = WEEK-SCHEDULE-PD
+   TYPE             = ON/OFF/FLAG
+   DAY-SCHEDULES    = ( "Fan Operation Weekday", "Fan Operation Weekday", 
+         "Fan Operation Weekday", "Fan Operation Weekday", 
+         "Fan Operation Weekday", "Fan Operation Weekend", 
+         "Fan Operation Weekend", "Fan Operation Weekend" )
+   ..
+"Heat Week Sched" = WEEK-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   DAY-SCHEDULES    = ( "Heat Weekday Sched" )
+   ..
+"Cool-Off Week Sched" = WEEK-SCHEDULE-PD
+   TYPE             = ON/OFF/TEMP
+   DAY-SCHEDULES    = ( "Cool-Off Day Sched", "Cool-Off Day Sched", 
+         "Cool-Off Day Sched", "Cool-Off Day Sched", "Cool-Off Day Sched", 
+         "Cool-Off Day Sched", "Cool-Off Day Sched", "Cool-Off Day Sched" )
+   ..
+"Cool Week Sched" = WEEK-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   DAY-SCHEDULES    = ( "Cool Weekday Sched" )
+   ..
+"Cool Reset Week Sched" = WEEK-SCHEDULE-PD
+   TYPE             = RESET-TEMP
+   DAY-SCHEDULES    = ( "Day Reset 1", "Day Reset 1", "Day Reset 1", 
+         "Day Reset 1", "Day Reset 1", "Day Reset 1", "Day Reset 1", 
+         "Day Reset 1" )
+   ..
+"Winter TOU8 Week" = WEEK-SCHEDULE-PD
+   TYPE             = FLAG
+   DAY-SCHEDULES    = ( "WD Winter TOU8", "WD Winter TOU8", "WD Winter TOU8", 
+         "WD Winter TOU8", "WD Winter TOU8", "WEH Winter TOU8", 
+         "WEH Winter TOU8", "WEH Winter TOU8" )
+   ..
+"Summer TOU8 Week" = WEEK-SCHEDULE-PD
+   TYPE             = FLAG
+   DAY-SCHEDULES    = ( "WD Summer TOU8", "WD Summer TOU8", "WD Summer TOU8", 
+         "WD Summer TOU8", "WD Summer TOU8", "WEH Summer TOU8", 
+         "WEH Summer TOU8", "WEH Summer TOU8" )
+   ..
+"24-Hour On Week" = WEEK-SCHEDULE-PD
+   TYPE             = FLAG
+   DAY-SCHEDULES    = ( "24-Hour On Day", "24-Hour On Day", "24-Hour On Day", 
+         "24-Hour On Day", "24-Hour On Day", "24-Hour On Day", 
+         "24-Hour On Day", "24-Hour On Day" )
+   ..
+
+$ ---------------------------------------------------------
+$              Annual Schedules
+$ ---------------------------------------------------------
+
+"Retail Occupancy" = SCHEDULE-PD
+   TYPE             = FRACTION
+   MONTH            = ( 11, 12 )
+   DAY              = ( 30, 31 )
+   WEEK-SCHEDULES   = ( "Ret Occ Week Nrm", "Ret Occ Week Dec" )
+   ..
+"Retail Lighting" = SCHEDULE-PD
+   TYPE             = FRACTION
+   MONTH            = ( 11, 12 )
+   DAY              = ( 30, 31 )
+   WEEK-SCHEDULES   = ( "Ret Lght Wk Nrm", "Ret Lght Wk Dec" )
+   ..
+"Retail Equipment" = SCHEDULE-PD
+   TYPE             = FRACTION
+   MONTH            = ( 11, 12 )
+   DAY              = ( 30, 31 )
+   WEEK-SCHEDULES   = ( "Ret Eqp Wk Norm", "Ret Eqp Wk Dec" )
+   ..
+"Ret Infiltration" = SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Ret Inf Wk Norm" )
+   ..
+"Office Occupancy" = SCHEDULE-PD
+   TYPE             = FRACTION
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Off Occup Week" )
+   ..
+"Office Lighting" = SCHEDULE-PD
+   TYPE             = FRACTION
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Off Light Week" )
+   ..
+"Office Equipment" = SCHEDULE-PD
+   TYPE             = FRACTION
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Off Equip Week" )
+   ..
+"Off Infiltration" = SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Off Infil Week" )
+   ..
+"Max Solar Sched" = SCHEDULE-PD
+   TYPE             = RADIATION
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Max Solar Week" )
+   ..
+"Shading Sched" = SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Shading Week" )
+   ..
+"Open Shade Sched" = SCHEDULE-PD
+   TYPE             = FRACTION
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Open Shade Week" )
+   ..
+"Vis Trans Sched" = SCHEDULE-PD
+   TYPE             = FRACTION
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Vis Trans Week" )
+   ..
+"Always On Sched" = SCHEDULE-PD
+   TYPE             = ON/OFF
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Always On Week" )
+   ..
+"Fan Operation" = SCHEDULE-PD
+   TYPE             = ON/OFF/FLAG
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Fan Operation Week" )
+   ..
+"Heat Schedule" = SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Heat Week Sched" )
+   ..
+"Cool-Off Schedule" = SCHEDULE-PD
+   TYPE             = ON/OFF/TEMP
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Cool-Off Week Sched" )
+   ..
+"Heat-Off Schedule" = SCHEDULE-PD
+   TYPE             = ON/OFF/TEMP
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Cool-Off Week Sched" )
+   ..
+"Cool Schedule" = SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Cool Week Sched" )
+   ..
+"Cool Reset Sched" = SCHEDULE-PD
+   TYPE             = RESET-TEMP
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Cool Reset Week Sched" )
+   ..
+"TOU8 Time Sched" = SCHEDULE-PD
+   TYPE             = FLAG
+   MONTH            = ( 5, 9, 12 )
+   DAY              = ( 31, 30, 31 )
+   WEEK-SCHEDULES   = ( "Winter TOU8 Week", "Summer TOU8 Week", 
+         "Winter TOU8 Week" )
+   ..
+"24-Hour On Sched" = SCHEDULE-PD
+   TYPE             = FLAG
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "24-Hour On Week" )
+   ..
+
+
+$ ---------------------------------------------------------
+$              Polygons
+$ ---------------------------------------------------------
+
+"FlrPoly" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 100, 0 )
+   V3               = ( 100, 80 )
+   V4               = ( 0, 80 )
+   ..
+"LongTrapPoly" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 100, 0 )
+   V3               = ( 75, 25 )
+   V4               = ( 25, 25 )
+   ..
+"LongTrapFlrPoly" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 1, 1 )
+   V3               = ( 1, 99 )
+   V4               = ( 0, 100 )
+   ..
+"ShortTrapPoly" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 80, 0 )
+   V3               = ( 55, 25 )
+   V4               = ( 25, 25 )
+   ..
+"ShortTrapFlrPoly" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 1, 1 )
+   V3               = ( 1, 79 )
+   V4               = ( 0, 80 )
+   ..
+"Interior Polygon" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 50, 0 )
+   V3               = ( 50, 30 )
+   V4               = ( 0, 30 )
+   ..
+"Interior Polygon - Mirror" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 30, 0 )
+   V3               = ( 30, 50 )
+   V4               = ( 0, 50 )
+   ..
+
+
+$ ---------------------------------------------------------
+$              Wall Parameters
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Fixed and Building Shades
+$ ---------------------------------------------------------
+
+
+"South Awning" = BUILDING-SHADE  
+   X                = 0
+   Y                = -10
+   Z                = 18
+   HEIGHT           = 10.2
+   WIDTH            = 100
+   AZIMUTH          = 180
+   TILT             = 20
+   ..
+"West awning" = BUILDING-SHADE  
+   LIKE = "South Awning"
+   X                = -10
+   Y                = 80
+   HEIGHT           = 10.2
+   WIDTH            = 80
+   AZIMUTH          = 270
+   TILT             = 20
+   ..
+
+
+$ ---------------------------------------------------------
+$              Misc Cost Related Objects
+$ ---------------------------------------------------------
+
+
+"Roofing" = COMPONENT-COST  
+   UNIT-NAME        = *SQUARES*
+   NUMBER-OF-UNITS  = 100
+   FIRST-COST       = 50
+   INSTALL-COST     = 60
+   ANNUAL-COST      = 10
+   COMPONENT-LIFE   = 12
+   MIN-OVHL-INT     = 3
+   MIN-OVHL-COST    = 75
+   MAJ-OVHL-INT     = 8
+   MAJ-OVHL-COST    = 95
+   ..
+"Windows" = COMPONENT-COST  
+   UNIT-NAME        = *GLASS*
+   NUMBER-OF-UNITS  = 1002
+   FIRST-COST       = 12
+   INSTALL-COST     = 13
+   ANNUAL-COST      = 14
+   COMPONENT-LIFE   = 15
+   MIN-OVHL-INT     = 16
+   MIN-OVHL-COST    = 17
+   MAJ-OVHL-INT     = 19
+   MAJ-OVHL-COST    = 154
+   ..
+
+"BASELINE 1" = BASELINE        
+   DISCOUNT-RATE    = 10
+   ..
+
+
+$ *********************************************************
+$ **                                                     **
+$ **      Floors / Spaces / Walls / Windows / Doors      **
+$ **                                                     **
+$ *********************************************************
+
+SET-DEFAULT FOR SPACE           
+   FLOOR-WEIGHT     = 120
+   ..
+
+SET-DEFAULT FOR EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Perim Wall"
+   LOCATION         = FRONT
+   ..
+
+SET-DEFAULT FOR INTERIOR-WALL   
+   CONSTRUCTION     = "Cons Int Wall"
+   LOCATION         = BACK
+   ..
+
+"Floor 1" = FLOOR           
+   MULTIPLIER       = 1
+   X                = 0
+   Y                = 0
+   Z                = 0
+   AZIMUTH          = 0
+   POLYGON          = "FlrPoly"
+   SHAPE            = POLYGON
+   FLOOR-HEIGHT     = 21
+   SPACE-HEIGHT     = 18
+   ..
+"Flr:1 > Plenum" = SPACE           
+   SHAPE            = POLYGON
+   FLOOR-WEIGHT     = 70
+   ZONE-TYPE        = PLENUM
+   NUMBER-OF-PEOPLE = 0
+   POLYGON          = "FlrPoly"
+   ..
+"Flr:1 Spc:Plnm > North Wall" = EXTERIOR-WALL   
+   LOCATION         = BACK
+   ..
+"Flr:1 Spc:Plnm > South Wall" = EXTERIOR-WALL   
+   ..
+"Flr:1 Spc:Plnm > West Wall" = EXTERIOR-WALL   
+   LOCATION         = LEFT
+   ..
+"Flr:1 Spc:Plnm > East Wall" = EXTERIOR-WALL   
+   LOCATION         = RIGHT
+   ..
+"Flr:1 > North" = SPACE           
+   SHAPE            = POLYGON
+   ZONE-TYPE        = CONDITIONED
+   PEOPLE-SCHEDULE  = "Retail Occupancy"
+   LIGHTING-SCHEDUL = ( "Retail Lighting" )
+   TASK-LIGHT-SCH   = "Retail Lighting"
+   EQUIP-SCHEDULE   = ( "Retail Equipment" )
+   INF-SCHEDULE     = "Ret Infiltration"
+   INF-METHOD       = AIR-CHANGE
+   PEOPLE-HG-LAT    = 190
+   PEOPLE-HG-SENS   = 230
+   LIGHT-TO-SPACE   = 0.85
+   EQUIP-LATENT     = ( 0.02 )
+   EQUIP-SENSIBLE   = ( 0.8 )
+   SOURCE-LATENT    = 0.02
+   SOURCE-SENSIBLE  = 0.5
+   TASK-LT-W/AREA   = 1.2
+   EQUIPMENT-W/AREA = ( 1.5125 )
+   AREA/PERSON      = 200
+   POLYGON          = "LongTrapPoly"
+   LIGHTING-SYSTEM  = ( "Test Lighting System" )
+   NO-OF-LUMINAIRES = ( 40 )
+   WORKPLANE-HEIGHT = 2.555
+   LTG-SPEC-METHOD  = LUMINAIRE-COUNT
+   LOCATION         = BACK
+   ..
+"Flr:1 Spc:N > North Wall" = EXTERIOR-WALL   
+   ..
+"Flr:1 Spc:N Wall:N > Win1" = WINDOW          
+   GLASS-TYPE       = "Lib 1205 - Grey"
+   SHADING-SCHEDULE = "Shading Sched"
+   FRAME-WIDTH      = 0.25
+   X                = 1.5
+   Y                = 3
+   HEIGHT           = 12
+   WIDTH            = {LOCAL("HEIGHT") * 0.667}
+   WIN-SHADE-TYPE   = MOVABLE-INTERIOR
+   MAX-SOLAR-SCH    = "Max Solar Sched"
+   VIS-TRANS-SCH    = "Vis Trans Sched"
+   SUN-CTRL-PROB    = 0.75
+   OPEN-SHADE-SCH   = "Open Shade Sched"
+   FRAME-CONDUCT    = 3.037
+   ..
+"Flr:1 Spc:N Wall:N > Win2" = WINDOW          
+   LIKE = "Flr:1 Spc:N Wall:N > Win1"
+   X                = 16.5
+   ..
+"Flr:1 Spc:N Wall:N > Win3" = WINDOW          
+   LIKE = "Flr:1 Spc:N Wall:N > Win1"
+   X                = 26.5
+   ..
+"Flr:1 Spc:N Wall:N > Win4" = WINDOW          
+   LIKE = "Flr:1 Spc:N Wall:N > Win1"
+   X                = 36.5
+   ..
+"Flr:1 Spc:N Wall:N > Win5" = WINDOW          
+   LIKE = "Flr:1 Spc:N Wall:N > Win1"
+   X                = 55.5
+   ..
+"Flr:1 Spc:N Wall:N > Win6" = WINDOW          
+   LIKE = "Flr:1 Spc:N Wall:N > Win1"
+   X                = 65.5
+   ..
+"Flr:1 Spc:N Wall:N > Win7" = WINDOW          
+   LIKE = "Flr:1 Spc:N Wall:N > Win1"
+   X                = 75.5
+   ..
+"Flr:1 Spc:N Wall:N > Win8" = WINDOW          
+   LIKE = "Flr:1 Spc:N Wall:N > Win1"
+   X                = 90.5
+   ..
+"Flr:1 Spc:N Wall:N > Door1" = DOOR            
+   CONSTRUCTION     = "Cons Door"
+   X                = 11
+   Y                = 0
+   HEIGHT           = 8
+   WIDTH            = 4
+   ..
+"Flr:1 Spc:N Wall:N > Door2" = DOOR            
+   LIKE = "Flr:1 Spc:N Wall:N > Door1"
+   X                = 46
+   ..
+"Flr:1 Spc:N Wall:N > Door3" = DOOR            
+   LIKE = "Flr:1 Spc:N Wall:N > Door1"
+   X                = 50
+   ..
+"Flr:1 Spc:N Wall:N > Door4" = DOOR            
+   LIKE = "Flr:1 Spc:N Wall:N > Door1"
+   X                = 85
+   ..
+"Flr:1 Spc:N > Floor" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Floor"
+   LOCATION         = BOTTOM
+   POLYGON          = "LongTrapFlrPoly"
+   ..
+"Flr:1 Spc:N > West Wall" = INTERIOR-WALL   
+   NEXT-TO          = "Flr:1 > West"
+   CONSTRUCTION     = "Cons Air Wall"
+   LOCATION         = RIGHT
+   ..
+"Flr:1 Spc:N > East Wall" = INTERIOR-WALL   
+   NEXT-TO          = "Flr:1 > East"
+   CONSTRUCTION     = "Cons Air Wall"
+   LOCATION         = LEFT
+   ..
+"Flr:1 Spc:N > South Wall" = INTERIOR-WALL   
+   NEXT-TO          = "Flr:1 > Core"
+   CONSTRUCTION     = "Cons Air Wall"
+   ..
+"Flr:1 Spc:N > Ceiling" = INTERIOR-WALL   
+   NEXT-TO          = "Flr:1 > Plenum"
+   CONSTRUCTION     = "Cons Ceiling"
+   LOCATION         = TOP
+   POLYGON          = "LongTrapPoly"
+   ..
+"Flr:1 > South" = SPACE           
+   LIKE = "Flr:1 > North"
+   LOCATION         = FRONT
+   ..
+"Flr:1 Spc:S > South Wall" = EXTERIOR-WALL   
+   ..
+"Flr:1 Spc:S Wall:S > Win1" = WINDOW          
+   LIKE = "Flr:1 Spc:N Wall:N > Win1"
+   X                = 1.5
+   ..
+"Flr:1 Spc:S Wall:S > Win2" = WINDOW          
+   LIKE = "Flr:1 Spc:N Wall:N > Win1"
+   X                = 16.5
+   ..
+"Flr:1 Spc:S Wall:S > Win3" = WINDOW          
+   LIKE = "Flr:1 Spc:N Wall:N > Win1"
+   X                = 26.5
+   ..
+"Flr:1 Spc:S Wall:S > Win4" = WINDOW          
+   LIKE = "Flr:1 Spc:N Wall:N > Win1"
+   X                = 36.5
+   ..
+"Flr:1 Spc:S Wall:S > Win5" = WINDOW          
+   LIKE = "Flr:1 Spc:N Wall:N > Win1"
+   X                = 55.5
+   ..
+"Flr:1 Spc:S Wall:S > Win6" = WINDOW          
+   LIKE = "Flr:1 Spc:N Wall:N > Win1"
+   X                = 65.5
+   ..
+"Flr:1 Spc:S Wall:S > Win7" = WINDOW          
+   LIKE = "Flr:1 Spc:N Wall:N > Win1"
+   X                = 75.5
+   ..
+"Flr:1 Spc:S Wall:S > Win8" = WINDOW          
+   LIKE = "Flr:1 Spc:N Wall:N > Win1"
+   X                = 90.5
+   ..
+"Flr:1 Spc:S Wall:S > Door1" = DOOR            
+   LIKE = "Flr:1 Spc:N Wall:N > Door1"
+   X                = 11
+   ..
+"Flr:1 Spc:S Wall:S > Door2" = DOOR            
+   LIKE = "Flr:1 Spc:N Wall:N > Door1"
+   X                = 46
+   ..
+"Flr:1 Spc:S Wall:S > Door3" = DOOR            
+   LIKE = "Flr:1 Spc:N Wall:N > Door1"
+   X                = 50
+   ..
+"Flr:1 Spc:S Wall:S > Door4" = DOOR            
+   LIKE = "Flr:1 Spc:N Wall:N > Door1"
+   X                = 85
+   ..
+"Flr:1 Spc:S > Floor" = EXTERIOR-WALL   
+   LIKE = "Flr:1 Spc:N > Floor"
+   ..
+"Flr:1 Spc:S > West Wall" = INTERIOR-WALL   
+   NEXT-TO          = "Flr:1 > West"
+   CONSTRUCTION     = "Cons Air Wall"
+   LOCATION         = LEFT
+   ..
+"Flr:1 Spc:S > East Wall" = INTERIOR-WALL   
+   NEXT-TO          = "Flr:1 > East"
+   CONSTRUCTION     = "Cons Air Wall"
+   LOCATION         = RIGHT
+   ..
+"Flr:1 Spc:S > North Wall" = INTERIOR-WALL   
+   NEXT-TO          = "Flr:1 > Core"
+   CONSTRUCTION     = "Cons Air Wall"
+   ..
+"Flr:1 Spc:S > Ceiling" = INTERIOR-WALL   
+   LIKE = "Flr:1 Spc:N > Ceiling"
+   ..
+"Flr:1 > West" = SPACE           
+   LIKE = "Flr:1 > South"
+   POLYGON          = "ShortTrapPoly"
+   NO-OF-LUMINAIRES = ( 30 )
+   LOCATION         = LEFT
+   ..
+"Flr:1 Spc:W > West Wall" = EXTERIOR-WALL   
+   ..
+"Flr:1 Spc:W Wall:W > Win1" = WINDOW          
+   LIKE = "Flr:1 Spc:N Wall:N > Win1"
+   X                = 1.5
+   ..
+"Flr:1 Spc:W Wall:W > Win2" = WINDOW          
+   LIKE = "Flr:1 Spc:N Wall:N > Win1"
+   X                = 11.5
+   ..
+"Flr:1 Spc:W Wall:W > Win3" = WINDOW          
+   LIKE = "Flr:1 Spc:N Wall:N > Win1"
+   X                = 29
+   ..
+"Flr:1 Spc:W Wall:W > Win4" = WINDOW          
+   LIKE = "Flr:1 Spc:N Wall:N > Win1"
+   X                = 43
+   ..
+"Flr:1 Spc:W Wall:W > Win5" = WINDOW          
+   LIKE = "Flr:1 Spc:N Wall:N > Win1"
+   X                = 60.5
+   ..
+"Flr:1 Spc:W Wall:W > Win6" = WINDOW          
+   LIKE = "Flr:1 Spc:N Wall:N > Win1"
+   X                = 70.5
+   ..
+"Flr:1 Spc:W Wall:W > Door1" = DOOR            
+   LIKE = "Flr:1 Spc:N Wall:N > Door1"
+   X                = 21
+   ..
+"Flr:1 Spc:W Wall:W > Door2" = DOOR            
+   LIKE = "Flr:1 Spc:N Wall:N > Door1"
+   X                = 55
+   ..
+"Flr:1 Spc:W > Floor" = EXTERIOR-WALL   
+   LIKE = "Flr:1 Spc:N > Floor"
+   POLYGON          = "ShortTrapFlrPoly"
+   ..
+"Flr:1 Spc:W > East Wall" = INTERIOR-WALL   
+   NEXT-TO          = "Flr:1 > Core"
+   CONSTRUCTION     = "Cons Air Wall"
+   ..
+"Flr:1 Spc:W > Ceiling" = INTERIOR-WALL   
+   LIKE = "Flr:1 Spc:N > Ceiling"
+   POLYGON          = "ShortTrapPoly"
+   ..
+"Flr:1 > East" = SPACE           
+   LIKE = "Flr:1 > South"
+   POLYGON          = "ShortTrapPoly"
+   NO-OF-LUMINAIRES = ( 30 )
+   LOCATION         = RIGHT
+   ..
+"Flr:1 Spc:E > East Wall" = EXTERIOR-WALL   
+   ..
+"Flr:1 Spc:E Wall:E > Win1" = WINDOW          
+   LIKE = "Flr:1 Spc:N Wall:N > Win1"
+   X                = 1.5
+   ..
+"Flr:1 Spc:E Wall:E > Win2" = WINDOW          
+   LIKE = "Flr:1 Spc:N Wall:N > Win1"
+   X                = 11.5
+   ..
+"Flr:1 Spc:E Wall:E > Win3" = WINDOW          
+   LIKE = "Flr:1 Spc:N Wall:N > Win1"
+   X                = 29
+   ..
+"Flr:1 Spc:E Wall:E > Win4" = WINDOW          
+   LIKE = "Flr:1 Spc:N Wall:N > Win1"
+   X                = 43
+   ..
+"Flr:1 Spc:E Wall:E > Win5" = WINDOW          
+   LIKE = "Flr:1 Spc:N Wall:N > Win1"
+   X                = 60.5
+   ..
+"Flr:1 Spc:E Wall:E > Win6" = WINDOW          
+   LIKE = "Flr:1 Spc:N Wall:N > Win1"
+   X                = 70.5
+   ..
+"Flr:1 Spc:E Wall:E > Door1" = DOOR            
+   LIKE = "Flr:1 Spc:N Wall:N > Door1"
+   X                = 21
+   ..
+"Flr:1 Spc:E Wall:E > Door2" = DOOR            
+   LIKE = "Flr:1 Spc:N Wall:N > Door1"
+   X                = 55
+   ..
+"Flr:1 Spc:E > Floor" = EXTERIOR-WALL   
+   LIKE = "Flr:1 Spc:N > Floor"
+   POLYGON          = "ShortTrapFlrPoly"
+   ..
+"Flr:1 Spc:E > West Wall" = INTERIOR-WALL   
+   NEXT-TO          = "Flr:1 > Core"
+   CONSTRUCTION     = "Cons Air Wall"
+   ..
+"Flr:1 Spc:E > Ceiling" = INTERIOR-WALL   
+   LIKE = "Flr:1 Spc:N > Ceiling"
+   POLYGON          = "ShortTrapPoly"
+   ..
+"Flr:1 > Core" = SPACE           
+   LIKE = "Flr:1 > South"
+   X                = 25
+   Y                = 25
+   Z                = 0
+   TASK-LT-W/AREA   = 1.5
+   POLYGON          = "Interior Polygon"
+   NO-OF-LUMINAIRES = ( 25 )
+   ..
+"Flr 1 Spc:C > Floor" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Floor"
+   LOCATION         = BOTTOM
+   ..
+"Flr:1 Spc:C > Ceiling" = INTERIOR-WALL   
+   LIKE = "Flr:1 Spc:N > Ceiling"
+   POLYGON          = "Interior Polygon"
+   ..
+"Floor 2" = FLOOR           
+   LIKE = "Floor 1"
+   Z                = 21
+   FLOOR-HEIGHT     = 12
+   SPACE-HEIGHT     = 9
+   ..
+"Flr:2 > Plenum" = SPACE           
+   LIKE = "Flr:1 > Plenum"
+   ZONE-TYPE        = PLENUM
+   NUMBER-OF-PEOPLE = 0
+   ..
+"Flr:2 Spc:Plnm > North Wall" = EXTERIOR-WALL   
+   LOCATION         = BACK
+   ..
+"Flr:2 Spc:Plnm > South Wall" = EXTERIOR-WALL   
+   ..
+"Flr:2 Spc:Plnm > West Wall" = EXTERIOR-WALL   
+   LOCATION         = LEFT
+   ..
+"Flr:2 Spc:Plnm > East Wall" = EXTERIOR-WALL   
+   LOCATION         = RIGHT
+   ..
+"Flr:2 > North" = SPACE           
+   SHAPE            = POLYGON
+   ZONE-TYPE        = CONDITIONED
+   PEOPLE-SCHEDULE  = "Office Occupancy"
+   LIGHTING-SCHEDUL = ( "Office Lighting" )
+   EQUIP-SCHEDULE   = ( "Office Equipment" )
+   INF-SCHEDULE     = "Off Infiltration"
+   LIGHTING-TYPE    = ( REC-FLUOR-NV )
+   INF-METHOD       = AIR-CHANGE
+   AIR-CHANGES/HR   = 0.25
+   PEOPLE-HG-LAT    = 190
+   PEOPLE-HG-SENS   = 230
+   LIGHT-TO-SPACE   = 0.85
+   EQUIP-LATENT     = ( 0.02 )
+   EQUIP-SENSIBLE   = ( 0.8 )
+   SOURCE-LATENT    = 0.02
+   SOURCE-SENSIBLE  = 0.5
+   LIGHTING-W/AREA  = ( 1.5 )
+   EQUIPMENT-W/AREA = ( 1.5125 )
+   AREA/PERSON      = 120
+   POLYGON          = "LongTrapPoly"
+   LOCATION         = BACK
+   ..
+"Flr:2 Spc:N > North Wall" = EXTERIOR-WALL   
+   ..
+"Flr:2 Spc:N Wall:N > Win1" = WINDOW          
+   GLASS-TYPE       = "Lib 1205 - Grey"
+   SHADING-SCHEDULE = "Shading Sched"
+   FRAME-WIDTH      = 0.25
+   X                = 4
+   Y                = 3
+   HEIGHT           = 5.5
+   WIDTH            = 8
+   WIN-SHADE-TYPE   = MOVABLE-INTERIOR
+   MAX-SOLAR-SCH    = "Max Solar Sched"
+   VIS-TRANS-SCH    = "Vis Trans Sched"
+   SUN-CTRL-PROB    = 0.75
+   OPEN-SHADE-SCH   = "Open Shade Sched"
+   OVERHANG-A       = 0.25
+   OVERHANG-B       = 0.25
+   OVERHANG-W       = 8.5
+   OVERHANG-D       = 2
+   LEFT-FIN-A       = 0.25
+   LEFT-FIN-B       = 0.25
+   LEFT-FIN-H       = 5.75
+   LEFT-FIN-D       = 2
+   RIGHT-FIN-A      = 0.25
+   RIGHT-FIN-B      = 0.25
+   RIGHT-FIN-H      = 5.75
+   RIGHT-FIN-D      = 2
+   FRAME-CONDUCT    = 3.037
+   ..
+"Flr:2 Spc:N Wall:N > Win2" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 16
+   ..
+"Flr:2 Spc:N Wall:N > Win3" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 28
+   ..
+"Flr:2 Spc:N Wall:N > Win4" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 40
+   ..
+"Flr:2 Spc:N Wall:N > Win5" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 52
+   ..
+"Flr:2 Spc:N Wall:N > Win6" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 64
+   ..
+"Flr:2 Spc:N Wall:N > Win7" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 76
+   ..
+"Flr:2 Spc:N Wall:N > Win8" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 88
+   ..
+"Flr:2 Spc:N > West Wall" = INTERIOR-WALL   
+   NEXT-TO          = "Flr:2 > West"
+   LOCATION         = RIGHT
+   ..
+"Flr:2 Spc:N > East Wall" = INTERIOR-WALL   
+   NEXT-TO          = "Flr:2 > East"
+   LOCATION         = LEFT
+   ..
+"Flr:2 Spc:N > South Wall" = INTERIOR-WALL   
+   NEXT-TO          = "Flr:2 > Core"
+   ..
+"Flr:2 Spc:N > Ceiling" = INTERIOR-WALL   
+   LIKE = "Flr:1 Spc:N > Ceiling"
+   NEXT-TO          = "Flr:2 > Plenum"
+   ..
+"Flr:2 > South" = SPACE           
+   LIKE = "Flr:2 > North"
+   LOCATION         = FRONT
+   ..
+"Flr:2 Spc:S > South Wall" = EXTERIOR-WALL   
+   ..
+"Flr:2 Spc:S Wall:S > Win1" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   ..
+"Flr:2 Spc:S Wall:S > Win2" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 16
+   ..
+"Flr:2 Spc:S Wall:S > Win3" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 28
+   ..
+"Flr:2 Spc:S Wall:S > Win4" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 40
+   ..
+"Flr:2 Spc:S Wall:S > Win5" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 52
+   ..
+"Flr:2 Spc:S Wall:S > Win6" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 64
+   ..
+"Flr:2 Spc:S Wall:S > Win7" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 76
+   ..
+"Flr:2 Spc:S Wall:S > Win8" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 88
+   ..
+"Flr:2 Spc:S > West Wall" = INTERIOR-WALL   
+   NEXT-TO          = "Flr:2 > West"
+   LOCATION         = LEFT
+   ..
+"Flr:2 Spc:S > East Wall" = INTERIOR-WALL   
+   NEXT-TO          = "Flr:2 > East"
+   LOCATION         = RIGHT
+   ..
+"Flr:2 Spc:S > North Wall" = INTERIOR-WALL   
+   NEXT-TO          = "Flr:2 > Core"
+   ..
+"Flr:2 Spc:S > Ceiling" = INTERIOR-WALL   
+   LIKE = "Flr:1 Spc:S > Ceiling"
+   NEXT-TO          = "Flr:2 > Plenum"
+   ..
+"Flr:2 > West" = SPACE           
+   LIKE = "Flr:2 > North"
+   POLYGON          = "ShortTrapPoly"
+   LOCATION         = LEFT
+   ..
+"Flr:2 Spc:W > West Wall" = EXTERIOR-WALL   
+   ..
+"Flr:2 Spc:W Wall:W > Win1" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 6
+   ..
+"Flr:2 Spc:W Wall:W > Win2" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 18
+   ..
+"Flr:2 Spc:W Wall:W > Win3" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 30
+   ..
+"Flr:2 Spc:W Wall:W > Win4" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 42
+   ..
+"Flr:2 Spc:W Wall:W > Win5" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 54
+   ..
+"Flr:2 Spc:W Wall:W > Win6" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 66
+   ..
+"Flr:2 Spc:W > East Wall" = INTERIOR-WALL   
+   NEXT-TO          = "Flr:2 > Core"
+   ..
+"Flr:2 Spc:W > Ceiling" = INTERIOR-WALL   
+   LIKE = "Flr:1 Spc:W > Ceiling"
+   NEXT-TO          = "Flr:2 > Plenum"
+   ..
+"Flr:2 > East" = SPACE           
+   LIKE = "Flr:2 > North"
+   POLYGON          = "ShortTrapPoly"
+   LOCATION         = RIGHT
+   ..
+"Flr:2 Spc:E > East Wall" = EXTERIOR-WALL   
+   ..
+"Flr:2 Spc:E Wall:E > Win1" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 6
+   ..
+"Flr:2 Spc:E Wall:E > Win2" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 18
+   ..
+"Flr:2 Spc:E Wall:E > Win3" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 30
+   ..
+"Flr:2 Spc:E Wall:E > Win4" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 42
+   ..
+"Flr:2 Spc:E Wall:E > Win5" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 54
+   ..
+"Flr:2 Spc:E Wall:E > Win6" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 66
+   ..
+"Flr:2 Spc:E > West Wall" = INTERIOR-WALL   
+   NEXT-TO          = "Flr:2 > Core"
+   ..
+"Flr:2 Spc:E > Ceiling" = INTERIOR-WALL   
+   LIKE = "Flr:1 Spc:E > Ceiling"
+   NEXT-TO          = "Flr:2 > Plenum"
+   ..
+"Flr:2 > Core" = SPACE           
+   LIKE = "Flr:2 > North"
+   X                = 25
+   Y                = 25
+   AZIMUTH          = 0
+   INF-METHOD       = NONE
+   AIR-CHANGES/HR   = 0
+   POLYGON          = "Interior Polygon"
+   ..
+"Flr:2 Spc:C > Ceiling" = INTERIOR-WALL   
+   LIKE = "Flr:1 Spc:C > Ceiling"
+   NEXT-TO          = "Flr:2 > Plenum"
+   ..
+"Floor 3" = FLOOR           
+   LIKE = "Floor 2"
+   Z                = 33
+   ..
+"Flr:3 > Plenum" = SPACE           
+   LIKE = "Flr:2 > Plenum"
+   ..
+"Flr:3 Spc:Plnm > North Wall" = EXTERIOR-WALL   
+   LOCATION         = BACK
+   ..
+"Flr:3 Spc:Plnm > South Wall" = EXTERIOR-WALL   
+   LOCATION         = FRONT
+   ..
+"Flr:3 Spc:Plnm > West Wall" = EXTERIOR-WALL   
+   LOCATION         = LEFT
+   ..
+"Flr:3 Spc:Plnm > East Wall" = EXTERIOR-WALL   
+   LOCATION         = RIGHT
+   ..
+"Flr:3 Spc:Plnm > Roof" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Cons Roof"
+   LOCATION         = TOP
+   ..
+"Flr:3 > North" = SPACE           
+   LIKE = "Flr:2 > North"
+   ..
+"Flr:3 Spc:N > North Wall" = EXTERIOR-WALL   
+   ..
+"Flr:3 Spc:N Wall:N > Win1" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 4
+   ..
+"Flr:3 Spc:N Wall:N > Win2" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 16
+   ..
+"Flr:3 Spc:N Wall:N > Win3" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 28
+   ..
+"Flr:3 Spc:N Wall:N > Win4" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 40
+   ..
+"Flr:3 Spc:N Wall:N > Win5" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 52
+   ..
+"Flr:3 Spc:N Wall:N > Win6" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 64
+   ..
+"Flr:3 Spc:N Wall:N > Win7" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 76
+   ..
+"Flr:3 Spc:N Wall:N > Win8" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 88
+   ..
+"Flr:3 Spc:N > West Wall" = INTERIOR-WALL   
+   NEXT-TO          = "Flr:3 > West"
+   LOCATION         = RIGHT
+   ..
+"Flr:3 Spc:N > East Wall" = INTERIOR-WALL   
+   NEXT-TO          = "Flr:3 > East"
+   LOCATION         = LEFT
+   ..
+"Flr:3 Spc:N > South Wall" = INTERIOR-WALL   
+   NEXT-TO          = "Flr:3 > Core"
+   ..
+"Flr:3 Spc:N > Ceiling" = INTERIOR-WALL   
+   LIKE = "Flr:1 Spc:N > Ceiling"
+   NEXT-TO          = "Flr:3 > Plenum"
+   ..
+"Flr:3 > South" = SPACE           
+   LIKE = "Flr:2 > South"
+   ..
+"Flr:3 Spc:S > South Wall" = EXTERIOR-WALL   
+   ..
+"Flr:3 Spc:S Wall:S > Win1" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 4
+   ..
+"Flr:3 Spc:S Wall:S > Win2" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 16
+   ..
+"Flr:3 Spc:S Wall:S > Win3" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 28
+   ..
+"Flr:3 Spc:S Wall:S > Win4" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 40
+   ..
+"Flr:3 Spc:S Wall:S > Win5" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 52
+   ..
+"Flr:3 Spc:S Wall:S > Win6" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 64
+   ..
+"Flr:3 Spc:S Wall:S > Win7" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 76
+   ..
+"Flr:3 Spc:S Wall:S > Win8" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 88
+   ..
+"Flr:3 Spc:S > West Wall" = INTERIOR-WALL   
+   NEXT-TO          = "Flr:3 > West"
+   LOCATION         = LEFT
+   ..
+"Flr:3 Spc:S > East Wall" = INTERIOR-WALL   
+   NEXT-TO          = "Flr:3 > East"
+   LOCATION         = RIGHT
+   ..
+"Flr:3 Spc:S > North Wall" = INTERIOR-WALL   
+   NEXT-TO          = "Flr:3 > Core"
+   ..
+"Flr:3 Spc:S > Ceiling" = INTERIOR-WALL   
+   LIKE = "Flr:1 Spc:S > Ceiling"
+   NEXT-TO          = "Flr:3 > Plenum"
+   ..
+"Flr:3 > West" = SPACE           
+   LIKE = "Flr:2 > West"
+   ..
+"Flr:3 Spc:W > West Wall" = EXTERIOR-WALL   
+   ..
+"Flr:3 Spc:W Wall:W > Win1" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 6
+   ..
+"Flr:3 Spc:W Wall:W > Win2" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 18
+   ..
+"Flr:3 Spc:W Wall:W > Win3" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 30
+   ..
+"Flr:3 Spc:W Wall:W > Win4" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 42
+   ..
+"Flr:3 Spc:W Wall:W > Win5" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 54
+   ..
+"Flr:3 Spc:W Wall:W > Win6" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 66
+   ..
+"Flr:3 Spc:W > East Wall" = INTERIOR-WALL   
+   NEXT-TO          = "Flr:3 > Core"
+   ..
+"Flr:3 Spc:W > Ceiling" = INTERIOR-WALL   
+   LIKE = "Flr:1 Spc:W > Ceiling"
+   NEXT-TO          = "Flr:3 > Plenum"
+   ..
+"Flr:3 > East" = SPACE           
+   LIKE = "Flr:2 > East"
+   ..
+"Flr:3 Spc:E > East Wall" = EXTERIOR-WALL   
+   ..
+"Flr:3 Spc:E Wall:E > Win1" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 6
+   ..
+"Flr:3 Spc:E Wall:E > Win2" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 18
+   ..
+"Flr:3 Spc:E Wall:E > Win3" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 30
+   ..
+"Flr:3 Spc:E Wall:E > Win4" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 42
+   ..
+"Flr:3 Spc:E Wall:E > Win5" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 54
+   ..
+"Flr:3 Spc:E Wall:E > Win6" = WINDOW          
+   LIKE = "Flr:2 Spc:N Wall:N > Win1"
+   X                = 66
+   ..
+"Flr:3 Spc:E > West Wall" = INTERIOR-WALL   
+   NEXT-TO          = "Flr:3 > Core"
+   ..
+"Flr:3 Spc:E > Ceiling" = INTERIOR-WALL   
+   LIKE = "Flr:1 Spc:E > Ceiling"
+   NEXT-TO          = "Flr:3 > Plenum"
+   ..
+"Flr:3 > Core" = SPACE           
+   LIKE = "Flr:2 > Core"
+   ..
+"Flr:3 Spc:C > Ceiling" = INTERIOR-WALL   
+   LIKE = "Flr:1 Spc:C > Ceiling"
+   NEXT-TO          = "Flr:3 > Plenum"
+   ..
+
+
+$ *********************************************************
+$ **                                                     **
+$ **              Electric & Fuel Meters                 **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$              Electric Meters
+$ ---------------------------------------------------------
+
+"EM1" = ELEC-METER      
+   TYPE             = UTILITY
+   SOURCE-SITE-EFF  = 0.37
+   ..
+
+
+$ ---------------------------------------------------------
+$              Fuel Meters
+$ ---------------------------------------------------------
+
+"FM1" = FUEL-METER      
+   TYPE             = NATURAL-GAS
+   SOURCE-SITE-EFF  = 0.98
+   ..
+
+
+$ ---------------------------------------------------------
+$              Master Meters
+$ ---------------------------------------------------------
+
+"MASTER-METERS 1" = MASTER-METERS   
+   MSTR-ELEC-METER  = "EM1"
+   MSTR-FUEL-METER  = "FM1"
+   ..
+
+
+$ *********************************************************
+$ **                                                     **
+$ **      HVAC Circulation Loops / Plant Equipment       **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$              Curve Fits
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Pumps
+$ ---------------------------------------------------------
+
+"Heating Pump" = PUMP            
+   HEAD-RATIO       = 1.2
+   CAP-CTRL         = TWO-SPEED-PUMP
+   ..
+"Cooling Pump" = PUMP            
+   HEAD-RATIO       = 1.2
+   MOTOR-CLASS      = PREMIUM
+   CAP-CTRL         = VAR-SPEED-PUMP
+   ..
+"Chiller 1 Recirculation Pump" = PUMP            
+   MOTOR-CLASS      = HI-EFF
+   ..
+"Chiller 1 Condenser Pump" = PUMP            
+   MOTOR-CLASS      = HI-EFF
+   ..
+"Chiller 2 Recirculation Pump" = PUMP            
+   LIKE = "Chiller 1 Recirculation Pump"
+   ..
+"Chiller 2 Condenser Pump" = PUMP            
+   LIKE = "Chiller 1 Condenser Pump"
+   ..
+
+
+$ ---------------------------------------------------------
+$              Circulation Loops
+$ ---------------------------------------------------------
+
+"Heating Loop" = CIRCULATION-LOOP
+   TYPE             = HW
+   SUBTYPE          = PRIMARY
+   LOOP-OPERATION   = DEMAND
+   HEAT-SETPT-CTRL  = LOAD-RESET
+   MAX-RESET-T      = 180
+   LOOP-PUMP        = "Heating Pump"
+   LOOP-AUX-KW      = 0.1
+   ..
+"Cooling Loop" = CIRCULATION-LOOP
+   TYPE             = CHW
+   SUBTYPE          = PRIMARY
+   LOOP-OPERATION   = DEMAND
+   LOOP-PUMP        = "Cooling Pump"
+   ..
+"Condenser Loop" = CIRCULATION-LOOP
+   TYPE             = CW
+   SUBTYPE          = PRIMARY
+   ..
+
+
+$ ---------------------------------------------------------
+$              Chillers
+$ ---------------------------------------------------------
+
+"Chiller 1" = CHILLER         
+   TYPE             = ELEC-HERM-REC
+   CHW-LOOP         = "Cooling Loop"
+   CHW-PUMP         = "Chiller 1 Recirculation Pump"
+   CONDENSER-TYPE   = WATER-COOLED
+   CW-LOOP          = "Condenser Loop"
+   CW-PUMP          = "Chiller 1 Condenser Pump"
+   MAX-HTREC        = 0.7
+   ..
+"Chiller 2" = CHILLER         
+   TYPE             = ELEC-HERM-REC
+   CHW-LOOP         = "Cooling Loop"
+   CHW-PUMP         = "Chiller 2 Recirculation Pump"
+   CONDENSER-TYPE   = WATER-COOLED
+   CW-LOOP          = "Condenser Loop"
+   CW-PUMP          = "Chiller 2 Condenser Pump"
+   ..
+
+
+$ ---------------------------------------------------------
+$              Boilers
+$ ---------------------------------------------------------
+
+"Boiler 1" = BOILER          
+   TYPE             = HW-BOILER-W/DRAFT
+   AUX-KW           = 0.1
+   AUX-MODE         = WHEN-ON
+   HW-LOOP          = "Heating Loop"
+   ..
+
+
+$ ---------------------------------------------------------
+$              Domestic Water Heaters
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Heat Rejection
+$ ---------------------------------------------------------
+
+"Cooling Tower 1" = HEAT-REJECTION  
+   TYPE             = OPEN-TWR
+   CW-LOOP          = "Condenser Loop"
+   ..
+
+
+$ ---------------------------------------------------------
+$              Tower Free Cooling
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Electric Generators
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Thermal Storage
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Heat Exchangers
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Ground Loop Heat Exchangers
+$ ---------------------------------------------------------
+
+
+
+$ *********************************************************
+$ **                                                     **
+$ **            Steam & Chilled Water Meters             **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$              Steam Meters
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Chilled Water Meters
+$ ---------------------------------------------------------
+
+
+
+$ *********************************************************
+$ **                                                     **
+$ **               HVAC Systems / Zones                  **
+$ **                                                     **
+$ *********************************************************
+
+"Flr:1 Air Handler" = SYSTEM          
+   TYPE             = DDS
+   HEAT-SOURCE      = HOT-WATER
+   SIZING-RATIO     = 1.2
+   RETURN-AIR-PATH  = PLENUM-ZONES
+   DDS-TYPE         = DUAL-FAN
+   MAX-SUPPLY-T     = 120
+   HEATING-SCHEDULE = "Heat-Off Schedule"
+   HEAT-CONTROL     = COLDEST
+   MIN-SUPPLY-T     = 55
+   COOLING-SCHEDULE = "Cool-Off Schedule"
+   COOL-RESET-SCH   = "Cool Reset Sched"
+   COOL-CONTROL     = RESET
+   ECONO-LIMIT-T    = 65
+   DUCT-AIR-LOSS    = 0.05
+   DUCT-DT          = 2
+   FAN-SCHEDULE     = "Always On Sched"
+   FAN-CONTROL      = SPEED
+   SUPPLY-STATIC    = 5.5
+   RETURN-STATIC    = 1
+   NIGHT-CYCLE-CTRL = CYCLE-ON-ANY
+   HFAN-CONTROL     = INLET
+   HSUPPLY-STATIC   = 2.5
+   RETURN-FAN-CONTR = INLET
+   MIN-FLOW-RATIO   = 0.3
+   HW-VALVE-TYPE    = TWO-WAY
+   HW-LOOP          = "Heating Loop"
+   CHW-VALVE-TYPE   = TWO-WAY
+   CHW-LOOP         = "Cooling Loop"
+   DUCT-ZONE        = "Flr:1 > Plenum Zone"
+   ..
+"Flr:1 > North Zone" = ZONE            
+   TYPE             = CONDITIONED
+   OA-FLOW/PER      = 7
+   DESIGN-HEAT-T    = 70
+   HEAT-TEMP-SCH    = "Heat Schedule"
+   DESIGN-COOL-T    = 76
+   COOL-TEMP-SCH    = "Cool Schedule"
+   THERMOSTAT-TYPE  = REVERSE-ACTION
+   SIZING-OPTION    = ADJUST-LOADS
+   SPACE            = "Flr:1 > North"
+   ..
+"Flr:1 > South Zone" = ZONE            
+   LIKE = "Flr:1 > North Zone"
+   SPACE            = "Flr:1 > South"
+   ..
+"Flr:1 > West Zone" = ZONE            
+   LIKE = "Flr:1 > North Zone"
+   SPACE            = "Flr:1 > West"
+   ..
+"Flr:1 > East Zone" = ZONE            
+   LIKE = "Flr:1 > North Zone"
+   SPACE            = "Flr:1 > East"
+   ..
+"Flr:1 > Core Zone" = ZONE            
+   LIKE = "Flr:1 > North Zone"
+   SPACE            = "Flr:1 > Core"
+   ..
+"Flr:1 > Plenum Zone" = ZONE            
+   TYPE             = PLENUM
+   DESIGN-HEAT-T    = 70
+   DESIGN-COOL-T    = 90
+   SIZING-OPTION    = ADJUST-LOADS
+   SPACE            = "Flr:1 > Plenum"
+   ..
+"Flr:2&3 Air Handler" = SYSTEM          
+   LIKE = "Flr:1 Air Handler"
+   FAN-SCHEDULE     = "Fan Operation"
+   DUCT-ZONE        = "Flr:2 > Plenum Zone"
+   ..
+"Flr:2 > North Zone" = ZONE            
+   LIKE = "Flr:1 > North Zone"
+   SPACE            = "Flr:2 > North"
+   ..
+"Flr:2 > South Zone" = ZONE            
+   LIKE = "Flr:1 > North Zone"
+   SPACE            = "Flr:2 > South"
+   ..
+"Flr:2 > West Zone" = ZONE            
+   LIKE = "Flr:1 > North Zone"
+   SPACE            = "Flr:2 > West"
+   ..
+"Flr:2 > East Zone" = ZONE            
+   LIKE = "Flr:1 > North Zone"
+   SPACE            = "Flr:2 > East"
+   ..
+"Flr:2 > Core Zone" = ZONE            
+   LIKE = "Flr:1 > North Zone"
+   SPACE            = "Flr:2 > Core"
+   ..
+"Flr:3 > North Zone" = ZONE            
+   LIKE = "Flr:1 > North Zone"
+   SPACE            = "Flr:3 > North"
+   ..
+"Flr:3 > South Zone" = ZONE            
+   LIKE = "Flr:1 > North Zone"
+   SPACE            = "Flr:3 > South"
+   ..
+"Flr:3 > West Zone" = ZONE            
+   LIKE = "Flr:1 > North Zone"
+   SPACE            = "Flr:3 > West"
+   ..
+"Flr:3 > East Zone" = ZONE            
+   LIKE = "Flr:1 > North Zone"
+   SPACE            = "Flr:3 > East"
+   ..
+"Flr:3 > Core Zone" = ZONE            
+   LIKE = "Flr:1 > North Zone"
+   SPACE            = "Flr:3 > Core"
+   ..
+"Flr:2 > Plenum Zone" = ZONE            
+   LIKE = "Flr:1 > Plenum Zone"
+   SPACE            = "Flr:2 > Plenum"
+   ..
+"Flr:3 > Plenum Zone" = ZONE            
+   LIKE = "Flr:1 > Plenum Zone"
+   SPACE            = "Flr:3 > Plenum"
+   ..
+
+
+$ *********************************************************
+$ **                                                     **
+$ **                Metering & Misc HVAC                 **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$              Equipment Controls
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Load Management
+$ ---------------------------------------------------------
+
+
+
+$ *********************************************************
+$ **                                                     **
+$ **                    Utility Rates                    **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$              Ratchets
+$ ---------------------------------------------------------
+
+"50% Ratchet" = RATCHET         
+   NUM-MONTHS       = 12
+   FRACTION         = 0.5
+   ..
+
+
+$ ---------------------------------------------------------
+$              Block Charges
+$ ---------------------------------------------------------
+
+"Win OffPeak" = BLOCK-CHARGE    
+   BLOCK-SCH        = "TOU8 Time Sched"
+   SCH-FLAG         = 1.1
+   BLOCK1-TYPE      = ENERGY
+   BLOCKS-1         = ( 1 )
+   COSTS-1          = ( 0.04335 )
+   BLOCK2-TYPE      = DEMAND
+   BLOCKS-2         = ( 1 )
+   COSTS-2          = ( 0.0001 )
+   ..
+"Win MidPeak" = BLOCK-CHARGE    
+   BLOCK-SCH        = "TOU8 Time Sched"
+   SCH-FLAG         = 1.2
+   BLOCK1-TYPE      = ENERGY
+   BLOCKS-1         = ( 1 )
+   COSTS-1          = ( 0.07688 )
+   BLOCK2-TYPE      = DEMAND
+   BLOCKS-2         = ( 1 )
+   COSTS-2          = ( 0.0001 )
+   ..
+"Sum OffPeak" = BLOCK-CHARGE    
+   BLOCK-SCH        = "TOU8 Time Sched"
+   SCH-FLAG         = 2.1
+   BLOCK1-TYPE      = ENERGY
+   BLOCKS-1         = ( 1 )
+   COSTS-1          = ( 0.04077 )
+   BLOCK2-TYPE      = DEMAND
+   BLOCKS-2         = ( 1 )
+   COSTS-2          = ( 0.0001 )
+   ..
+"Sum MidPeak" = BLOCK-CHARGE    
+   BLOCK-SCH        = "TOU8 Time Sched"
+   SCH-FLAG         = 2.2
+   BLOCK1-TYPE      = ENERGY
+   BLOCKS-1         = ( 1 )
+   COSTS-1          = ( 0.06517 )
+   BLOCK2-TYPE      = DEMAND
+   BLOCKS-2         = ( 1 )
+   COSTS-2          = ( 2.35 )
+   ..
+"Sum Peak" = BLOCK-CHARGE    
+   BLOCK-SCH        = "TOU8 Time Sched"
+   SCH-FLAG         = 2.3
+   BLOCK1-TYPE      = ENERGY
+   BLOCKS-1         = ( 1 )
+   COSTS-1          = ( 0.13752 )
+   BLOCK2-TYPE      = DEMAND
+   BLOCKS-2         = ( 1 )
+   COSTS-2          = ( 15.75 )
+   ..
+"24-Hour Demand" = BLOCK-CHARGE    
+   BLOCK-SCH        = "24-Hour On Sched"
+   SCH-FLAG         = 1
+   DEMAND-RATCHETS  = ( "50% Ratchet" )
+   BLOCK1-TYPE      = DEMAND
+   BLOCKS-1         = ( 1 )
+   COSTS-1          = ( 3.15 )
+   ..
+
+
+$ ---------------------------------------------------------
+$              Utility Rates
+$ ---------------------------------------------------------
+
+"TOU-8 Electric Rate" = UTILITY-RATE    
+   TYPE             = ELECTRICITY
+   ELEC-METERS      = ( "EM1" )
+   MONTH-CHGS       = ( 359.45 )
+   BLOCK-CHARGES    = ( "Win OffPeak", "Win MidPeak", "Sum OffPeak", 
+         "Sum MidPeak", "Sum Peak", "24-Hour Demand" )
+   RATE-LIMITATION  = 0.20549
+   ..
+"Gas Rate" = UTILITY-RATE    
+   TYPE             = NATURAL-GAS
+   FUEL-METERS      = ( "FM1" )
+   ENERGY-CHG       = 0.5
+   ..
+
+
+$ *********************************************************
+$ **                                                     **
+$ **                 Output Reporting                    **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$              Loads Non-Hourly Reporting
+$ ---------------------------------------------------------
+
+LOADS-REPORT    
+   VERIFICATION     = ( ALL-VERIFICATION )
+   SUMMARY          = ( ALL-SUMMARY )
+   ..
+
+
+$ ---------------------------------------------------------
+$              Systems Non-Hourly Reporting
+$ ---------------------------------------------------------
+
+SYSTEMS-REPORT  
+   VERIFICATION     = ( ALL-VERIFICATION )
+   SUMMARY          = ( ALL-SUMMARY )
+   ..
+
+
+$ ---------------------------------------------------------
+$              Plant Non-Hourly Reporting
+$ ---------------------------------------------------------
+
+PLANT-REPORT    
+   VERIFICATION     = ( ALL-VERIFICATION )
+   SUMMARY          = ( ALL-SUMMARY )
+   ..
+
+
+$ ---------------------------------------------------------
+$              Economics Non-Hourly Reporting
+$ ---------------------------------------------------------
+
+ECONOMICS-REPORT
+   VERIFICATION     = ( ALL-VERIFICATION )
+   SUMMARY          = ( ALL-SUMMARY )
+   ..
+
+
+$ ---------------------------------------------------------
+$              Hourly Reporting
+$ ---------------------------------------------------------
+
+"RB-RZ1" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "Flr:2 > South Zone"
+   VARIABLE-LIST    = ( 6, 8, 12, 13 )
+   ..
+"RB-RZ2" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "Flr:2 > Core Zone"
+   VARIABLE-LIST    = ( 6, 8, 12, 13 )
+   ..
+"RB-SYS" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "Flr:1 Air Handler"
+   VARIABLE-LIST    = ( 2, 3, 4, 5, 6, 7, 8, 17, 20, 24, 25, 75, 76 )
+   ..
+"Enduse Report Block" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "EM1"
+   VARIABLE-LIST    = ( 1, 3, 4, 5, 7, 8, 20 )
+   ..
+"Fuel Enduse Block" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "FM1"
+   VARIABLE-LIST    = ( 1, 2, 3, 4, 5, 6, 7, 8, 11, 20 )
+   ..
+
+"HR-LOSSES" = HOURLY-REPORT   
+   REPORT-SCHEDULE  = "Always On Sched"
+   REPORT-BLOCK     = ( "RB-RZ1", "RB-RZ2", "RB-SYS" )
+   ..
+"Elec Enduse Report" = HOURLY-REPORT   
+   REPORT-SCHEDULE  = "Always On Sched"
+   REPORT-BLOCK     = ( "Enduse Report Block" )
+   ..
+"Fuel Enduse Report" = HOURLY-REPORT   
+   REPORT-SCHEDULE  = "Always On Sched"
+   REPORT-BLOCK     = ( "Fuel Enduse Block" )
+   ..
+
+
+$ ---------------------------------------------------------
+$              THE END
+$ ---------------------------------------------------------
+
+END ..
+COMPUTE ..
+STOP ..

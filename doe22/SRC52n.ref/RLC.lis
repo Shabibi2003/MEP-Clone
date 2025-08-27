@@ -1,0 +1,170 @@
+      PROGRAM  RPTL                                                             RPTL     2
+C                                                                               RPTL     3
+C              RPTL CREATES THE REPORT LIBRARY                                  RPTL     4
+C                                                                               RPTL     5
+      COMMON/ONE/IDIR(2,200), IFMT(240,60), IA(9999), IAX, LIB,                 -044e5   1
+     1      LINES(60), NVAL(60), NFL(60), ITITLE(20), LRECL, NF                 -062     2
+     2     ,NUNIT(300,60),NTOT(60),NLIT(60)                                     -062     3
+C                                                                               ONE      5
+      DIMENSION IHRDS(12,1500),IHRDR(2,3),LEN(3),BUF(9,65)                      RPTL     7
+     1,IBUF(9,65)                                                               RPTL     8
+      EQUIVALENCE (BUF(1,1),IBUF(1,1))                                          RPTL     9
+C              READS UNIT TABLE FROM BDLKEY                                     RPTL    10
+      COMMON/UNITT/VKONV(300),DUMLOG(4),JUNITT(4,300,2)                         UNITS1   1
+C              ---                                                              RPTL    12
+C                                                                               RPTL    13
+      IKEY   = 3                                                                RPTL    14
+      IOUTPT = 6                                                                RPTL    15
+      INPUT  = 5                                                                RPTL    16
+C              ---                                                              RPTL    17
+      LIB    = 1                                                                RPTL    18
+C>>>>>                                                                          RPTL    19
+      OPEN ( INPUT , FILE='DRLC.cmp' ,  STATUS='old' )                          -051     1
+      OPEN ( IOUTPT, FILE='HDRFIL.out'   ,                                      -051     2
+     1               carriagecontrol='FORTRAN', STATUS='new' )                  -051     3
+      OPEN ( IKEY  , FILE='BDLKEY.BIN', FORM='UNFORMATTED',                     PC22     1
+     1       RECL=550000,RECORDTYPE='variable', STATUS='old')                   PC22     2
+      OPEN ( LIB   , FILE='HDRFIL.bin', FORM='UNFORMATTED',                     -051     4
+     1               RECORDTYPE='variable', STATUS='new' )                      -051     5
+      OPEN ( 4     , FILE='TAPE4.TMP' , FORM='UNFORMATTED')                     PC       7
+      OPEN ( 2     , FILE='TAPE2.TMP' , STATUS='UNKNOWN' )                      PC       8
+C>>>>>                                                                          RPTL    33
+      READ(IKEY) (VKONV(I),((JUNITT(J,I,K),J=1,4),K=1,2),I=1,300)               UNITS1   2
+      NR     = 0                                                                RPTL    35
+      I      = 1                                                                RPTL    36
+      WRITE(IOUTPT,1)                                                           RPTL    37
+    1 FORMAT(1H1)                                                               RPTL    38
+   10 READ(INPUT,1000) (IHRDS(J,I),J=1,12)                                      RPTL    39
+      IU     = IHRDS(12,I)                                                      RPTL    40
+      IF( IU .LT. 1 )  IU = 1                                                   RPTL    41
+      WRITE(IOUTPT,1000) (IHRDS(J,I),J=1,12),((JUNITT(J,IU,K),J=1,4),K=1        RPTL    42
+     1,2)                                                                       RPTL    43
+ 1000 FORMAT(4I3,3A4,1X,4A4,I5,2X,4A4,5X,4A4)                                   RPTL    44
+      IHRDS(12,I)=IABS(IHRDS(12,I))                                             RPTL    45
+      IF(IHRDS(1,I) .EQ. 999)  GOTO 30                                          RPTL    46
+      IF(IHRDS(1,I) .EQ. NR )  GOTO 20                                          RPTL    47
+      NR     = NR + 1                                                           RPTL    48
+      IHRDR(1,NR) = I                                                           RPTL    49
+      IF(NR .NE. 1)  IHRDR(2,NR-1) = I - 1                                      RPTL    50
+   20 I      = I + 1                                                            RPTL    51
+      GOTO 10                                                                   RPTL    52
+   30 IHRDR(2,NR) = I - 1                                                       RPTL    53
+C                                                                               RPTL    54
+C               WRITE FOUR H-R RECS TO FILE                                     RPTL    55
+C                                                                               RPTL    56
+      DO 40 NR=1,3                                                              RPTL    57
+      LEN(NR)=(IHRDR(2,NR)-IHRDR(1,NR)+1)*12                                    RPTL    58
+   40 CONTINUE                                                                  RPTL    59
+      WRITE (LIB) LEN                                                           RPTL    60
+      DO 50 NR=1,3                                                              RPTL    61
+      IB     = IHRDR(1,NR)                                                      RPTL    62
+      IE     = IHRDR(2,NR)                                                      RPTL    63
+      WRITE(LIB)((IHRDS(J,I),J=1,12),I=IB,IE)                                   RPTL    64
+   50 CONTINUE                                                                  RPTL    65
+      IDIR(1,1) = 1                                                             RPTL    66
+      IAX    = 0                                                                RPTL    67
+      LRECL  = 1500                                                             RPTL    68
+      NR     = 0                                                                RPTL    69
+  100 NR     = NR + 1                                                           RPTL    70
+ 1001 FORMAT(20A4)                                                              RPTL    71
+      READ(INPUT, 1001, END=900)  ITITLE                                        RPTL    72
+      NF     = 0                                                                RPTL    73
+  130 NF     = NF + 1                                                           RPTL    74
+      READ(INPUT,1002) NFL(NF),LINES(NF),NLIT(NF),NVAL(NF)                      RPTL    75
+ 1002 FORMAT(4I4)                                                               RPTL    76
+      NTOT(NF)=NVAL(NF)+NLIT(NF)                                                RPTL    77
+      IF(NFL(NF).EQ.0) GO TO 140                                                RPTL    78
+      N      = NFL(NF)*20                                                       RPTL    79
+      READ(INPUT,1001)  (IFMT(I,NF),I=1,N)                                      RPTL    80
+      NT     = NTOT(NF)                                                         RPTL    81
+      IF(NT.EQ.0)GOTO 131                                                       RPTL    82
+      READ(INPUT,1012) (NUNIT(I,NF),I=1,NT)                                     RPTL    83
+ 1012 FORMAT(16I5)                                                              RPTL    84
+  131 CONTINUE                                                                  RPTL    85
+      GO TO 130                                                                 RPTL    86
+  140 NF     = NF - 1                                                           RPTL    87
+      IF(NR.NE.1) IDIR(1,NR) = IDIR(1,NR-1) + IDIR(2,NR-1)                      RPTL    88
+      WRITE(IOUTPT,1003)  ITITLE, NR                                            RPTL    89
+ 1003 FORMAT(1H1, 20A4, 10X,  6HREPORT , I5  ////                               RPTL    90
+     1   5X,48HNUM  LINES  LITRLS  VALUES  FORMAT/CNVFACT      /)               RPTL    91
+      DO 160 I = 1,NF                                                           RPTL    92
+      N      = NFL(I)*20                                                        RPTL    93
+      WRITE(IOUTPT,1004) I,LINES(I),NLIT(I),NVAL(I),(IFMT(J,I),J=1,N)           RPTL    94
+ 1004 FORMAT(1X,I7,3I8,2X,20A4/(32X,20A4))                                      RPTL    95
+      NT     = NTOT(I)                                                          RPTL    96
+      IF(NT.EQ.0)GOTO 160                                                       RPTL    97
+      WRITE(IOUTPT,1014) (NUNIT(J,I),J=1,NT)                                    RPTL    98
+ 1014 FORMAT(32X,16I5)                                                          RPTL    99
+  160 CONTINUE                                                                  RPTL   100
+      CALL PUT(N)                                                               RPTL   101
+      IDIR(2,NR) = N                                                            RPTL   102
+      GO TO 100                                                                 RPTL   103
+  900 NR     = NR - 1                                                           RPTL   104
+      WRITE(4) (IA(I),I=1,LRECL)                                                RPTL   105
+      ENDFILE 4                                                                 RPTL   106
+      WRITE(IOUTPT,1005)  (I, (IDIR(J,I),J=1,2),I=1,NR)                         RPTL   107
+ 1005 FORMAT(25H1REPORT LIBRARY DIRECTORY  ////                                 RPTL   108
+     1   5X,16HREPORT  STARTING  /                                              RPTL   109
+     2   5X,23HNUMBER   INDEX   LENGTH  //                                      RPTL   110
+     3   (I9,I7,I8))                                                            RPTL   111
+      WRITE(LIB) NR, ((IDIR(I,J),I=1,2),J=1,NR)                                 RPTL   112
+      REWIND 4                                                                  RPTL   113
+910   READ(4, END=930) (IA(I), I=1,LRECL)                                       RPTL   114
+      WRITE(LIB) (IA(I),I=1,LRECL)                                              RPTL   115
+      GO TO 910                                                                 RPTL   116
+  930 ENDFILE LIB                                                               RPTL   117
+      END                                                                       RPTL   118
+      SUBROUTINE PUT (N)                                                        PUT      2
+C                                                                               PUT      3
+C              PUT PUTS THE REPORT INTO THE REPORT LIBRARY                      PUT      4
+C                                                                               PUT      5
+      COMMON/ONE/IDIR(2,200), IFMT(240,60), IA(9999), IAX, LIB,                 -044e5   1
+     1      LINES(60), NVAL(60), NFL(60), ITITLE(20), LRECL, NF                 -062     2
+     2     ,NUNIT(300,60),NTOT(60),NLIT(60)                                     -062     3
+C                                                                               ONE      5
+C                                                                               PUT      7
+      IAX0   = IAX                                                              PUT      8
+C              PUT TITLE                                                        PUT      9
+      DO 20 I = 1,20                                                            PUT     10
+   20 IA(IAX + I) = ITITLE(I)                                                   PUT     11
+      IAX    = IAX + 20                                                         PUT     12
+C              PUT NUMBER OF FORMATS                                            PUT     13
+      IAX    = IAX + 1                                                          PUT     14
+      IA(IAX) = NF                                                              PUT     15
+      NG     = 0                                                                PUT     16
+      DO 30 I=1,NF                                                              PUT     17
+   30 NG     = NG+NTOT(I)                                                       PUT     18
+      IAX    = IAX+1                                                            PUT     19
+      IA(IAX)=NG                                                                PUT     20
+      DO 31 J=1,NF                                                              PUT     21
+      KG     = NTOT(J)                                                          PUT     22
+      IF(KG.EQ.0)GO TO 31                                                       PUT     23
+      DO 32 I=1,KG                                                              PUT     24
+      IAX    = IAX+1                                                            PUT     25
+      IA(IAX)=NUNIT(I,J)                                                        PUT     26
+   32 CONTINUE                                                                  PUT     27
+   31 CONTINUE                                                                  PUT     28
+      DO 100 I = 1,NF                                                           PUT     29
+      N      = NFL(I)*20                                                        PUT     30
+      IAX    = IAX + 1                                                          PUT     31
+      IA(IAX)=N+3                                                               PUT     32
+      IAX    = IAX + 1                                                          PUT     33
+      IA(IAX) = LINES(I)                                                        PUT     34
+      IAX    = IAX + 1                                                          PUT     35
+      IA(IAX)=NLIT(I)                                                           PUT     36
+      IAX    = IAX+1                                                            PUT     37
+      IA(IAX) = NVAL(I)                                                         PUT     38
+      DO 50 J = 1,N                                                             PUT     39
+   50 IA(IAX+J) = IFMT(J,I)                                                     PUT     40
+      IAX    = IAX + N                                                          PUT     41
+      IF(IAX.LE.LRECL) GO TO 100                                                PUT     42
+      WRITE(4)(IA(J),J=1,LRECL)                                                 PUT     43
+      IAX0   = IAX0 - LRECL                                                     PUT     44
+      N      = IAX - LRECL                                                      PUT     45
+      DO 70 J = 1,N                                                             PUT     46
+   70 IA(J)  = IA(J+LRECL)                                                      PUT     47
+      IAX    = IAX - LRECL                                                      PUT     48
+  100 CONTINUE                                                                  PUT     49
+      N      = IAX - IAX0                                                       PUT     50
+      RETURN                                                                    PUT     51
+      END                                                                       PUT     52

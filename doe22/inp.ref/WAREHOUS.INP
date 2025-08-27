@@ -1,0 +1,3295 @@
+INPUT ..
+
+
+$ ---------------------------------------------------------
+$              Abort, Diagnostics
+$ ---------------------------------------------------------
+
+
+$ ---------------------------------------------------------
+$              Title, Run Periods, Design Days, Holidays
+$ ---------------------------------------------------------
+
+TITLE           
+   LINE-1           = *Sample Refrigerated Warehouse*
+   ..
+
+
+$ ---------------------------------------------------------
+$              Global Parameters
+$ ---------------------------------------------------------
+
+PARAMETER
+
+"Dock Temp"                 =  40.
+"Dock Supply dT"            =  6.7
+"Dock Inlets dT"            = 10.0
+
+"Freezer A Temp"            = -12.
+"Freezer A Supply dT"       =  6.7
+"Freezer A Inlets dT"       = 10.0
+
+"Freezer B Temp"            =  -5.
+"Freezer B Supply dT"       =  6.7
+"Freezer B Inlets dT"       = 10.0
+
+"Convertible Temp"          =  -5.
+"Convertible Supply dT"     =  6.7
+"Convertible Inlets dT"     = 10.0
+
+"Subfloor Temp"             = 45.
+"Subfloor Heat"             = Electric                          
+"Heat Trace DS"             = "12 hours"                      
+"Freezer Floor Res"         = 30                                
+
+"VSD Fans"                  = No
+"Comp Cap Ctrl"             =Slide                             
+"SST Ctrl"                  =LOAD-RESET                        
+"SCT Ctrl"                  =LOAD-RESET                        
+
+..
+
+
+
+$ ---------------------------------------------------------
+$              Title, Run Periods, Design Days, Holidays
+$ ---------------------------------------------------------
+
+
+"Entire Year" = RUN-PERIOD-PD
+   BEGIN-MONTH      = 1
+   BEGIN-DAY        = 1
+   BEGIN-YEAR       = 1991
+   END-MONTH        = 12
+   END-DAY          = 31
+   END-YEAR         = 1991
+   ..
+
+"Default CDD" = DESIGN-DAY      
+   TYPE             = COOLING
+   DRYBULB-HIGH     = 95
+   DRYBULB-RANGE    = 20
+   WETBULB-AT-HIGH  = 70
+   ..
+"Default HDD" = DESIGN-DAY      
+   TYPE             = HEATING
+   DRYBULB-HIGH     = 40
+   ..
+
+
+
+$ ---------------------------------------------------------
+$              Site and Building Data
+$ ---------------------------------------------------------
+
+"SITE-PARAMETERS 1" = SITE-PARAMETERS 
+   ..
+
+"BUILD-PARAMETERS 1" = BUILD-PARAMETERS
+   ..
+
+
+
+$ ---------------------------------------------------------
+$              Materials / Layers / Constructions
+$ ---------------------------------------------------------
+
+"Polyurethane 2in (IN45)" = MATERIAL        
+   LIBRARY-ENTRY "Polyurethane 2in (IN45)"
+   ..
+"Polyurethane 3in (IN46)" = MATERIAL        
+   LIBRARY-ENTRY "Polyurethane 3in (IN46)"
+   ..
+"Polyurethane 4in (IN47)" = MATERIAL        
+   LIBRARY-ENTRY "Polyurethane 4in (IN47)"
+   ..
+"Polystyrene 3in (IN36)" = MATERIAL        
+   LIBRARY-ENTRY "Polystyrene 3in (IN36)"
+   ..
+"Polystyrene 4in (IN37)" = MATERIAL        
+   LIBRARY-ENTRY "Polystyrene 4in (IN37)"
+   ..
+"Blt-Up Roof 3/8in (BR01)" = MATERIAL        
+   LIBRARY-ENTRY "Blt-Up Roof 3/8in (BR01)"
+   ..
+"Insul Bd 1/2in (IN61)" = MATERIAL        
+   LIBRARY-ENTRY "Insul Bd 1/2in (IN61)"
+   ..
+"Insul Bd 3/4in (IN62)" = MATERIAL        
+   LIBRARY-ENTRY "Insul Bd 3/4in (IN62)"
+   ..
+"Steel Siding (AS01)" = MATERIAL        
+   LIBRARY-ENTRY "Steel Siding (AS01)"
+   ..
+"CMU HW 8in Hollow (CB11)" = MATERIAL        
+   LIBRARY-ENTRY "CMU HW 8in Hollow (CB11)"
+   ..
+"GypBd 5/8in (GP02)" = MATERIAL        
+   LIBRARY-ENTRY "GypBd 5/8in (GP02)"
+   ..
+"Air Lay <3/4in Vert (AL11)" = MATERIAL        
+   LIBRARY-ENTRY "Air Lay <3/4in Vert (AL11)"
+   ..
+"Air Lay <4in Vert (AL21)" = MATERIAL        
+   LIBRARY-ENTRY "Air Lay <4in Vert (AL21)"
+   ..
+"MinWool Batt R7 (IN01)" = MATERIAL        
+   LIBRARY-ENTRY "MinWool Batt R7 (IN01)"
+   ..
+"Conc HW 140lb 3.25in (CC13)" = MATERIAL        
+   LIBRARY-ENTRY "Conc HW 140lb 3.25in (CC13)"
+   ..
+"Conc HW 140lb 6in (CC15)" = MATERIAL        
+   LIBRARY-ENTRY "Conc HW 140lb 6in (CC15)"
+   ..
+"Conc HW 140lb 8in (CC05)" = MATERIAL        
+   LIBRARY-ENTRY "Conc HW 140lb 8in (CC05)"
+   ..
+"Plywd 1/2in (PW03)" = MATERIAL        
+   LIBRARY-ENTRY "Plywd 1/2in (PW03)"
+   ..
+"MinWool Batt R19 (IN03)" = MATERIAL        
+   LIBRARY-ENTRY "MinWool Batt R19 (IN03)"
+   ..
+"Soil 12in" = MATERIAL        
+   LIBRARY-ENTRY "Soil 12in"
+   ..
+
+"Concrete Masonry Lay" = LAYERS          
+   MATERIAL         = ( "CMU HW 8in Hollow (CB11)" )
+   ..
+"Stud Wall Lay" = LAYERS          
+   MATERIAL         = ( "GypBd 5/8in (GP02)", "Air Lay <4in Vert (AL21)", 
+         "GypBd 5/8in (GP02)" )
+   ..
+"Stud Wall - Insulated Lay" = LAYERS          
+   MATERIAL         = ( "GypBd 5/8in (GP02)", "MinWool Batt R7 (IN01)", 
+         "GypBd 5/8in (GP02)" )
+   ..
+"Panel/Gyp Lay" = LAYERS          
+   MATERIAL         = ( "Steel Siding (AS01)", "Polyurethane 2in (IN45)", 
+         "Polyurethane 2in (IN45)", "Air Lay <3/4in Vert (AL11)", 
+         "GypBd 5/8in (GP02)" )
+   ..
+"Freezer Floor Lay" = LAYERS          
+   MATERIAL         = ( "Conc HW 140lb 8in (CC05)", "Polystyrene 3in (IN36)", 
+         "Polystyrene 3in (IN36)" )
+   ..
+"Dock Floor Lay" = LAYERS          
+   MATERIAL         = ( "Conc HW 140lb 8in (CC05)", "Polystyrene 3in (IN36)" )
+   ..
+"Dock Subgrade Lay" = LAYERS          
+   MATERIAL         = ( "Conc HW 140lb 6in (CC15)", "Polystyrene 3in (IN36)", 
+         "Polystyrene 3in (IN36)", "Conc HW 140lb 6in (CC15)" )
+   ..
+"Lounge Roof Lay" = LAYERS          
+   MATERIAL         = ( "Blt-Up Roof 3/8in (BR01)", "Plywd 1/2in (PW03)", 
+         "MinWool Batt R19 (IN03)" )
+   ..
+
+"Stud Wall" = CONSTRUCTION    
+   TYPE             = LAYERS
+   LAYERS           = "Stud Wall Lay"
+   ..
+"Stud Wall - Insulated" = CONSTRUCTION    
+   TYPE             = LAYERS
+   LAYERS           = "Stud Wall - Insulated Lay"
+   ..
+"Concrete Masonry" = CONSTRUCTION    
+   TYPE             = LAYERS
+   LAYERS           = "Concrete Masonry Lay"
+   ..
+"Freezer Roof" = CONSTRUCTION    
+   TYPE             = U-VALUE
+   U-VALUE          = {1./45.6}
+   ..
+"Dock Roof" = CONSTRUCTION    
+   TYPE             = U-VALUE
+   U-VALUE          = {1./22.8}
+   ..
+"Metal Panel - 6" = CONSTRUCTION    
+   TYPE             = U-VALUE
+   U-VALUE          = {1./38.}
+   ..
+"Metal Panel - 5" = CONSTRUCTION    
+   TYPE             = U-VALUE
+   U-VALUE          = {1./38.}
+   ..
+"Metal Panel - 4" = CONSTRUCTION    
+   TYPE             = U-VALUE
+   U-VALUE          = {1./22.8}
+   ..
+"Infil Cons" = CONSTRUCTION    
+   TYPE             = U-VALUE
+   U-VALUE          = 1.08
+   ..
+"Panel/Gyp" = CONSTRUCTION    
+   TYPE             = LAYERS
+   LAYERS           = "Panel/Gyp Lay"
+   ..
+"Dock Door Cons" = CONSTRUCTION    
+   TYPE             = U-VALUE
+   U-VALUE          = 0.067            
+   ..
+"Freezer Floor Cons" = CONSTRUCTION    
+   TYPE             = LAYERS
+   LAYERS           = "Freezer Floor Lay"
+   ..
+"Dock Floor Cons" = CONSTRUCTION    
+   TYPE             = LAYERS
+   LAYERS           = "Dock Floor Lay"
+   ..
+"Lounge Roof Cons" = CONSTRUCTION    
+   TYPE             = LAYERS
+   LAYERS           = "Lounge Roof Lay"
+   ..
+"Dock Subgrade Cons" = CONSTRUCTION    
+   TYPE             = LAYERS
+   LAYERS           = "Dock Subgrade Lay"
+   ..
+
+
+$ ---------------------------------------------------------
+$              Glass Types
+$ ---------------------------------------------------------
+
+"T24 North GTC 1001" = GLASS-TYPE      
+   TYPE             = GLASS-TYPE-CODE
+   GLASS-TYPE-CODE  = "1001"
+   ..
+"T24 Non-north GTC 1203" = GLASS-TYPE      
+   TYPE             = GLASS-TYPE-CODE
+   GLASS-TYPE-CODE  = "1203"
+   ..
+"Actual GTC 2212"   = GLASS-TYPE    $ Just a guess - no info currently
+   TYPE             = GLASS-TYPE-CODE
+   GLASS-TYPE-CODE  = "2213"
+   ..
+
+
+$ ---------------------------------------------------------
+$              Window Layers
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Lamps / Luminaries / Lighting Systems
+$ ---------------------------------------------------------
+
+
+
+
+
+$ ---------------------------------------------------------
+$              Day Schedules
+$ ---------------------------------------------------------
+
+"T24 Heat WD" = DAY-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   VALUES           = ( 55, &D, &D, &D, &D, 63, 68, 70, &D, &D, &D, &D, &D, 
+         &D, &D, &D, &D, &D, &D, 55 )
+   ..
+"T24 Heat Saturday" = DAY-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   VALUES           = ( 55, &D, &D, &D, &D, 63, 68, 70, &D, &D, &D, &D, &D, 
+         &D, 55 )
+   ..
+"South Heat WEH" = DAY-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   VALUES           = ( 55, &D, &D, &D, &D, &D, 68, 70, &D, &D, &D, &D, &D, 
+         &D, &D, 55 )
+   ..
+"T24 Heat WEH" = DAY-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   VALUES           = ( 55, &D, &D, &D, &D, &D, &D, &D, &D, &D, &D, &D, &D, 
+         &D, &D, &D, &D, &D, &D, &D, &D, 55 )
+   ..
+"Heat WD 24hr" = DAY-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   VALUES           = ( 70 )
+   ..
+"T24 Cool WD" = DAY-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   VALUES           = ( 95, &D, &D, &D, &D, 74, &D, &D, &D, &D, &D, &D, &D, 
+         &D, &D, &D, &D, &D, &D, &D, 95 )
+   ..
+"T24 Cool Saturday" = DAY-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   VALUES           = ( 95, &D, &D, &D, &D, 74, &D, &D, &D, &D, &D, &D, &D, 
+         &D, &D, 95 )
+   ..
+"T24 Cool WEH" = DAY-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   VALUES           = ( 95 )
+   ..
+"South Cool WEH" = DAY-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   VALUES           = ( 95, &D, &D, &D, &D, &D, 74, &D, &D, &D, &D, &D, &D, 
+         &D, &D, 95 )
+   ..
+"Actual South Fan WEH" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF
+   VALUES           = ( 0, &D, &D, &D, &D, &D, 1, &D, &D, &D, &D, &D, &D, 
+         &D, &D, 0 )
+   ..
+"Cool WD 24hr" = DAY-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   VALUES           = ( 74 )
+   ..
+"Freezer A Cool DS" = DAY-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   VALUES           = ( "Freezer A Temp" )
+   ..
+"Freezer B Cool DS" = DAY-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   VALUES           = ( "Freezer B Temp" )
+   ..
+"Convertible Cool DS" = DAY-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   VALUES           = ( "Convertible Temp" )
+   ..
+"Dock Cool DS" = DAY-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   VALUES           = ( "Dock Temp" )
+   ..
+"No Heat T DS" = DAY-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   VALUES           = ( -99 )
+   ..
+"Support Cool DS" = DAY-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   VALUES           = ( 80 )
+   ..
+"Always Off DS" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF
+   VALUES           = ( 0 )
+   ..
+"Always On DS" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF
+   VALUES           = ( 1 )
+   ..
+"Always On Equip DS" = DAY-SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   VALUES           = ( 1 )
+   ..
+"24 hours" = DAY-SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   VALUES           = ( 1 )
+   ..
+"12 hours" = DAY-SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   VALUES           = ( 2, &D, &D, &D, &D, &D, 
+                       &D, &D,  0, &D, &D, &D,
+                       &D, &D, &D, &D, &D, &D,
+                       &D, &D,  2, &D, &D, &D )
+   ..
+"6 hours" = DAY-SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   VALUES           = ( 4, &D, &D, &D, &D, &D, 
+                        0, &D, &D, &D, &D, &D,
+                       &D, &D, &D, &D, &D, &D,
+                       &D, &D, &D, &D, &D, &D )  
+   ..
+"T24 Infil WD" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF
+   VALUES           = ( 1, &D, &D, &D, &D, 0, &D, &D, &D, &D, &D, &D, &D, &D, 
+         &D, &D, &D, &D, &D, &D, 1 )
+   ..
+"T24 Infil Saturday" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF
+   VALUES           = ( 1, &D, &D, &D, &D, 0, &D, &D, &D, &D, &D, &D, &D, &D, 
+         &D, 1 )
+   ..
+"T24 Infil WEH" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF
+   VALUES           = ( 1 )
+   ..
+"Forklift DS" = DAY-SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   VALUES           = ( 0.44, 0.44, 0.44, 0.33, 0.11, 0.11, 
+                        0.11, 0.11, 0.11, 0.11, 0.11, 0.11,
+                        0.11, 0.11, 0.11, 0.11, 0.11, 0.33,
+                        0.44, 0.44, 0.44, 0.44, 0.44, 0.44  )
+   ..
+"Forklift Design" = DAY-SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   VALUES           = ( 0.80, 0.80, 0.80, 0.60, 0.20, 0.20,
+                        0.20, 0.20, 0.20, 0.20, 0.20, 0.20,
+                        0.20, 0.20, 0.20, 0.20, 0.20, 0.60,
+                        0.80, 0.80, 0.80, 0.80, 0.80, 0.80   )
+   ..
+"Dock Infil DS" = DAY-SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   VALUES           = ( 0.30, 0.30, 0.30, 0.30, 0.12, 0.12
+                        0.12, 0.12, 0.12, 0.12, 0.12, 0.12,
+                        0.12, 0.12, 0.12, 0.12, 0.12, 0.12,
+                        0.30, 0.30, 0.30, 0.30, 0.30, 0.30 )
+   ..
+"Dock Infil Design" = DAY-SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   VALUES           = ( 1.00, 1.00, 1.00, 1.00, 0.40, 0.40,
+                        0.40, 0.40, 0.40, 0.40, 0.40, 0.40,
+                        0.40, 0.40, 0.40, 0.40, 0.40, 0.40,
+                        1.00, 1.00, 1.00, 1.00, 1.00, 1.00  )
+   ..
+"Freezer Infil DS" = DAY-SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   VALUES           = ( 0.45, 0.45, 0.45, 0.45, 0.18, 0.18,
+                        0.18, 0.18, 0.18, 0.18, 0.18, 0.18,
+                        0.18, 0.18, 0.18, 0.18, 0.18, 0.18,
+                        0.45, 0.45, 0.45, 0.45, 0.45, 0.45  )
+   ..
+"Freezer Infil Design" = DAY-SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   VALUES           = ( 1.00, 1.00, 1.00, 1.00, 0.40, 0.40,
+                        0.40, 0.40, 0.40, 0.40, 0.40, 0.40,
+                        0.40, 0.40, 0.40, 0.40, 0.40, 0.40,
+                        1.00, 1.00, 1.00, 1.00, 1.00, 1.00   )
+   ..
+"Product Pulldown DS" = DAY-SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   VALUES           = ( 0.15)
+   ..
+"Product Pulldown Jun Sep DS" = DAY-SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   VALUES           = ( 0.20)
+   ..
+"Product Pulldown Jul Aug DS" = DAY-SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   VALUES           = ( 0.25)
+   ..
+"Product Pulldown Design" = DAY-SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   VALUES           = ( 1.00)
+   ..
+
+
+$ ---------------------------------------------------------
+$              Week Schedules
+$ ---------------------------------------------------------
+
+"T24 Heat WS" = WEEK-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   DAY-SCHEDULES    = ( "T24 Heat WD", &D, &D, &D, &D, "T24 Heat Saturday", 
+         "T24 Heat WEH" )
+   ..
+"Actual North Heat WS" = WEEK-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   DAY-SCHEDULES    = ( "Heat WD 24hr", &D, &D, &D, &D, "Heat WD 24hr", 
+         "Heat WD 24hr" )
+   ..
+"Actual South Heat WS" = WEEK-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   DAY-SCHEDULES    = ( "Heat WD 24hr", &D, &D, &D, &D, "South Heat WEH", 
+          "South Heat WEH", "South Heat WEH","Heat WD 24hr" )
+   ..
+"T24 Cool WS" = WEEK-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   DAY-SCHEDULES    = ( "T24 Cool WD", &D, &D, &D, &D, "T24 Cool Saturday", 
+         "T24 Cool WEH" )
+   ..
+"Actual North Cool WS" = WEEK-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   DAY-SCHEDULES    = ( "Cool WD 24hr", &D, &D, &D, &D, "Cool WD 24hr", 
+         "Cool WD 24hr" )
+   ..
+"Actual South Cool WS" = WEEK-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   DAY-SCHEDULES    = ( "Cool WD 24hr", &D, &D, &D, &D, "South Cool WEH", 
+          "South Cool WEH", "South Cool WEH","Cool WD 24hr" )
+   ..
+"Actual South Fan WS" = WEEK-SCHEDULE-PD
+   TYPE             = ON/OFF
+   DAY-SCHEDULES    = ("Always On DS", &D, &D, &D, &D, "Actual South Fan WEH", 
+          "Actual South Fan WEH", "Actual South Fan WEH","Always On DS" )
+   ..
+"Freezer A Cool WS" = WEEK-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   DAY-SCHEDULES    = ( "Freezer A Cool DS", &D, &D, &D, &D, 
+         "Freezer A Cool DS" )
+   ..
+"Freezer B Cool WS" = WEEK-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   DAY-SCHEDULES    = ( "Freezer B Cool DS", &D, &D, &D, &D, 
+         "Freezer B Cool DS" )
+   ..
+"Convertible Cool WS" = WEEK-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   DAY-SCHEDULES    = ( "Convertible Cool DS", &D, &D, &D, &D, 
+         "Convertible Cool DS" )
+   ..
+"Dock Cool WS" = WEEK-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   DAY-SCHEDULES    = ( "Dock Cool DS", &D, &D, &D, &D, "Dock Cool DS" )
+   ..
+"Support Cool WS" = WEEK-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   DAY-SCHEDULES    = ( "Support Cool DS", &D, &D, &D, &D, "Support Cool DS" )
+   ..
+"No Heat T WS" = WEEK-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   DAY-SCHEDULES    = ( "No Heat T DS", &D, &D, &D, &D, "No Heat T DS" )
+   ..
+"Always Off WS" = WEEK-SCHEDULE-PD
+   TYPE             = ON/OFF
+   DAY-SCHEDULES    = ( "Always Off DS", &D, &D, &D, &D, "Always Off DS" )
+   ..
+"Always On WS" = WEEK-SCHEDULE-PD
+   TYPE             = ON/OFF
+   DAY-SCHEDULES    = ( "Always On DS", &D, &D, &D, &D, "Always On DS" )
+   ..
+"Always On Equip WS" = WEEK-SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   DAY-SCHEDULES    = ( "Always On Equip DS", &D, &D, &D, &D,
+                        "Always On Equip DS" )
+   ..
+"Heat Trace WS" = WEEK-SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   DAY-SCHEDULES    = ( "Heat Trace DS", &D, &D, &D, &D, "Heat Trace DS" )
+   ..
+"T24 Day Infil WK" = WEEK-SCHEDULE-PD
+   TYPE             = ON/OFF
+   DAY-SCHEDULES    = ( "T24 Infil WD", &D, &D, &D, &D, "T24 Infil Saturday", 
+         "T24 Infil WEH" )
+   ..
+"Dock Infil WS" = WEEK-SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   DAY-SCHEDULES    = ( "Dock Infil DS", &D, &D, &D, &D, &D, &D,
+                         "Dock Infil Design", &D )
+   ..
+"Forklift WS" = WEEK-SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   DAY-SCHEDULES    = ( "Forklift DS", &D, &D, &D, &D, &D, &D,
+                         "Forklift Design", &D )
+   ..
+"Freezer Infil WS" = WEEK-SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   DAY-SCHEDULES    = ( "Freezer Infil DS", &D, &D, &D, &D, &D, &D,
+                         "Freezer Infil Design", &D )
+   ..
+"Product Pulldown WS" = WEEK-SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   DAY-SCHEDULES    = ( "Product Pulldown DS", &D, &D, &D, &D, &D, &D,
+                         "Product Pulldown Design", &D )
+   ..
+"Product Pulldown Jun Sep WS" = WEEK-SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   DAY-SCHEDULES    = ( "Product Pulldown Jun Sep DS", &D, &D, &D, &D, &D, &D,
+                         "Product Pulldown Design", &D )
+   ..
+"Product Pulldown Jul Aug WS" = WEEK-SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   DAY-SCHEDULES    = ( "Product Pulldown Jul Aug DS", &D, &D, &D, &D, &D, &D,
+                         "Product Pulldown Design", &D )
+   ..
+
+$ ---------------------------------------------------------
+$              Annual Schedules
+$ ---------------------------------------------------------
+
+"T24 DAYTIME EQP" = SCHEDULE-PD
+   LIBRARY-ENTRY "T24 DAYTIME EQP"
+   ..
+"T24 Heat Sch" = SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "T24 Heat WS" )
+   ..
+"Actual North Heat Sch" = SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Actual North Heat WS" )
+   ..
+"Actual South Heat Sch" = SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Actual South Heat WS" )
+   ..
+"T24 Cool Sch" = SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "T24 Cool WS" )
+   ..
+"Actual North Cool Sch" = SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Actual North Cool WS" )
+   ..
+"Actual South Cool Sch" = SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Actual South Cool WS" )
+   ..
+"Actual South Fan Sch" = SCHEDULE-PD
+   TYPE             = ON/OFF
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Actual South Fan WS" )
+   ..
+"Freezer A Cool Sch" = SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Freezer A Cool WS" )
+   ..
+"Freezer B Cool Sch" = SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Freezer B Cool WS" )
+   ..
+"Convertible Cool Sch" = SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Convertible Cool WS" )
+   ..
+"Dock Cool Sch" = SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Dock Cool WS" )
+   ..
+"No Heat T Sch" = SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "No Heat T WS" )
+   ..
+"Support Cool Sch" = SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Support Cool WS" )
+   ..
+"Always Off Sch" = SCHEDULE-PD
+   TYPE             = ON/OFF
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Always Off WS" )
+   ..
+"Always On Sch" = SCHEDULE-PD
+   TYPE             = ON/OFF
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Always On WS" )
+   ..
+"Always On Equip Sch" = SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Always On Equip WS" )
+   ..
+"Heat Trace Sch" = SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Heat Trace WS" )
+   ..
+"T24 DAYTIME LTG" = SCHEDULE-PD
+   LIBRARY-ENTRY "T24 DAYTIME LTG"
+   ..
+"T24 DAYTIME OCC" = SCHEDULE-PD
+   LIBRARY-ENTRY "T24 DAYTIME OCC"
+   ..
+"T24 DAYTIME FAN" = SCHEDULE-PD
+   LIBRARY-ENTRY "T24 DAYTIME FAN"
+   ..
+
+"T24 Day Infiltration" = SCHEDULE-PD
+   LIBRARY-ENTRY "T24 DAYTIME FAN"
+   WEEK-SCHEDULES   = ( "T24 Day Infil WK" )
+   ..
+"OFFICE DHW" = SCHEDULE-PD
+   LIBRARY-ENTRY "OFFICE DHW"
+   ..
+"Forklift Sch" = SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Forklift WS" )
+   ..
+"Dock Infil Sch" = SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Dock Infil WS" )
+   ..
+"Freezer Infil Sch" = SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Freezer Infil WS" )
+   ..
+"Product Pulldown Sch" = SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   MONTH            = (  5,  6,  8,  9, 12  )
+   DAY              = ( 31, 30, 31, 30, 31 )
+   WEEK-SCHEDULES   = ( "Product Pulldown WS", 
+                        "Product Pulldown Jun Sep WS",
+                        "Product Pulldown Jul Aug WS",
+                        "Product Pulldown Jun Sep WS", 
+                        "Product Pulldown WS")
+   ..
+
+$ ---------------------------------------------------------
+$              Polygons
+$ ---------------------------------------------------------
+
+"Main Floor Poly" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 486, 0 )
+   V3               = ( 486, -15 )
+   V4               = ( 521, -15 )
+   V5               = ( 521, -27 )
+   V6               = ( 550, -27 )
+   V7               = ( 550, -15 )
+   V8               = ( 550, 40.5 )
+   V9               = ( 550, 116.5 )
+   V10              = ( 550, 215 )
+   V11              = ( 550, 231 )
+   V12              = ( 550, 380 )
+   V13              = ( 550, 396 )
+   V14              = ( 550, 461 )
+   V15              = ( 550, 473 )
+   V16              = ( 521, 473 )
+   V17              = ( 521, 461 )
+   V18              = ( 486, 461 )
+   V19              = ( 486, 440 )
+   V20              = ( 0, 440 )
+   V21              = ( 0, 380 )
+   V22              = ( 0, 210 )
+   V23              = ( 0, 40 )
+   ..
+"South Dock Poly" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 486, 0 )
+   V3               = ( 486, 25 )
+   V4               = ( 550, 25 )
+   V5               = ( 550, 40 )
+   V6               = ( 506, 40 )
+   V7               = ( 0, 40 )
+   ..
+"South Office Poly" = POLYGON         
+   V1               = ( 486, -15 )
+   V2               = ( 550, -15 )
+   V3               = ( 550, 25 )
+   V4               = ( 486, 25 )
+   V5               = ( 486, 0 )
+   ..
+"South Stair Poly" = POLYGON         
+   V1               = ( 521, -15 )
+   V2               = ( 521, -27 )
+   V3               = ( 550, -27 )
+   V4               = ( 550, -15 )
+   ..
+"South Forklift Poly" = POLYGON         
+   V1               = ( 506, 40 )
+   V2               = ( 550, 40 )
+   V3               = ( 550, 117 )
+   V4               = ( 518, 117 )
+   V5               = ( 518, 255 )
+   V6               = ( 506, 255 )
+   ..
+"Machine Room Poly" = POLYGON         
+   V1               = ( 518, 117 )
+   V2               = ( 550, 117 )
+   V3               = ( 550, 204.5 )
+   V4               = ( 533, 204.5 )
+   V5               = ( 533, 217 )
+   V6               = ( 518, 217 )
+   ..
+"North Forklift Poly" = POLYGON         
+   V1               = ( 534, 255 )
+   V2               = ( 534, 270 )
+   V3               = ( 550, 270 )
+   V4               = ( 550, 380 )
+   V5               = ( 506, 380 )
+   V6               = ( 506, 255 )
+   ..
+"North Dock Polygon" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 506, 0 )
+   V3               = ( 550, 0 )
+   V4               = ( 550, 16 )
+   V5               = ( 486, 16 )
+   V6               = ( 486, 60 )
+   V7               = ( 0, 60 )
+   ..
+"North Office Polygon" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 65, -9.15527e-005 )
+   V3               = ( 65, 64 )
+   V4               = ( 44, 64 )
+   V5               = ( 0, 64 )
+   ..
+"North Stair Poly" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 29, 0 )
+   V3               = ( 29, 12 )
+   V4               = ( 0, 12 )
+   ..
+"Freezer A Poly" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 126.5, 0 )
+   V3               = ( 126.5, 170 )
+   V4               = ( 0, 170 )
+   ..
+"Freezer B Poly" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 379.5, 0 )
+   V3               = ( 379.5, 170 )
+   V4               = ( 0, 170 )
+   ..
+"Convertible Poly" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 506, 0 )
+   V3               = ( 506, 170 )
+   V4               = ( 126.5, 170 )
+   V5               = ( 0, 170 )
+   ..
+"Freezer A Poly - Mirror" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 170, 0 )
+   V3               = ( 170, 126.5 )
+   V4               = ( 0, 126.5 )
+   ..
+"Freezer B Poly - Mirror" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 170, 0 )
+   V3               = ( 170, 379.5 )
+   V4               = ( 0, 379.5 )
+   ..
+"Convertible Poly - Mirror" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 170, 0 )
+   V3               = ( 170, 126.5 )
+   V4               = ( 170, 506 )
+   V5               = ( 0, 506 )
+   ..
+"North Dock Polygon - Mirror" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 60, 0 )
+   V3               = ( 60, 486 )
+   V4               = ( 16, 486 )
+   V5               = ( 16, 550 )
+   V6               = ( 0, 550 )
+   V7               = ( 0, 506 )
+   ..
+"South Dock Poly - Mirror" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 40, 0 )
+   V3               = ( 40, 506 )
+   V4               = ( 40, 550 )
+   V5               = ( 25, 550 )
+   V6               = ( 25, 486 )
+   V7               = ( 0, 486 )
+   ..
+"South Forklift Poly - Mirror" = POLYGON         
+   V1               = ( 40, 506 )
+   V2               = ( 231, 506 )
+   V3               = ( 231, 518 )
+   V4               = ( 116.5, 518 )
+   V5               = ( 116.5, 550 )
+   V6               = ( 40, 550 )
+   ..
+"Machine Room Poly - Mirror" = POLYGON         
+   V1               = ( 116.5, 518 )
+   V2               = ( 215, 518 )
+   V3               = ( 215, 550 )
+   V4               = ( 116.5, 550 )
+   ..
+"North Forklift Poly - Mirror" = POLYGON         
+   V1               = ( 231, 550 )
+   V2               = ( 231, 506 )
+   V3               = ( 380, 506 )
+   V4               = ( 380, 550 )
+   ..
+"Mirror Poly 1" = POLYGON         
+   V1               = ( 116.5, 518 )
+   V2               = ( 204.5, 518 )
+   V3               = ( 204.5, 550 )
+   V4               = ( 116.5, 550 )
+   ..
+"Mirror Poly 2" = POLYGON         
+   V1               = ( 204.5, 518 )
+   V2               = ( 231, 518 )
+   V3               = ( 231, 550 )
+   V4               = ( 204.5, 550 )
+   ..
+"Mirror Poly 3" = POLYGON         
+   V1               = ( 204.5, 518 )
+   V2               = ( 231, 518 )
+   V3               = ( 231, 534 )
+   V4               = ( 246, 534 )
+   V5               = ( 246, 550 )
+   V6               = ( 204.5, 550 )
+   ..
+"Mirror Poly 4" = POLYGON         
+   V1               = ( 40, 506 )
+   V2               = ( 255, 506 )
+   V3               = ( 255, 518 )
+   V4               = ( 116.5, 518 )
+   V5               = ( 116.5, 550 )
+   V6               = ( 40, 550 )
+   ..
+"Mirror Poly 5" = POLYGON         
+   V1               = ( 204.5, 518 )
+   V2               = ( 255, 518 )
+   V3               = ( 255, 534 )
+   V4               = ( 270, 534 )
+   V5               = ( 270, 550 )
+   V6               = ( 204.5, 550 )
+   ..
+"Mirror Poly 6" = POLYGON         
+   V1               = ( 255, 550 )
+   V2               = ( 255, 506 )
+   V3               = ( 380, 506 )
+   V4               = ( 380, 550 )
+   ..
+"Mirror Poly 7" = POLYGON         
+   V1               = ( 255, 534 )
+   V2               = ( 255, 506 )
+   V3               = ( 380, 506 )
+   V4               = ( 380, 550 )
+   V5               = ( 270, 550 )
+   V6               = ( 270, 534 )
+   ..
+"Mirror Poly 8" = POLYGON         
+   V1               = ( 40, 506 )
+   V2               = ( 255, 506 )
+   V3               = ( 255, 518 )
+   V4               = ( 117, 518 )
+   V5               = ( 117, 550 )
+   V6               = ( 40, 550 )
+   ..
+"Mirror Poly 9" = POLYGON         
+   V1               = ( 117, 518 )
+   V2               = ( 204.5, 518 )
+   V3               = ( 204.5, 550 )
+   V4               = ( 117, 550 )
+   ..
+"Mirror Poly 10" = POLYGON         
+   V1               = ( 117, 518 )
+   V2               = ( 217, 518 )
+   V3               = ( 217, 533 )
+   V4               = ( 204.5, 533 )
+   V5               = ( 204.5, 550 )
+   V6               = ( 117, 550 )
+   ..
+"Control Polygon" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 12.5, -1.52588e-005 )
+   V3               = ( 12.5, 17 )
+   V4               = ( 0, 17 )
+   ..
+"Electric Polygon" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 22, -3.05176e-005 )
+   V3               = ( 22, 32 )
+   V4               = ( 0, 32 )
+   ..
+"Maintenance Poly" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 31, -4.57764e-005 )
+   V3               = ( 31, 17 )
+   V4               = ( 16, 17 )
+   V5               = ( 16, 32 )
+   V6               = ( 0, 32 )
+   ..
+"Control Polygon - Mirror" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 17, 0 )
+   V3               = ( 17, 12.5 )
+   V4               = ( -1.52588e-005, 12.5 )
+   ..
+"Electric Polygon - Mirror" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 32, 0 )
+   V3               = ( 32, 22 )
+   V4               = ( -3.05176e-005, 22 )
+   ..
+"Maintenance Poly - Mirror" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 32, 0 )
+   V3               = ( 32, 16 )
+   V4               = ( 17, 16 )
+   V5               = ( 17, 31 )
+   V6               = ( -4.57764e-005, 31 )
+   ..
+
+
+$ ---------------------------------------------------------
+$              Wall Parameters
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Fixed and Building Shades
+$ ---------------------------------------------------------
+
+
+
+
+$ ---------------------------------------------------------
+$              Misc Cost Related Objects
+$ ---------------------------------------------------------
+
+
+
+"BASELINE 1" = BASELINE        
+   ..
+
+
+$ *********************************************************
+$ **                                                     **
+$ **      Floors / Spaces / Walls / Windows / Doors      **
+$ **                                                     **
+$ *********************************************************
+
+"Main Floor" = FLOOR           
+   POLYGON          = "Main Floor Poly"
+   SHAPE            = POLYGON
+   FLOOR-HEIGHT     = 12
+   ..
+"South Dock" = SPACE           
+   HEIGHT           = 26
+   SHAPE            = POLYGON
+   FLOOR-WEIGHT     = 130
+   TEMPERATURE      = ( "Dock Temp" )
+   PEOPLE-SCHEDULE  = "T24 DAYTIME OCC"
+   LIGHTING-SCHEDUL = ("T24 DAYTIME LTG" )
+   EQUIP-SCHEDULE   = ("T24 DAYTIME EQP" )
+   PEOPLE-HEAT-GAIN = 1450.
+   PEOPLE-HG-SENS   = 580.
+   PEOPLE-HG-LAT    = 870.
+   LIGHTING-W/AREA  = (0.6 )
+   EQUIPMENT-W/AREA = (0.43)
+   NUMBER-OF-PEOPLE = 12.
+   POLYGON          = "South Dock Poly"
+   LOCATION         = FLOOR-V1
+   ..
+"South Dock West" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 4"
+   LOCATION         = SPACE-V7
+   ..
+"South Dock South" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 4"
+   LOCATION         = SPACE-V1
+   ..
+"Dock Door 9x8" = DOOR            
+   CONSTRUCTION     = "Dock Door Cons"
+   INF-COEF         = 3
+   X                = 20
+   HEIGHT           = 9
+   WIDTH            = 8
+   ..
+"Door 2" = DOOR            
+   LIKE = "Dock Door 9x8"
+   X                = 36
+   ..
+"Door 3" = DOOR            
+   LIKE = "Dock Door 9x8"
+   X                = 52
+   ..
+"Door 4" = DOOR            
+   LIKE = "Dock Door 9x8"
+   X                = 68
+   ..
+"Door 5" = DOOR            
+   LIKE = "Dock Door 9x8"
+   X                = 85
+   ..
+"Door 6" = DOOR            
+   LIKE = "Dock Door 9x8"
+   X                = 100
+   ..
+"Door 7" = DOOR            
+   LIKE = "Dock Door 9x8"
+   X                = 153
+   ..
+"Door 8" = DOOR            
+   LIKE = "Dock Door 9x8"
+   X                = 168
+   ..
+"Door 9" = DOOR            
+   LIKE = "Dock Door 9x8"
+   X                = 185
+   ..
+"Door 10" = DOOR            
+   LIKE = "Dock Door 9x8"
+   X                = 200
+   ..
+"Door 11" = DOOR            
+   LIKE = "Dock Door 9x8"
+   X                = 262
+   ..
+"Door 12" = DOOR            
+   LIKE = "Dock Door 9x8"
+   X                = 278
+   ..
+"Door 13" = DOOR            
+   LIKE = "Dock Door 9x8"
+   X                = 294
+   ..
+"Door 14" = DOOR            
+   LIKE = "Dock Door 9x8"
+   X                = 310
+   ..
+"Door 15" = DOOR            
+   LIKE = "Dock Door 9x8"
+   X                = 326
+   ..
+"Door 16" = DOOR            
+   LIKE = "Dock Door 9x8"
+   X                = 380
+   ..
+"Door 17" = DOOR            
+   LIKE = "Dock Door 9x8"
+   X                = 395
+   ..
+"Door 18" = DOOR            
+   LIKE = "Dock Door 9x8"
+   X                = 412
+   ..
+"Door 19" = DOOR            
+   LIKE = "Dock Door 9x8"
+   X                = 428
+   ..
+"Door 20" = DOOR            
+   LIKE = "Dock Door 9x8"
+   X                = 444
+   ..
+"Dock Door 13x8" = DOOR            
+   LIKE = "Dock Door 9x8"
+   X                = 238
+   HEIGHT           = 13
+   ..
+"South Dock East" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 4"
+   LOCATION         = SPACE-V4
+   ..
+"South Dock Roof" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Dock Roof"
+   LOCATION         = TOP
+   ..
+"Subgrade EW" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Dock Subgrade Cons"
+   Z                = -6
+   HEIGHT           = 6
+   LOCATION         = SPACE-V1
+   ..
+"Subgrade West EW" = EXTERIOR-WALL   
+   LIKE = "Subgrade EW"
+   LOCATION         = SPACE-V7
+   ..
+"Interior Wall 12" = INTERIOR-WALL   
+   NEXT-TO          = "South Forklift"
+   CONSTRUCTION     = "Metal Panel - 4"
+   LOCATION         = SPACE-V5
+   ..
+"South Dock Floor" = UNDERGROUND-WALL
+   CONSTRUCTION     = "Dock Floor Cons"
+   LOCATION         = BOTTOM
+   ..
+"South Office" = SPACE           
+   HEIGHT           = 13
+   SHAPE            = POLYGON
+   FLOOR-WEIGHT     = 70
+   PEOPLE-SCHEDULE  = "T24 DAYTIME OCC"
+   LIGHTING-SCHEDUL = ( "T24 DAYTIME LTG" )
+   EQUIP-SCHEDULE   = ( "T24 DAYTIME EQP" )
+   INF-METHOD       = AIR-CHANGE
+   AIR-CHANGES/HR   = 0.25
+   PEOPLE-HG-LAT    = 206
+   PEOPLE-HG-SENS   = 250
+   PEOPLE-HEAT-GAIN = 456
+   LIGHTING-W/AREA  = ( 1.2 )
+   EQUIPMENT-W/AREA = ( 1.34 )
+   POLYGON          = "South Office Poly"
+   AREA/PERSON      = 100
+   ..
+"South Office South" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Panel/Gyp"
+   LOCATION         = SPACE-V1
+   ..
+"Window A" = WINDOW          
+   GLASS-TYPE       = "Actual GTC 2212"     $"T24 Non-north GTC 1203"
+   X                = 3
+   Y                = 2.5
+   HEIGHT           = 4
+   WIDTH            = 6
+   ..
+"Window 3" = WINDOW          
+   LIKE = "Window A"
+   GLASS-TYPE       = "Actual GTC 2212"     $"T24 North GTC 1001"
+   X                = 12.5
+   Y                = 2.5
+   HEIGHT           = 4
+   WIDTH            = 6
+   ..
+"Window 4" = WINDOW          
+   LIKE = "Window A"
+   GLASS-TYPE       = "Actual GTC 2212"     $"T24 North GTC 1001"
+   X                = 22
+   Y                = 2.5
+   HEIGHT           = 4
+   WIDTH            = 6
+   ..
+"South Office West" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Panel/Gyp"
+   LOCATION         = SPACE-V5
+   ..
+"Window C" = WINDOW          
+   GLASS-TYPE       = "Actual GTC 2212"     $"T24 North GTC 1001"
+   X                = 2
+   Y                = 2.5
+   HEIGHT           = 4
+   WIDTH            = 4
+   ..
+"South Office East" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Panel/Gyp"
+   LOCATION         = SPACE-V2
+   ..
+"Window 5" = WINDOW          
+   LIKE = "Window C"
+   X                = 8
+   ..
+"Window 6" = WINDOW          
+   LIKE = "Window A"
+   X                = 23
+   ..
+"Window 7" = WINDOW          
+   LIKE = "Window A"
+   X                = 32
+   ..
+"Interior Wall 8" = INTERIOR-WALL   
+   NEXT-TO          = "South Dock"
+   CONSTRUCTION     = "Panel/Gyp"
+   LOCATION         = SPACE-V4
+   ..
+"Window 39" = WINDOW          
+   GLASS-TYPE       = "Actual GTC 2212"     $"T24 North GTC 1001"
+   X                = 3
+   Y                = 2.5
+   HEIGHT           = 4
+   WIDTH            = 6
+   ..
+"Window 40" = WINDOW          
+   GLASS-TYPE       = "Actual GTC 2212"     $"T24 North GTC 1001"
+   X                = 12
+   Y                = 2.5
+   HEIGHT           = 4
+   WIDTH            = 6
+   ..
+"Interior Wall 9" = INTERIOR-WALL   
+   NEXT-TO          = "South Dock"
+   CONSTRUCTION     = "Panel/Gyp"
+   LOCATION         = SPACE-V3
+   ..
+"Window 43" = WINDOW          
+   GLASS-TYPE       = "Actual GTC 2212"     $"T24 North GTC 1001"
+   X                = 11
+   Y                = 2.5
+   HEIGHT           = 4
+   WIDTH            = 6
+   ..
+"Window 44" = WINDOW          
+   GLASS-TYPE       = "Actual GTC 2212"     $"T24 North GTC 1001"
+   X                = 21
+   Y                = 2.5
+   HEIGHT           = 4
+   WIDTH            = 6
+   ..
+"Window 45" = WINDOW          
+   LIKE = "Window C"
+   X                = 44
+   ..
+"South Forklift" = SPACE           
+   HEIGHT           = 26
+   SHAPE            = POLYGON
+   PEOPLE-SCHEDULE  = "T24 DAYTIME OCC"
+   LIGHTING-SCHEDUL = ("T24 DAYTIME LTG")
+   EQUIP-SCHEDULE   = ("T24 DAYTIME EQP" )
+   PEOPLE-HG-LAT    = 475
+   PEOPLE-HG-SENS   = 275
+   PEOPLE-HEAT-GAIN = 750
+   LIGHTING-W/AREA  = (1.2)
+   EQUIPMENT-W/AREA = (1.0 )
+   AREA/PERSON      = 143.
+   POLYGON          = "South Forklift Poly"
+   ..
+"South Forklift East" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 4"
+   LOCATION         = SPACE-V2
+   ..
+"South Forklift Roof" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Dock Roof"
+   LOCATION         = TOP
+   ..
+"South Forklift Floor" = UNDERGROUND-WALL
+   LIKE = "South Dock Floor"
+   ..
+"Machine Room" = SPACE           
+   HEIGHT           = 26
+   SHAPE            = POLYGON
+   ZONE-TYPE        = UNCONDITIONED
+   PEOPLE-SCHEDULE  = "T24 DAYTIME OCC"
+   LIGHTING-SCHEDUL = ("T24 DAYTIME LTG")
+   EQUIP-SCHEDULE   = ("T24 DAYTIME EQP")
+   PEOPLE-HG-LAT    = 250
+   PEOPLE-HG-SENS   = 250
+   PEOPLE-HEAT-GAIN = 500
+   LIGHTING-W/AREA  = ( 0.7 )
+   EQUIPMENT-W/AREA = ( 0.2 )
+   AREA/PERSON      = 143
+   POLYGON          = "Machine Room Poly"
+   ..
+"Machine East" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 4"
+   LOCATION         = SPACE-V2
+   ..
+"Machine Roof" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Dock Roof"
+   LOCATION         = TOP
+   ..
+"Machine/South Forklift" = INTERIOR-WALL   
+   NEXT-TO          = "South Forklift"
+   CONSTRUCTION     = "Concrete Masonry"
+   LOCATION         = SPACE-V1
+   ..
+"Interior Wall 23" = INTERIOR-WALL   
+   NEXT-TO          = "South Forklift"
+   CONSTRUCTION     = "Concrete Masonry"
+   LOCATION         = SPACE-V6
+   ..
+"Machine Room Floor" = UNDERGROUND-WALL
+   LIKE = "South Dock Floor"
+   ..
+"North Forklift" = SPACE           
+   LIKE = "South Forklift"
+   HEIGHT           = 26
+   SHAPE            = POLYGON
+   LIGHTING-W/AREA  = (1.2)
+   POLYGON          = "North Forklift Poly"
+   EQUIPMENT-W/AREA = ( 1.0)
+   ..
+"North Forklift East" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 4"
+   LOCATION         = SPACE-V3
+   ..
+"North Forklift Roof" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Dock Roof"
+   LOCATION         = TOP
+   ..
+"North Forklift Floor" = UNDERGROUND-WALL
+   LIKE = "South Dock Floor"
+   ..
+"North Dock" = SPACE           
+   LIKE = "South Dock"
+   Y                = 380
+   SHAPE            = POLYGON
+   LIGHTING-W/AREA  = (0.6)
+   POLYGON          = "North Dock Polygon"
+   LOCATION         = FLOOR-V1
+   EQUIPMENT-W/AREA = (0.43)
+   NUMBER-OF-PEOPLE = 15.
+   ..
+"North Dock West" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 4"
+   LOCATION         = SPACE-V7
+   ..
+"North Dock East" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 4"
+   LOCATION         = SPACE-V3
+   ..
+"North Dock Roof" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Dock Roof"
+   LOCATION         = TOP
+   ..
+"North Dock North" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 4"
+   LOCATION         = SPACE-V6
+   ..
+"Door 22" = DOOR            
+   CONSTRUCTION     = "Dock Door Cons"
+   INF-COEF         = 3
+   X                = 20
+   HEIGHT           = 9
+   WIDTH            = 8
+   ..
+"Door 23" = DOOR            
+   LIKE = "Dock Door 9x8"
+   X                = 34
+   ..
+"Door 24" = DOOR            
+   LIKE = "Dock Door 9x8"
+   X                = 49
+   ..
+"Door 25" = DOOR            
+   LIKE = "Dock Door 9x8"
+   X                = 65
+   ..
+"Door 26" = DOOR            
+   LIKE = "Dock Door 9x8"
+   X                = 79
+   ..
+"Door 27" = DOOR            
+   LIKE = "Dock Door 9x8"
+   X                = 128
+   ..
+"Door 28" = DOOR            
+   LIKE = "Dock Door 9x8"
+   X                = 143
+   ..
+"Door 29" = DOOR            
+   LIKE = "Dock Door 9x8"
+   X                = 158
+   ..
+"Door 30" = DOOR            
+   LIKE = "Dock Door 9x8"
+   X                = 173
+   ..
+"Door 31" = DOOR            
+   LIKE = "Dock Door 9x8"
+   X                = 188
+   ..
+"Door 32" = DOOR            
+   LIKE = "Dock Door 9x8"
+   X                = 218
+   ..
+"Door 33" = DOOR            
+   LIKE = "Dock Door 9x8"
+   X                = 278
+   ..
+"Door 34" = DOOR            
+   LIKE = "Dock Door 9x8"
+   X                = 294
+   ..
+"Door 35" = DOOR            
+   LIKE = "Dock Door 9x8"
+   X                = 308
+   ..
+"Door 36" = DOOR            
+   LIKE = "Dock Door 9x8"
+   X                = 324
+   ..
+"Door 37" = DOOR            
+   LIKE = "Dock Door 9x8"
+   X                = 338
+   ..
+"Door 38" = DOOR            
+   LIKE = "Dock Door 9x8"
+   X                = 383
+   ..
+"Door 39" = DOOR            
+   LIKE = "Dock Door 9x8"
+   X                = 398
+   ..
+"Door 40" = DOOR            
+   LIKE = "Dock Door 9x8"
+   X                = 414
+   ..
+"Door 41" = DOOR            
+   LIKE = "Dock Door 9x8"
+   X                = 428
+   ..
+"Door 42" = DOOR            
+   LIKE = "Dock Door 9x8"
+   X                = 203
+   ..
+"Door 43" = DOOR            
+   LIKE = "Dock Door 9x8"
+   X                = 443
+   ..
+"Door 44" = DOOR            
+   LIKE = "Dock Door 9x8"
+   X                = 458
+   ..
+"Door 45" = DOOR            
+   LIKE = "Dock Door 9x8"
+   X                = 474
+   ..
+"Door 46" = DOOR            
+   LIKE = "Dock Door 13x8"
+   X                = 242
+   ..
+"Subgrade North Dock" = EXTERIOR-WALL   
+   LIKE = "Subgrade EW"
+   LOCATION         = SPACE-V6
+   ..
+"Sidegrade North Dock" = EXTERIOR-WALL   
+   LIKE = "Subgrade EW"
+   Z                = -4
+   HEIGHT           = 4
+   LOCATION         = SPACE-V7
+   ..
+"North Dock/North Forklift" = INTERIOR-WALL   
+   NEXT-TO          = "North Forklift"
+   CONSTRUCTION     = "Metal Panel - 4"
+   HEIGHT           = 26
+   LOCATION         = SPACE-V2
+   ..
+"North Dock Floor" = UNDERGROUND-WALL
+   LIKE = "South Dock Floor"
+   ..
+"North Office" = SPACE           
+   LIKE = "South Office"
+   POLYGON          = "North Office Polygon"
+   LOCATION         = FLOOR-V13
+   ..
+"North Office East" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Panel/Gyp"
+   LOCATION         = SPACE-V1
+   ..
+"Window 15" = WINDOW          
+   LIKE = "Window A"
+   X                = 28
+   ..
+"Window 16" = WINDOW          
+   LIKE = "Window A"
+   X                = 36
+   ..
+"Window 17" = WINDOW          
+   LIKE = "Window C"
+   X                = 51
+   ..
+"Exterior Wall 27" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Panel/Gyp"
+   LOCATION         = SPACE-V2
+   ..
+"Window 18" = WINDOW          
+   LIKE = "Window A"
+   X                = 33
+   ..
+"North Window A" = WINDOW          
+   LIKE = "Window A"
+   GLASS-TYPE       = "Actual GTC 2212"     $"T24 North GTC 1001"
+   X                = 42
+   ..
+"Window 20" = WINDOW          
+   LIKE = "North Window A"
+   X                = 50
+   ..
+"Exterior Wall 28" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Panel/Gyp"
+   LOCATION         = SPACE-V3
+   ..
+"Window 21" = WINDOW          
+   LIKE = "Window A"
+   X                = 10
+   ..
+"Interior Wall 17" = INTERIOR-WALL   
+   NEXT-TO          = "North Dock"
+   CONSTRUCTION     = "Panel/Gyp"
+   LOCATION         = SPACE-V4
+   ..
+"Window 29" = WINDOW          
+   GLASS-TYPE       = "Actual GTC 2212"     $"T24 North GTC 1001"
+   X                = 3
+   Y                = 2.5
+   HEIGHT           = 4
+   WIDTH            = 6
+   ..
+"Window 30" = WINDOW          
+   GLASS-TYPE       = "Actual GTC 2212"     $"T24 North GTC 1001"
+   X                = 27
+   Y                = 2.5
+   HEIGHT           = 4
+   WIDTH            = 6
+   ..
+"Window 31" = WINDOW          
+   GLASS-TYPE       = "Actual GTC 2212"     $"T24 North GTC 1001"
+   X                = 35
+   Y                = 2.5
+   HEIGHT           = 4
+   WIDTH            = 6
+   ..
+"Interior Wall 18" = INTERIOR-WALL   
+   NEXT-TO          = "North Dock"
+   CONSTRUCTION     = "Panel/Gyp"
+   LOCATION         = SPACE-V5
+   ..
+"Window 32" = WINDOW          
+   GLASS-TYPE       = "Actual GTC 2212"     $"T24 North GTC 1001"
+   X                = 35
+   Y                = 2.5
+   HEIGHT           = 4
+   WIDTH            = 6
+   ..
+"Window 33" = WINDOW          
+   GLASS-TYPE       = "Actual GTC 2212"     $"T24 North GTC 1001"
+   X                = 13
+   Y                = 2.5
+   HEIGHT           = 4
+   WIDTH            = 4
+   ..
+"Freezer A" = SPACE           
+   X                = 0
+   Y                = 210
+   HEIGHT           = 40
+   SHAPE            = POLYGON
+   FLOOR-WEIGHT     = 130
+   TEMPERATURE      = ( "Freezer A Temp" )
+   PEOPLE-SCHEDULE  = "T24 DAYTIME OCC"
+   LIGHTING-SCHEDUL = ("T24 DAYTIME LTG")
+   PEOPLE-HEAT-GAIN = 1450.
+   PEOPLE-HG-SENS   = 580.
+   PEOPLE-HG-LAT    = 870.
+   LIGHTING-W/AREA  = (0.6 )
+   EQUIP-SCHEDULE   = ("T24 DAYTIME EQP",
+                       "Heat Trace Sch")
+   EQUIPMENT-W/AREA = ( 0.43,
+                        {if (#PA("Subfloor Heat") == "Electric")
+                          then (#PA("Subfloor Temp")-#PA("Freezer A Temp"))
+                                       / (#PA("Freezer Floor Res") * 3.413)
+                          else unused
+                         endif} )
+   EQUIP-SENSIBLE   = ( 1.0,
+                        {if (#PA("Subfloor Heat") == "Electric")
+                          then 0.0
+                          else unused
+                         endif} )
+   EQUIP-LATENT     = ( 0.0,
+                        {if (#PA("Subfloor Heat") == "Electric")
+                          then 0.0
+                          else unused
+                         endif})
+$                              Subfloor heat and pull-down load
+   SOURCE-BTU/HR    = {if (#PA("Subfloor Heat") == "Subcool")
+                        then 90442.
+                        else 90442. +
+                             (#PA("Subfloor Temp")-#PA("Freezer A Temp")) 
+                                  * #L("AREA") / #PA("Freezer Floor Res")
+                       endif}
+   SOURCE-SENSIBLE  = 1.0
+   SOURCE-SCHEDULE  = "Always On Equip Sch"
+   SOURCE-TYPE      = PROCESS
+   NUMBER-OF-PEOPLE = 5.
+   POLYGON          = "Freezer A Poly"
+   INF-METHOD       = AIR-CHANGE
+   INF-FLOW/AREA    = {1083. / #L("AREA")}
+   INF-SCHEDULE     = "Dock Infil Sch"
+   ..
+"Freezer A North" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 6"
+   Z                = 26
+   HEIGHT           = 14
+   LOCATION         = SPACE-V3
+   ..
+"FreezerA West" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 6"
+   HEIGHT           = 40
+   LOCATION         = SPACE-V4
+   ..
+"Freezer A Roof" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Freezer Roof"
+   LOCATION         = TOP
+   ..
+"Exterior Wall 57" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 6"
+   X                = 47
+   Y                = 102
+   Z                = 40
+   HEIGHT           = 10
+   WIDTH            = 44
+   AZIMUTH          = -90
+   LOCATION         = RIGHT
+   ..
+"Exterior Wall 58" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 6"
+   X                = 89
+   Y                = 60
+   Z                = 40
+   HEIGHT           = 10
+   WIDTH            = 44
+   LOCATION         = RIGHT
+   ..
+"Exterior Wall 59" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 6"
+   X                = 89
+   Y                = 104
+   Z                = 40
+   HEIGHT           = 10
+   WIDTH            = 42
+   AZIMUTH          = 0
+   LOCATION         = LEFT
+   ..
+"Exterior Wall 60" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 6"
+   X                = 47
+   Y                = 60
+   Z                = 40
+   HEIGHT           = 10
+   WIDTH            = 42
+   LOCATION         = FRONT
+   ..
+"North Dock/Freezer A" = INTERIOR-WALL   
+   NEXT-TO          = "North Dock"
+   CONSTRUCTION     = "Metal Panel - 6"
+   HEIGHT           = 26
+   LOCATION         = SPACE-V3
+   ..
+"North Dock/Freezer A Infil" = INTERIOR-WALL   
+   INT-WALL-TYPE    = AIR
+   CONSTRUCTION     = "Infil Cons"
+   NEXT-TO          = "North Dock"
+   AREA             = 688.
+   ..
+"Freezer A/B" = INTERIOR-WALL   
+   NEXT-TO          = "Freezer B"
+   CONSTRUCTION     = "Metal Panel - 5"
+   LOCATION         = SPACE-V2
+   ..
+"Freezer A/Convertible" = INTERIOR-WALL   
+   NEXT-TO          = "Convertible"
+   CONSTRUCTION     = "Metal Panel - 5"
+   LOCATION         = SPACE-V1
+   ..
+"Freezer A Floor" = UNDERGROUND-WALL
+   CONSTRUCTION     = "Freezer Floor Cons"
+   LOCATION         = BOTTOM
+   ..
+"Freezer B" = SPACE           
+   LIKE = "Freezer A"
+   X                = 126.5
+   Y                = 210
+   HEIGHT           = 40
+   SHAPE            = POLYGON
+   POLYGON          = "Freezer B Poly"
+   TEMPERATURE      = "Freezer B Temp"
+   LIGHTING-W/AREA  = (0.6 )
+   EQUIPMENT-W/AREA = (0.43,
+                        {if (#PA("Subfloor Heat") == "Electric")
+                          then (#PA("Subfloor Temp")-#PA("Freezer B Temp"))
+                                       / (#PA("Freezer Floor Res") * 3.413)
+                          else unused
+                         endif} )
+   SOURCE-BTU/HR    = {if (#PA("Subfloor Heat") == "Subcool")
+                        then 271209.
+                        else 271209. +
+                             (#PA("Subfloor Temp")-#PA("Freezer B Temp")) 
+                                  * #L("AREA") / #PA("Freezer Floor Res")
+                       endif}
+   NUMBER-OF-PEOPLE = 10.
+   INF-FLOW/AREA    = {2667. / #L("AREA")}
+   ..
+"Freezer B East" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 6"
+   Z                = 26
+   HEIGHT           = 14
+   LOCATION         = SPACE-V2
+   ..
+"Freezer B North" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 6"
+   Z                = 26
+   HEIGHT           = 14
+   LOCATION         = SPACE-V3
+   ..
+"Freezer B Roof" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Freezer Roof"
+   LOCATION         = TOP
+   ..
+"Exterior Wall 61" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 6"
+   X                = 62
+   Y                = 102
+   Z                = 40
+   HEIGHT           = 10
+   WIDTH            = 44
+   AZIMUTH          = -90
+   LOCATION         = RIGHT
+   ..
+"Exterior Wall 62" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 6"
+   X                = 275
+   Y                = 102
+   Z                = 40
+   HEIGHT           = 10
+   WIDTH            = 44
+   AZIMUTH          = -90
+   LOCATION         = RIGHT
+   ..
+"Exterior Wall 63" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 6"
+   X                = 104
+   Y                = 60
+   Z                = 40
+   HEIGHT           = 10
+   WIDTH            = 44
+   LOCATION         = RIGHT
+   ..
+"Exterior Wall 64" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 6"
+   X                = 104
+   Y                = 104
+   Z                = 40
+   HEIGHT           = 10
+   WIDTH            = 42
+   AZIMUTH          = 0
+   LOCATION         = LEFT
+   ..
+"Exterior Wall 65" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 6"
+   X                = 62
+   Y                = 60
+   Z                = 40
+   HEIGHT           = 10
+   WIDTH            = 42
+   LOCATION         = FRONT
+   ..
+"Exterior Wall 66" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 6"
+   X                = 275
+   Y                = 60
+   Z                = 40
+   HEIGHT           = 10
+   WIDTH            = 42
+   LOCATION         = FRONT
+   ..
+"Exterior Wall 67" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 6"
+   X                = 317
+   Y                = 60
+   Z                = 40
+   HEIGHT           = 10
+   WIDTH            = 44
+   LOCATION         = RIGHT
+   ..
+"Exterior Wall 68" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 6"
+   X                = 317
+   Y                = 104
+   Z                = 40
+   HEIGHT           = 10
+   WIDTH            = 42
+   AZIMUTH          = 0
+   LOCATION         = LEFT
+   ..
+"Freezer B/North Forklift" = INTERIOR-WALL   
+   NEXT-TO          = "North Forklift"
+   CONSTRUCTION     = "Metal Panel - 6"
+   HEIGHT           = 26
+   LOCATION         = SPACE-V2
+   ..
+"North Dock/Freezer B" = INTERIOR-WALL   
+   NEXT-TO          = "North Dock"
+   CONSTRUCTION     = "Metal Panel - 6"
+   HEIGHT           = 26
+   LOCATION         = SPACE-V3
+   ..
+"North Dock/Freezer B Infil" = INTERIOR-WALL   
+   INT-WALL-TYPE    = AIR
+   CONSTRUCTION     = "Infil Cons"
+   NEXT-TO          = "North Dock"
+   AREA             = 2005.
+   ..
+"Freezer B/Convertible" = INTERIOR-WALL   
+   NEXT-TO          = "Convertible"
+   CONSTRUCTION     = "Metal Panel - 5"
+   LOCATION         = SPACE-V1
+   ..
+"Freezer B Floor" = UNDERGROUND-WALL
+   LIKE = "Freezer A Floor"
+   ..
+"Convertible" = SPACE           
+   LIKE = "Freezer A"
+   X                = 0
+   Y                = 40
+   HEIGHT           = 40
+   SHAPE            = POLYGON
+   POLYGON          = "Convertible Poly"
+   TEMPERATURE      = ( "Convertible Temp" )
+   LIGHTING-W/AREA  = (0.6)
+   EQUIPMENT-W/AREA = ( 0.43,
+                        {if (#PA("Subfloor Heat") == "Electric")
+                          then (#PA("Subfloor Temp")-#PA("Convertible Temp"))
+                                         / (#PA("Freezer Floor Res") * 3.413)
+                          else unused
+                         endif} )
+   SOURCE-BTU/HR    = {if (#PA("Subfloor Heat") == "Subcool")
+                        then 361688.
+                        else 361688. +
+                             (#PA("Subfloor Temp")-#PA("Convertible Temp")) 
+                                  * #L("AREA") / #PA("Freezer Floor Res")
+                       endif}
+   NUMBER-OF-PEOPLE = 8.
+   INF-FLOW/AREA    = {3150. / #L("AREA")}
+   ..
+"Convertible South" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 6"
+   Z                = 26
+   HEIGHT           = 14
+   LOCATION         = SPACE-V1
+   ..
+"Convertible West" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 6"
+   LOCATION         = SPACE-V5
+   ..
+"Convertible East" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 6"
+   Z                = 26
+   HEIGHT           = 14
+   LOCATION         = SPACE-V2
+   ..
+"Convertible Roof" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Freezer Roof"
+   LOCATION         = TOP
+   ..
+"Penthouse Wall" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 6"
+   X                = 47
+   Y                = 60
+   Z                = 40
+   HEIGHT           = 10
+   WIDTH            = 32
+   LOCATION         = FRONT
+   ..
+"Exterior Wall 42" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 6"
+   X                = 173
+   Y                = 60
+   Z                = 40
+   HEIGHT           = 10
+   WIDTH            = 32
+   LOCATION         = FRONT
+   ..
+"Exterior Wall 43" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 6"
+   X                = 300
+   Y                = 60
+   Z                = 40
+   HEIGHT           = 10
+   WIDTH            = 32
+   LOCATION         = FRONT
+   ..
+"Exterior Wall 44" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 6"
+   X                = 427
+   Y                = 60
+   Z                = 40
+   HEIGHT           = 10
+   WIDTH            = 32
+   LOCATION         = FRONT
+   ..
+"Exterior Wall 45" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 6"
+   X                = 79
+   Y                = 60
+   Z                = 40
+   HEIGHT           = 10
+   WIDTH            = 44
+   LOCATION         = RIGHT
+   ..
+"Exterior Wall 46" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 6"
+   X                = 205
+   Y                = 60
+   Z                = 40
+   HEIGHT           = 10
+   WIDTH            = 44
+   LOCATION         = RIGHT
+   ..
+"Exterior Wall 47" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 6"
+   X                = 332
+   Y                = 60
+   Z                = 40
+   HEIGHT           = 10
+   WIDTH            = 44
+   LOCATION         = RIGHT
+   ..
+"Exterior Wall 48" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 6"
+   X                = 459
+   Y                = 60
+   Z                = 40
+   HEIGHT           = 10
+   WIDTH            = 44
+   LOCATION         = RIGHT
+   ..
+"Exterior Wall 49" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 6"
+   X                = 459
+   Y                = 104
+   Z                = 40
+   HEIGHT           = 10
+   WIDTH            = 32
+   LOCATION         = BACK
+   ..
+"Exterior Wall 50" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 6"
+   X                = 332
+   Y                = 104
+   Z                = 40
+   HEIGHT           = 10
+   WIDTH            = 32
+   LOCATION         = BACK
+   ..
+"Exterior Wall 51" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 6"
+   X                = 205
+   Y                = 104
+   Z                = 40
+   HEIGHT           = 10
+   WIDTH            = 32
+   LOCATION         = BACK
+   ..
+"Exterior Wall 52" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 6"
+   X                = 79
+   Y                = 104
+   Z                = 40
+   HEIGHT           = 10
+   WIDTH            = 32
+   LOCATION         = LEFT
+   ..
+"Exterior Wall 53" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 6"
+   X                = 300
+   Y                = 102
+   Z                = 40
+   HEIGHT           = 10
+   WIDTH            = 44
+   AZIMUTH          = -90
+   LOCATION         = RIGHT
+   ..
+"Exterior Wall 54" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 6"
+   X                = 173
+   Y                = 102
+   Z                = 40
+   HEIGHT           = 10
+   WIDTH            = 44
+   AZIMUTH          = -90
+   LOCATION         = RIGHT
+   ..
+"Exterior Wall 55" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 6"
+   X                = 47
+   Y                = 102
+   Z                = 40
+   HEIGHT           = 10
+   WIDTH            = 44
+   AZIMUTH          = -90
+   LOCATION         = RIGHT
+   ..
+"Exterior Wall 56" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 6"
+   X                = 427
+   Y                = 102
+   Z                = 40
+   HEIGHT           = 10
+   WIDTH            = 44
+   AZIMUTH          = -90
+   LOCATION         = RIGHT
+   ..
+"South Dock/Convertible" = INTERIOR-WALL   
+   NEXT-TO          = "South Dock"
+   CONSTRUCTION     = "Metal Panel - 6"
+   HEIGHT           = 26
+   LOCATION         = SPACE-V1
+   ..
+"South Dock/Convertible Infil" = INTERIOR-WALL   
+   INT-WALL-TYPE    = AIR
+   CONSTRUCTION     = "Infil Cons"
+   NEXT-TO          = "South Dock"
+   AREA             = 2984.
+   ..
+"Convertible/South Forklift" = INTERIOR-WALL   
+   NEXT-TO          = "South Forklift"
+   CONSTRUCTION     = "Metal Panel - 6"
+   HEIGHT           = 26
+   LOCATION         = SPACE-V2
+   ..
+"Convertible/Freezer A" = INTERIOR-WALL   
+   NEXT-TO          = "Freezer A"
+   CONSTRUCTION     = "Metal Panel - 5"
+   LOCATION         = SPACE-V4
+   ..
+"Convertible Floor" = UNDERGROUND-WALL
+   LIKE = "Freezer A Floor"
+   ..
+"South Office 2" = SPACE           
+   LIKE = "South Office"
+   Z                = 13
+   ..
+"Exterior Wall 13" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Panel/Gyp"
+   LOCATION         = SPACE-V1
+   ..
+"Window 8" = WINDOW          
+   GLASS-TYPE       = "Actual GTC 2212"     $"T24 North GTC 1001"
+   X                = 3
+   Y                = 2.5
+   HEIGHT           = 4
+   WIDTH            = 6
+   ..
+"Window 9" = WINDOW          
+   LIKE = "Window A"
+   GLASS-TYPE       = "Actual GTC 2212"     $"T24 North GTC 1001"
+   X                = 12.5
+   Y                = 2.5
+   HEIGHT           = 4
+   WIDTH            = 6
+   ..
+"Window 10" = WINDOW          
+   LIKE = "Window A"
+   GLASS-TYPE       = "Actual GTC 2212"     $"T24 North GTC 1001"
+   X                = 22
+   Y                = 2.5
+   HEIGHT           = 4
+   WIDTH            = 6
+   ..
+"Exterior Wall 14" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Panel/Gyp"
+   LOCATION         = SPACE-V5
+   ..
+"Window 11" = WINDOW          
+   GLASS-TYPE       = "Actual GTC 2212"     $"T24 North GTC 1001"
+   X                = 2
+   Y                = 2.5
+   HEIGHT           = 4
+   WIDTH            = 4
+   ..
+"Exterior Wall 15" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Panel/Gyp"
+   LOCATION         = SPACE-V2
+   ..
+"Window 12" = WINDOW          
+   LIKE = "Window C"
+   X                = 8
+   ..
+"Window 13" = WINDOW          
+   LIKE = "Window A"
+   X                = 23
+   ..
+"Window 14" = WINDOW          
+   LIKE = "Window A"
+   X                = 32
+   ..
+"South Office Roof" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Dock Roof"
+   LOCATION         = TOP
+   ..
+"Interior Wall 10" = INTERIOR-WALL   
+   NEXT-TO          = "South Dock"
+   CONSTRUCTION     = "Panel/Gyp"
+   LOCATION         = SPACE-V4
+   ..
+"Window 41" = WINDOW          
+   GLASS-TYPE       = "Actual GTC 2212"     $"T24 North GTC 1001"
+   X                = 3
+   Y                = 2.5
+   HEIGHT           = 4
+   WIDTH            = 6
+   ..
+"Window 42" = WINDOW          
+   GLASS-TYPE       = "Actual GTC 2212"     $"T24 North GTC 1001"
+   X                = 12
+   Y                = 2.5
+   HEIGHT           = 4
+   WIDTH            = 6
+   ..
+"Interior Wall 11" = INTERIOR-WALL   
+   NEXT-TO          = "South Dock"
+   CONSTRUCTION     = "Panel/Gyp"
+   LOCATION         = SPACE-V3
+   ..
+"Window 46" = WINDOW          
+   LIKE = "Window C"
+   X                = 11
+   ..
+"Window 47" = WINDOW          
+   LIKE = "Window C"
+   X                = 21
+   ..
+"Window 48" = WINDOW          
+   LIKE = "Window C"
+   X                = 44
+   ..
+"North Office 2" = SPACE           
+   LIKE = "North Office"
+   Z                = 13
+   ..
+"Exterior Wall 29" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Panel/Gyp"
+   LOCATION         = SPACE-V1
+   ..
+"Window 22" = WINDOW          
+   LIKE = "Window A"
+   X                = 28
+   ..
+"Window 23" = WINDOW          
+   LIKE = "Window A"
+   X                = 36
+   ..
+"Window 24" = WINDOW          
+   LIKE = "Window C"
+   X                = 51
+   ..
+"Exterior Wall 30" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Panel/Gyp"
+   LOCATION         = SPACE-V2
+   ..
+"Window 25" = WINDOW          
+   LIKE = "Window A"
+   X                = 33
+   ..
+"Window 26" = WINDOW          
+   LIKE = "North Window A"
+   X                = 42
+   ..
+"Window 27" = WINDOW          
+   LIKE = "North Window A"
+   X                = 50
+   ..
+"Exterior Wall 31" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Panel/Gyp"
+   LOCATION         = SPACE-V3
+   ..
+"Window 28" = WINDOW          
+   LIKE = "Window A"
+   X                = 10
+   ..
+"North Office Roof" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Dock Roof"
+   LOCATION         = TOP
+   ..
+"Interior Wall 19" = INTERIOR-WALL   
+   NEXT-TO          = "North Dock"
+   CONSTRUCTION     = "Panel/Gyp"
+   LOCATION         = SPACE-V4
+   ..
+"Window 36" = WINDOW          
+   GLASS-TYPE       = "Actual GTC 2212"     $"T24 North GTC 1001"
+   X                = 3
+   Y                = 2.5
+   HEIGHT           = 4
+   WIDTH            = 6
+   ..
+"Window 37" = WINDOW          
+   GLASS-TYPE       = "Actual GTC 2212"     $"T24 North GTC 1001"
+   X                = 27
+   Y                = 2.5
+   HEIGHT           = 4
+   WIDTH            = 6
+   ..
+"Window 38" = WINDOW          
+   GLASS-TYPE       = "Actual GTC 2212"     $"T24 North GTC 1001"
+   X                = 35
+   Y                = 2.5
+   HEIGHT           = 4
+   WIDTH            = 6
+   ..
+"Interior Wall 20" = INTERIOR-WALL   
+   NEXT-TO          = "North Dock"
+   CONSTRUCTION     = "Panel/Gyp"
+   LOCATION         = SPACE-V5
+   ..
+"Window 34" = WINDOW          
+   GLASS-TYPE       = "Actual GTC 2212"     $"T24 North GTC 1001"
+   X                = 35
+   Y                = 2.5
+   HEIGHT           = 4
+   WIDTH            = 6
+   ..
+"Window 35" = WINDOW          
+   GLASS-TYPE       = "Actual GTC 2212"     $"T24 North GTC 1001"
+   X                = 13
+   Y                = 2.5
+   HEIGHT           = 4
+   WIDTH            = 4
+   ..
+"Truckers Lounge" = SPACE           
+   X                = 217.5
+   Y                = 474
+   SHAPE            = BOX
+   WIDTH            = 17.66
+   DEPTH            = 30
+   FLOOR-WEIGHT     = 70
+   PEOPLE-SCHEDULE  = "T24 DAYTIME OCC"
+   LIGHTING-SCHEDUL = ("T24 DAYTIME LTG")
+   EQUIP-SCHEDULE   = ("T24 DAYTIME EQP" )
+   PEOPLE-HG-LAT    = 275
+   PEOPLE-HG-SENS   = 275
+   PEOPLE-HEAT-GAIN = 550
+   LIGHTING-W/AREA  = ( 0.9 )
+   EQUIPMENT-W/AREA = ( 0.5 )
+   AREA/PERSON      = 15
+   ..
+"Trucker West" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Concrete Masonry"
+   LOCATION         = LEFT
+   ..
+"Window 49" = WINDOW          
+   LIKE = "Window C"
+   X                = 16
+   ..
+"Exterior Wall 70" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Concrete Masonry"
+   LOCATION         = RIGHT
+   ..
+"Window 50" = WINDOW          
+   LIKE = "Window C"
+   X                = 10
+   ..
+"Exterior Wall 71" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Concrete Masonry"
+   LOCATION         = FRONT
+   ..
+"Exterior Wall 72" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Concrete Masonry"
+   LOCATION         = BACK
+   ..
+"Lounge Roof" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Lounge Roof Cons"
+   LOCATION         = TOP
+   ..
+"Control Room" = SPACE           
+   LIKE = "South Office"
+   X                = 550
+   Y                = 204.5
+   AZIMUTH          = -90
+   HEIGHT           = 26
+   LIGHTING-W/AREA  = (1.2)
+   EQUIPMENT-W/AREA = ( 1.34 )
+   POLYGON          = "Control Polygon"
+   ..
+"Exterior Wall 73" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 4"
+   LOCATION         = SPACE-V1
+   ..
+"Control Roof" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Dock Roof"
+   LOCATION         = TOP
+   ..
+"Interior Wall 22" = INTERIOR-WALL   
+   NEXT-TO          = "Machine Room"
+   CONSTRUCTION     = "Concrete Masonry"
+   LOCATION         = SPACE-V4
+   ..
+"Interior Wall 24" = INTERIOR-WALL   
+   NEXT-TO          = "Electric Room"
+   CONSTRUCTION     = "Concrete Masonry"
+   LOCATION         = SPACE-V2
+   ..
+"Interior Wall 31" = INTERIOR-WALL   
+   NEXT-TO          = "Machine Room"
+   CONSTRUCTION     = "Concrete Masonry"
+   LOCATION         = SPACE-V3
+   ..
+"Control Floor" = UNDERGROUND-WALL
+   LIKE = "South Dock Floor"
+   ..
+"Electric Room" = SPACE           
+   LIKE             = "Machine Room"
+   X                = 550
+   Y                = 217
+   AZIMUTH          = -90
+   HEIGHT           = 26
+   SHAPE            = POLYGON
+   LIGHTING-W/AREA  = (0.7 )
+   POLYGON          = "Electric Polygon"
+   ..
+"Exterior Wall 74" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 4"
+   LOCATION         = SPACE-V1
+   ..
+"Electric Roof" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Dock Roof"
+   LOCATION         = TOP
+   ..
+"Interior Wall 25" = INTERIOR-WALL   
+   NEXT-TO          = "South Forklift"
+   CONSTRUCTION     = "Concrete Masonry"
+   LOCATION         = SPACE-V3
+   ..
+"Interior Wall 26" = INTERIOR-WALL   
+   NEXT-TO          = "Maintenance"
+   CONSTRUCTION     = "Concrete Masonry"
+   LOCATION         = SPACE-V2
+   ..
+"Electric Floor" = UNDERGROUND-WALL
+   LIKE = "South Dock Floor"
+   ..
+"Maintenance" = SPACE           
+   X                = 550
+   Y                = 239
+   AZIMUTH          = -90
+   HEIGHT           = 26
+   SHAPE            = POLYGON
+   PEOPLE-SCHEDULE  = "Forklift Sch"
+   AREA/PERSON      = 143.
+   LIGHTING-SCHEDUL = ("Always On Equip Sch")
+   EQUIP-SCHEDULE   = ("Forklift Sch")
+   LIGHTING-W/AREA  = (1.2)
+   EQUIPMENT-W/AREA = ( 1.0 )
+   POLYGON          = "Maintenance Poly"
+   ..
+"Exterior Wall 75" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Metal Panel - 4"
+   LOCATION         = SPACE-V1
+   ..
+"Maintenance Roof" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Dock Roof"
+   LOCATION         = TOP
+   ..
+"Interior Wall 27" = INTERIOR-WALL   
+   NEXT-TO          = "North Forklift"
+   CONSTRUCTION     = "Concrete Masonry"
+   LOCATION         = SPACE-V2
+   ..
+"Interior Wall 28" = INTERIOR-WALL   
+   NEXT-TO          = "North Forklift"
+   CONSTRUCTION     = "Concrete Masonry"
+   LOCATION         = SPACE-V3
+   ..
+"Interior Wall 29" = INTERIOR-WALL   
+   NEXT-TO          = "North Forklift"
+   CONSTRUCTION     = "Concrete Masonry"
+   LOCATION         = SPACE-V4
+   ..
+"Interior Wall 30" = INTERIOR-WALL   
+   NEXT-TO          = "South Forklift"
+   CONSTRUCTION     = "Concrete Masonry"
+   LOCATION         = SPACE-V5
+   ..
+"Maintenance Floor" = UNDERGROUND-WALL
+   LIKE = "South Dock Floor"
+   ..
+
+
+$ *********************************************************
+$ **                                                     **
+$ **                Performance Curves                   **
+$ **                                                     **
+$ *********************************************************
+
+"No Coil fT" = CURVE-FIT
+   TYPE RATIO-FT&T    ORDER-OF-FIT LINEAR  INPUT-TYPE COEFFICIENTS
+   COEFFICIENTS  (1.0, 0., 0., 0.)
+   ..
+
+RWF-100-Flow-fSST&SDT = CURVE-FIT  
+TYPE=FLOW-FSST&SDT     ORDER-OF-FIT QUADRATIC  INPUT-TYPE DATA
+EXTRAPOLATE YES                       
+MIN-SST = -36.         MAX-SST = 51.
+MIN-SDT = 49.          MAX-SDT = 121.
+INPUT-1 = (  -35,   -15,     0,    20,    40,
+             -35,   -15,     0,    20,    40,
+             -35,   -15,     0,    20,    40,
+             -35,   -15,     0,    20,    40)
+INPUT-2 = (   60,    60,    60,    60,    60,
+              80,    80,    80,    80,    80,
+             100,   100,   100,   100,   100,
+             120,   120,   120,   120,   120)
+OUTPUT  = (1428., 2460., 3540., 5538., 8370.,
+           1410., 2403., 3492., 5448., 8226.,
+           1386., 2388., 3450., 5406., 8130.,
+           1356., 2340., 3390., 5328., 8028.)  ..
+
+RWF-100-kW-fSST&SDT = CURVE-FIT  
+TYPE=PWR-FSST&SDT      ORDER-OF-FIT QUADRATIC  INPUT-TYPE DATA
+EXTRAPOLATE YES                       
+MIN-SST = -36.         MAX-SST = 51.
+MIN-SDT = 49.          MAX-SDT = 121.
+INPUT-1 = (  -35,   -15,     0,              
+             -35,   -15,     0,    20,       
+             -35,   -15,     0,    20,       
+             -35,   -15,     0,    20,    40)
+INPUT-2 = (   60,    60,    60,              
+              80,    80,    80,    80,      
+             100,   100,   100,   100,       
+             120,   120,   120,   120,   120)
+OUTPUT  = ( 94.3, 106.4, 111.4,              
+           116.5, 137.2, 148.2, 154.8,       
+           149.6, 172.5, 191.2, 210.1,       
+           197.9, 215.9, 239.5, 269.7, 288.1)  ..
+
+RWF-100-SlidekW-fPLR = CURVE-FIT  
+TYPE=RATIO-FRATIO      ORDER-OF-FIT QUADRATIC  INPUT-TYPE DATA
+EXTRAPOLATE YES                       
+MIN-INPUT-1 = .19      MAX-INPUT-1 = 1.01
+INPUT-1 = ( 1.,  .9,  .8,  .7,  .6,  .5,  .4,  .3,  .2)       
+OUTPUT  = ( 1., .94, .89, .84, .78, .73, .69, .64, .61)  ..
+
+RWF-NoEcono-kW-fSST&SDT = CURVE-FIT  
+TYPE=PWR-FSST&SDT      ORDER-OF-FIT QUADRATIC  INPUT-TYPE DATA
+EXTRAPOLATE YES                       
+MIN-SST = -36.         MAX-SST = 51.
+MIN-SDT = 49.          MAX-SDT = 121.
+INPUT-1 = (  -35,   -15,     0,              
+             -35,   -15,     0,    20,       
+             -35,   -15,     0,    20,       
+             -35,   -15,     0,    20,    40)
+INPUT-2 = (   60,    60,    60,              
+              80,    80,    80,    80,      
+             100,   100,   100,   100,       
+             120,   120,   120,   120,   120)
+OUTPUT  = ( 90.1, 103.2, 109.4,              
+           109.2, 129.1, 143.0, 152.1,       
+           138.7, 160.9, 180.6, 202.4,       
+           183.4, 198.2, 222.1, 254.6, 277.5)  ..
+
+Compressor-ASDkW-fPLR = CURVE-FIT
+TYPE=RATIO-FRATIO      ORDER-OF-FIT QUADRATIC  INPUT-TYPE DATA
+EXTRAPOLATE YES                       
+MIN-INPUT-1 = 0.       MAX-INPUT-1 = 1.01
+INPUT-1 = ( 1., .5, .1)       
+OUTPUT  = ( 1., .4, .1)  ..
+
+RWF-270-Flow-fSST&SDT = CURVE-FIT  
+TYPE=FLOW-FSST&SDT     ORDER-OF-FIT QUADRATIC  INPUT-TYPE DATA
+EXTRAPOLATE YES                       
+MIN-SST = -36.         MAX-SST = 51.
+MIN-SDT = 49.          MAX-SDT = 121.
+INPUT-1 = (  -35,   -15,     0,                
+             -35,   -15,     0,    20,       
+             -35,   -15,     0,    20,         
+             -35,   -15,     0,    20,    40)
+INPUT-2 = (   60,    60,    60,              
+              80,    80,    80,    80,        
+             100,   100,   100,   100,         
+             120,   120,   120,   120,   120)
+OUTPUT  = (3984., 6864., 9894.,                
+           3906., 6780., 9792., 15300,        
+           3774., 6660., 9684., 15186,        
+           3582., 6450., 9468.,14952.,22560.)  ..
+
+RWF-270-kW-fSST&SDT = CURVE-FIT  
+TYPE=PWR-FSST&SDT      ORDER-OF-FIT QUADRATIC  INPUT-TYPE DATA
+EXTRAPOLATE YES                       
+MIN-SST = -36.         MAX-SST = 51.
+MIN-SDT = 49.          MAX-SDT = 121.
+INPUT-1 = (  -35,   -15,     0,                
+             -35,   -15,     0,    20,       
+             -35,   -15,     0,    20,         
+             -35,   -15,     0,    20,    40)
+INPUT-2 = (   60,    60,    60,              
+              80,    80,    80,    80,        
+             100,   100,   100,   100,         
+             120,   120,   120,   120,   120)
+OUTPUT  = (248.4, 280.5, 292.0,                
+           306.3, 360.3, 392.3, 408.1,        
+           387.8, 456.3, 508.2, 555.9,        
+           494.8, 568.6, 636.2, 716.5, 762.9)  ..
+
+RWF-270-SlidekW-fPLR = CURVE-FIT  
+TYPE=RATIO-FRATIO      ORDER-OF-FIT QUADRATIC  INPUT-TYPE DATA
+EXTRAPOLATE YES                       
+MIN-INPUT-1 = .19      MAX-INPUT-1 = 1.01
+INPUT-1 = ( 1.,  .9,  .8,  .7,  .6,  .5,  .4,  .3,  .2)       
+OUTPUT  = ( 1., .95, .90, .85, .81, .75, .70, .65, .61)  ..
+
+
+$ *********************************************************
+$ **                                                     **
+$ **              Electric & Fuel Meters                 **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$              Electric Meters
+$ ---------------------------------------------------------
+
+"EM1" = METER
+   TYPE           = ELECTRIC
+   INTERIOR-POWER = ({if (#PA("Subfloor Heat") == "Subcool")
+                       then 2.4
+                       else unused
+                      endif})
+   INTERIOR-SCH   = ({if (#PA("Subfloor Heat") == "Subcool")
+                       then #SI("Always On Equip Sch","METER",
+                                                       "INTERIOR-SCH")
+                       else unused
+                      endif})
+   ..
+
+
+$ ---------------------------------------------------------
+$              Fuel Meters
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Master Meters
+$ ---------------------------------------------------------
+
+"MASTER-METERS 1" = MASTER-METERS   
+   MSTR-ELEC-METER  = "EM1"
+   MSTR-FUEL-METER  = "FM1"
+   ..
+
+
+$ *********************************************************
+$ **                                                     **
+$ **      HVAC Circulation Loops / Plant Equipment       **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$              Pumps
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Circulation Loops
+$ ---------------------------------------------------------
+
+$ Note that this developmental version does not yet simulate DHW Loops
+$"DHW Loop" = CIRCULATION-LOOP
+$   TYPE             = DHW
+$   HEAT-SETPT-T     = 140.
+$   PROCESS-FLOW     = 1.6
+$   PROCESS-SCH      = "DHW Schedule"
+$   HEAD-SPEC-METHOD = NET-HEAD       
+$   NET-HEAD         = 1.
+$   ..
+
+$ ---------------------------------------------------------
+$              Chillers
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Boilers
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Domestic Water Heaters
+$ ---------------------------------------------------------
+
+$"DHW Heater" = DW-HEATER
+$   TYPE             = GAS
+$   DHW-LOOP         = "DHW Loop"
+$   ..
+
+$ ---------------------------------------------------------
+$              Heat Rejection
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Tower Free Cooling
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Electric Generators
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Thermal Storage
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Heat Exchangers
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Ground Loop Heat Exchangers
+$ ---------------------------------------------------------
+
+
+
+$ *********************************************************
+$ **                                                     **
+$ **            Steam & Chilled Water Meters             **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$              Steam Meters
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Chilled Water Meters
+$ ---------------------------------------------------------
+
+
+"Refg System"      = REFG-SYSTEM
+   REFRIGERANT      = R-717    
+   DESIGN-SCT       = 85.
+   DESIGN-WETBULB   = 74.
+   SCT-CTRL         = "SCT Ctrl"
+   SCT-SETPT        = 85.
+   SCT-THROTTLE     = {if (#PA("SCT Ctrl") == "FIXED")
+                        then 4.
+                        else 1.
+                       endif}
+   BACKFLOOD-CTRL   = {if (#PA("SCT Ctrl") == "FIXED")
+                        then unused
+                        else #SI("FIXED","REFG-SYSTEM","BACKFLOOD-CTRL")
+                       endif}
+   BACKFLOOD-SETPT  = {if (#PA("SCT Ctrl") == "FIXED")
+                        then unused
+                        else 61.
+                       endif}
+   OVERRIDE-MAX-SCT = {if (#PA("SCT Ctrl") == "FIXED")
+                        then unused
+                        else 85.
+                       endif}
+   LOAD-MAX-AIRFLOW = {if (#PA("SCT Ctrl") == "FIXED")  
+                        then unused
+                        else 0.9
+                       endif}
+   LOAD-MIN-AIRFLOW = {if (#PA("SCT Ctrl") == "FIXED")  
+                        then unused
+                        else 0.5
+                       endif}
+   LOAD-MIN-PLR     = {if (#PA("SCT Ctrl") == "FIXED")  
+                        then unused
+                        else 0.5
+                       endif}
+   ..
+
+"Freezer Liquid Ckt" = REFG-CIRCUIT 
+   TYPE             = LIQUID               
+   ATTACH-TO        = REFG-SYSTEM                
+   REFG-SYSTEM      = "Refg System"
+   EQUIPMENT-REPORT = YES
+   ..
+"Dock Liquid Ckt" = REFG-CIRCUIT 
+   TYPE             = LIQUID               
+   ATTACH-TO        = REFG-SYSTEM                
+   REFG-SYSTEM      = "Refg System"
+   EQUIPMENT-REPORT = YES
+   ..
+
+"Discharge Ckt" = REFG-CIRCUIT       
+   TYPE             = DISCHARGE          
+   ATTACH-TO        = REFG-SYSTEM              
+   REFG-SYSTEM      = "Refg System"
+   FRICTION-DT      = 2.
+   EQUIPMENT-REPORT = YES                
+   ..                                    
+
+"EVAPCO PMCB-770 (3)" = CONDENSER
+   TYPE             = EVAPORATIVE 
+   RATED-CAPACITY   = 13422000
+   RATED-SCT        = 85.
+   RATED-WETBULB    = 74.
+   RATED-REFG-CLASS = AMMONIA
+   NUMBER-OF-FANS   = 9
+   KW/FAN           = 8.335
+   SPRAY-KW         = 2.08
+   CAPACITY-CTRL    = {if (#PA("SCT Ctrl") == "FIXED")  
+                        then #SI("ONE-SPEED-FAN","CONDENSER","CAPACITY-CTRL")
+                        else #SI("VAR-SPEED-FAN","CONDENSER","CAPACITY-CTRL")
+                       endif}
+   REFG-SYSTEM      = "Refg System"
+   EQUIPMENT-REPORT = YES
+   ..
+
+"Freezer Suction Group" = SUCTION-GROUP      
+   TYPE              = PARALLEL      
+   DESIGN-SST        = -30.              
+   DISCHARGE-CIRCUIT = "Discharge Ckt" 
+   TEMP-CTRL         = "SST Ctrl"
+   TEMP-SETPT        = -28.
+   TEMP-THROTTLE     = 4.
+   EQUIPMENT-REPORT  = YES
+   ..
+
+"Freezer Suction Ckt" = REFG-CIRCUIT       
+   TYPE             = SUCTION            
+   ATTACH-TO        = SUCTION-GROUP              
+   SUCTION-GROUP    = "Freezer Suction Group"
+   FRICTION-DT      = 3.
+   EQUIPMENT-REPORT = YES
+   .. 
+
+"Frick RWF-100E" = COMPRESSOR   
+   TYPE             = SEMI-HERMETIC 
+   CAP-FSST&SDT     = RWF-100-Flow-fSST&SDT
+   PWR-FSST&SDT     = RWF-100-kW-fSST&SDT
+   PWR-FPLR         = {if (#PA("Comp Cap Ctrl") == "Slide")  
+                        then #SIT("RWF-100-SlidekW-fPLR", "COMPRESSOR",
+                                                         "PWR-FPLR",#L("TYPE"))
+                        else #SIT("Compressor-ASDkW-fPLR","COMPRESSOR",
+                                                         "PWR-FPLR",#L("TYPE"))
+                       endif}
+   SUCTION-GROUP    = "Freezer Suction Group"
+   CAPACITY-CTRL    = EXTERNAL-SIGNAL
+   EQUIPMENT-REPORT = YES                
+   ..                                    
+"Compressor 2" = COMPRESSOR
+   LIKE             = "Frick RWF-100E"
+   ..
+"Compressor 3" = COMPRESSOR
+   LIKE             = "Frick RWF-100E"
+   ..
+"Compressor 4" = COMPRESSOR
+   LIKE             = "Frick RWF-100E"
+   ..
+"Compressor 5" = COMPRESSOR
+   LIKE             = "Frick RWF-100E"
+   ..
+"Compressor 6" = COMPRESSOR
+   LIKE             = "Frick RWF-100E"
+   ..
+"Compressor 7" = COMPRESSOR
+   LIKE             = "Frick RWF-100E"
+   ..
+
+"Compressor 8" = COMPRESSOR
+   LIKE             = "Frick RWF-100E"
+   ..
+
+"Dock Suction Ckt" = REFG-CIRCUIT       
+   TYPE             = SUCTION            
+   ATTACH-TO        = SUCTION-GROUP              
+   SUCTION-GROUP    = "Freezer Suction Group"
+   EQUIPMENT-REPORT = YES
+   .. 
+
+
+
+$ *********************************************************
+$ **                                                     **
+$ **               HVAC Systems / Zones                  **
+$ **                                                     **
+$ *********************************************************
+
+"RTU-1" = SYSTEM          
+   TYPE             = PSZ
+   HEAT-SOURCE      = HEAT-PUMP
+   SUPPLY-FLOW      = 3200
+   MIN-OUTSIDE-AIR  = 0.187
+   FAN-SCHEDULE     = "T24 DAYTIME FAN"
+   NIGHT-CYCLE-CTRL = CYCLE-ON-FIRST
+   COOLING-CAPACITY = 96000
+   COOL-SH-CAP      = 85000
+   HEATING-CAPACITY = -93000
+   HP-SUPP-SOURCE   = NONE
+   CONTROL-ZONE     = "North Office Zone"
+   COOLING-EIR      = 0.29
+   HEATING-EIR      = 0.33
+   SUPPLY-KW/FLOW   = 0.00056
+   ..
+"North Office Zone" = ZONE            
+   TYPE             = CONDITIONED
+   OA-FLOW/PER      = 15
+   HEAT-TEMP-SCH    = "T24 Heat Sch"
+   COOL-TEMP-SCH    = "T24 Cool Sch"
+   SIZING-OPTION    = FROM-LOADS
+   SPACE            = "North Office"
+   ..
+"RTU-2" = SYSTEM          
+   LIKE = "RTU-1"
+   CONTROL-ZONE     = "North Office 2 Zone"
+   ..
+"North Office 2 Zone" = ZONE            
+   LIKE = "North Office Zone"
+   SPACE            = "North Office 2"
+   ..
+"RTU-3" = SYSTEM          
+   LIKE = "RTU-1"
+   TYPE             = PSZ
+   SUPPLY-FLOW      = 2400
+   MIN-OUTSIDE-AIR  = 0.17
+   COOLING-CAPACITY = 70000
+   COOL-SH-CAP      = 64000
+   HEATING-CAPACITY = -72400
+   CONTROL-ZONE     = "South Office Zone"
+   COOLING-EIR      = 0.30
+   HEATING-EIR      = 0.31
+   SUPPLY-KW/FLOW   = 0.00064
+   FAN-SCHEDULE     = "T24 DAYTIME FAN"
+   ..
+"South Office Zone" = ZONE            
+   LIKE = "North Office Zone"
+   SPACE            = "South Office"
+   HEAT-TEMP-SCH    = "T24 Heat Sch"
+   COOL-TEMP-SCH    = "T24 Cool Sch"
+   ..
+"RTU-4" = SYSTEM          
+   LIKE = "RTU-3"
+   CONTROL-ZONE     = "South Office 2 Zone"
+   ..
+"South Office 2 Zone" = ZONE            
+   LIKE = "South Office Zone"
+   SPACE            = "South Office 2"
+   ..
+"RTU-5" = SYSTEM          
+   LIKE = "RTU-1"
+   SUPPLY-FLOW      = 1300
+   MIN-OUTSIDE-AIR  = 0.09
+   COOLING-CAPACITY = 35600
+   COOL-SH-CAP      = 2700
+   HEATING-CAPACITY = -35400
+   CONTROL-ZONE     = "Truckers Lounge Zone"
+   FAN-SCHEDULE     = "T24 DAYTIME FAN"
+   COOLING-EIR      = 0.41
+   HEATING-EIR      = 0.32
+   SUPPLY-KW/FLOW   = 0.00036
+   ..
+"Truckers Lounge Zone" = ZONE            
+   LIKE = "North Office Zone"
+   SPACE            = "Truckers Lounge"
+   ..
+"HVAC South Dock" = SYSTEM          
+   TYPE             = PVVT
+   CONTROL-ZONE     = "South Dock Zone"
+   HEAT-SOURCE      = NONE
+   COOL-SOURCE      = REFG-SYSTEM
+   FAN-PLACEMENT    = DRAW-THROUGH
+   RETURN-AIR-PATH  = DIRECT
+   OA-CONTROL       = FIXED
+   MIN-OUTSIDE-AIR  = 0
+   MIN-SUPPLY-T     = {#PA("Dock Temp") - #PA("Dock Supply dT")}
+   SST-SUPPLY-TD    = "Dock Inlets dT"
+   FAN-SCHEDULE     = "Always On Sch"
+   FAN-CONTROL      = SPEED
+   MIN-FLOW-RATIO   = {if (#PA("VSD Fans") == "No")  
+                        then 1.0
+                        else 0.7
+                       endif}
+   REFG-LIQUID-CKT  = "Dock Liquid Ckt"
+   REFG-SUCTION-CKT = "Dock Suction Ckt"
+   ..
+"South Dock Zone" = ZONE            
+   TYPE             = CONDITIONED
+   DESIGN-HEAT-T    = 0
+   DESIGN-COOL-T    = "Dock Temp"
+   COOL-TEMP-SCH    = "Dock Cool Sch"
+   SIZING-OPTION    = FROM-LOADS
+   SPACE            = "South Dock"
+   ..
+"HVAC North Dock" = SYSTEM          
+   LIKE = "HVAC South Dock"
+   CONTROL-ZONE     = "North Dock Zone"
+   ..
+"North Dock Zone" = ZONE            
+   LIKE = "South Dock Zone"
+   SPACE            = "North Dock"
+   ..
+"HVAC Freezer A" = SYSTEM          
+   LIKE = "HVAC South Dock"
+   CONTROL-ZONE     = "Freezer A Zone"
+   MIN-SUPPLY-T     = {#PA("Freezer A Temp") - #PA("Freezer A Supply dT")}
+   SST-SUPPLY-TD    = "Freezer A Inlets dT"
+   REFG-LIQUID-CKT  = "Freezer Liquid Ckt"
+   REFG-SUCTION-CKT = "Freezer Suction Ckt"
+   ..
+"Freezer A Zone" = ZONE            
+   LIKE             = "South Dock Zone"
+   DESIGN-COOL-T    = "Freezer A Temp"
+   COOL-TEMP-SCH    = "Freezer A Cool Sch"
+   SPACE            = "Freezer A"
+   ..
+"HVAC Freezer B" = SYSTEM          
+   LIKE = "HVAC Freezer A"
+   CONTROL-ZONE     = "Freezer B Zone"
+   MIN-SUPPLY-T     = {#PA("Freezer B Temp") - #PA("Freezer B Supply dT")}
+   SST-SUPPLY-TD    = "Freezer B Inlets dT"
+   ..
+"Freezer B Zone" = ZONE            
+   LIKE             = "Freezer A Zone"
+   DESIGN-COOL-T    = "Freezer B Temp"
+   COOL-TEMP-SCH    = "Freezer B Cool Sch"
+   SPACE            = "Freezer B"
+   ..
+"HVAC Convertible" = SYSTEM          
+   LIKE             = "HVAC Freezer A"
+   CONTROL-ZONE     = "Convertible Zone"
+   MIN-SUPPLY-T     = {#PA("Convertible Temp") - #PA("Convertible Supply dT")}
+   SST-SUPPLY-TD    = "Convertible Inlets dT"
+   ..
+"Convertible Zone" = ZONE            
+   LIKE             = "Freezer A Zone"
+   DESIGN-COOL-T    = "Convertible Temp"
+   COOL-TEMP-SCH    = "Convertible Cool Sch"
+   SPACE            = "Convertible"
+   ..
+"HVAC South Fork Lift" = SYSTEM          
+   TYPE             = PVVT
+   HEAT-SOURCE      = NONE
+   HEATING-SCHEDULE = "Always Off Sch"
+   MIN-SUPPLY-T     = 70
+   COOLING-SCHEDULE = "Always Off Sch"
+   SUPPLY-FLOW      = 2000
+   MIN-OUTSIDE-AIR  = 1
+   OA-CONTROL       = FIXED
+   FAN-SCHEDULE     = "T24 DAYTIME FAN"
+   FAN-CONTROL      = CYCLING
+   SUPPLY-KW/FLOW   = 0.0002
+   FAN-PLACEMENT    = DRAW-THROUGH
+   MIN-FAN-RATIO    = 0.25
+   MIN-FLOW-RATIO   = 0.25
+   COOLING-CAPACITY = 2
+   COOL-SH-CAP      = 1
+   CONTROL-ZONE     = "South Forklift Zone"
+   ..
+"South Forklift Zone" = ZONE            
+   TYPE             = CONDITIONED
+   ASSIGNED-FLOW    = 2000
+   DESIGN-HEAT-T    = 0
+   HEAT-TEMP-SCH    = "No Heat T Sch"
+   DESIGN-COOL-T    = 80
+   COOL-TEMP-SCH    = "Support Cool Sch"
+   SIZING-OPTION    = FROM-LOADS
+   SPACE            = "South Forklift"
+   ..
+"HVAC North Forklift" = SYSTEM          
+   LIKE = "HVAC South Fork Lift"
+   SUPPLY-FLOW      = 7000
+   SUPPLY-KW/FLOW   = 0.0003
+   CONTROL-ZONE     = "North Forklift Zone"
+   ..
+"North Forklift Zone" = ZONE            
+   TYPE             = CONDITIONED
+   ASSIGNED-FLOW    = 7000
+   DESIGN-HEAT-T    = 0
+   HEAT-TEMP-SCH    = "No Heat T Sch"
+   DESIGN-COOL-T    = 80
+   COOL-TEMP-SCH    = "Support Cool Sch"
+   SIZING-OPTION    = FROM-LOADS
+   SPACE            = "North Forklift"
+   ..
+"Machine Room Zone" = ZONE            
+   TYPE             = UNCONDITIONED
+   SPACE            = "Machine Room"
+   ..
+"Electric Room Zone" = ZONE            
+   TYPE             = UNCONDITIONED
+   SPACE            = "Electric Room"
+   ..
+"HVAC Maintenance" = SYSTEM          
+   TYPE             = PSZ
+   HEAT-SOURCE      = HEAT-PUMP
+   MIN-OUTSIDE-AIR  = 0.2
+   FAN-SCHEDULE     = "T24 DAYTIME FAN"
+   CONTROL-ZONE     = "Maintenance Zone"
+   ..
+"Maintenance Zone" = ZONE            
+   TYPE             = CONDITIONED
+   OA-FLOW/PER      = 15
+   HEAT-TEMP-SCH    = "T24 Heat Sch"
+   COOL-TEMP-SCH    = "T24 Cool Sch"
+   SPACE            = "Maintenance"
+   ..
+"HVAC Control" = SYSTEM          
+   TYPE             = PTAC
+   HEAT-SOURCE      = HEAT-PUMP
+   SUPPLY-FLOW      = 290
+   MIN-OUTSIDE-AIR  = 0.14
+   FAN-SCHEDULE     = "T24 DAYTIME FAN"
+   COOLING-CAPACITY = 10400
+   COOL-SH-CAP      = 8320
+   HEATING-CAPACITY = -9100
+   HP-SUPP-HT-CAP   = -5120
+   ..
+"Control Room Zone" = ZONE            
+   LIKE = "North Office Zone"
+   SPACE            = "Control Room"
+   ..
+
+
+$ *********************************************************
+$ **                                                     **
+$ **                Metering & Misc HVAC                 **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$              Equipment Controls
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Load Management
+$ ---------------------------------------------------------
+
+
+
+$ *********************************************************
+$ **                                                     **
+$ **                    Utility Rates                    **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$              Ratchets
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Block Charges
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Utility Rates
+$ ---------------------------------------------------------
+
+TOU-8 = UTILITY-RATE
+   LIBRARY-ENTRY "SCE TOU-8A Elec Rate"
+   ..
+
+$ *********************************************************
+$ **                                                     **
+$ **                 Output Reporting                    **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$              Loads Non-Hourly Reporting
+$ ---------------------------------------------------------
+
+LOADS-REPORT    
+   VERIFICATION     = ( ALL-VERIFICATION )
+   SUMMARY          = ( ALL-SUMMARY )
+   ..
+
+
+$ ---------------------------------------------------------
+$              Systems Non-Hourly Reporting
+$ ---------------------------------------------------------
+
+SYSTEMS-REPORT  
+   VERIFICATION     = ( ALL-VERIFICATION )
+   SUMMARY          = ( ALL-SUMMARY )
+   ..
+
+
+$ ---------------------------------------------------------
+$              Plant Non-Hourly Reporting
+$ ---------------------------------------------------------
+
+PLANT-REPORT    
+   VERIFICATION     = ( ALL-VERIFICATION )
+   SUMMARY          = ( ALL-SUMMARY )
+   DUMP-OPTIONS     = ( DEBUG, SIMULATION)
+   ..
+
+
+$ ---------------------------------------------------------
+$              Economics Non-Hourly Reporting
+$ ---------------------------------------------------------
+
+ECONOMICS-REPORT
+   VERIFICATION     = ( ALL-VERIFICATION )
+   SUMMARY          = ( ALL-SUMMARY )
+   ..
+
+
+$ ---------------------------------------------------------
+$              Hourly Reporting
+$ ---------------------------------------------------------
+
+"HR On DS" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF
+   VALUES           = ( 1 )
+   ..
+"HR Off DS" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF
+   VALUES           = ( 0 )
+   ..
+"HR On WS" = WEEK-SCHEDULE-PD
+   TYPE             = ON/OFF
+   DAY-SCHEDULES    = ("HR On DS" )
+   ..
+"HR Off WS" = WEEK-SCHEDULE-PD
+   TYPE             = ON/OFF
+   DAY-SCHEDULES    = ("HR Off DS" )
+   ..
+"HR Sch" = SCHEDULE-PD
+   TYPE             = ON/OFF
+   MONTH            = (2, 2, 7, 7, 12)
+   DAY              = (1, 8, 7, 14, 31 )
+   WEEK-SCHEDULES   = ( "HR Off WS","HR On WS","HR Off WS","HR On WS",
+                       "HR Off WS" )
+   ..
+
+ 
+"RB Suction Group"       = REPORT-BLOCK  VARIABLE-TYPE "Freezer Suction Group"
+                                         VARIABLE-LIST (1,2,5,8)            ..
+"RB Condenser"           = REPORT-BLOCK  VARIABLE-TYPE "EVAPCO PMCB-770 (3)"
+                                         VARIABLE-LIST (4,9,10)  ..
+"HR Refg System"         = HOURLY-REPORT   
+   REPORT-SCHEDULE       = "HR Sch"
+   REPORT-BLOCK          = ("RB Suction Group",
+                            "RB Condenser")  ..
+
+"RB South Dock"          = REPORT-BLOCK  VARIABLE-TYPE "South Dock Zone"
+                                         VARIABLE-LIST (6,72,73)            ..
+"RB South Dock HVAC"     = REPORT-BLOCK  VARIABLE-TYPE "HVAC South Dock"
+                                         VARIABLE-LIST (2,4,6,17,33,36,37)  ..
+"HR South Dock"          = HOURLY-REPORT   
+   REPORT-SCHEDULE       = "HR Sch"
+   REPORT-BLOCK          = ("RB South Dock",
+                            "RB South Dock HVAC")  ..
+
+"RB North Dock"          = REPORT-BLOCK  VARIABLE-TYPE "North Dock Zone"
+                                         VARIABLE-LIST (6,72,73)            ..
+"RB North Dock HVAC"     = REPORT-BLOCK  VARIABLE-TYPE "HVAC North Dock"
+                                         VARIABLE-LIST (2,4,6,17,33,36,37)  ..
+"HR North Dock"          = HOURLY-REPORT   
+   REPORT-SCHEDULE       = "HR Sch"
+   REPORT-BLOCK          = ("RB North Dock",
+                            "RB North Dock HVAC")  ..
+
+"RB Freezer A"           = REPORT-BLOCK  VARIABLE-TYPE "Freezer A Zone"
+                                         VARIABLE-LIST (6,72,73)            ..
+"RB Freezer A HVAC"      = REPORT-BLOCK  VARIABLE-TYPE "HVAC Freezer A"
+                                         VARIABLE-LIST (2,4,6,17,33,36,37)  ..
+"HR Freezer A"           = HOURLY-REPORT   
+   REPORT-SCHEDULE       = "HR Sch"
+   REPORT-BLOCK          = ("RB Freezer A",
+                            "RB Freezer A HVAC")  ..
+
+"RB Freezer B"           = REPORT-BLOCK  VARIABLE-TYPE "Freezer B Zone"
+                                         VARIABLE-LIST (6,72,73)            ..
+"RB Freezer B HVAC"      = REPORT-BLOCK  VARIABLE-TYPE "HVAC Freezer B"
+                                         VARIABLE-LIST (2,4,6,17,33,36,37)  ..
+"HR Freezer B"           = HOURLY-REPORT   
+   REPORT-SCHEDULE       = "HR Sch"
+   REPORT-BLOCK          = ("RB Freezer B",
+                            "RB Freezer B HVAC")  ..
+
+"RB Convertible"         = REPORT-BLOCK  VARIABLE-TYPE "Convertible Zone"
+                                         VARIABLE-LIST (6,72,73)            ..
+"RB Convertible HVAC"    = REPORT-BLOCK  VARIABLE-TYPE "HVAC Convertible"
+                                         VARIABLE-LIST (2,4,6,17,33,36,37)  ..
+"HR Convertible"         = HOURLY-REPORT   
+   REPORT-SCHEDULE       = "HR Sch"
+   REPORT-BLOCK          = ("RB Convertible",
+                            "RB Convertible HVAC")  ..
+
+ 
+
+$ ---------------------------------------------------------
+$              THE END
+$ ---------------------------------------------------------
+
+END ..
+COMPUTE ..
+STOP ..

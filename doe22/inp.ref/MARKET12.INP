@@ -1,0 +1,2046 @@
+INPUT ..
+
+
+$ ---------------------------------------------------------
+$              Abort, Diagnostics
+$ ---------------------------------------------------------
+
+
+
+
+$ ---------------------------------------------------------
+$              Global Parameters
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Title, Run Periods, Design Days, Holidays
+$ ---------------------------------------------------------
+
+TITLE           
+   LINE-1           = *DOE2.2 Supermarket Sample "Market 1"*
+   LINE-2           = *Created by PRC 6/98, Revised 12/98*
+   LINE-3           = *Using JJH DOE2.2 Beta Release 30NT*
+   ..
+
+"Run Period 1" = RUN-PERIOD-PD
+   BEGIN-MONTH      = 1
+   BEGIN-DAY        = 1
+   BEGIN-YEAR       = 1997
+   END-MONTH        = 12
+   END-DAY          = 31
+   END-YEAR         = 1997
+   ..
+
+
+
+
+$ ---------------------------------------------------------
+$              Site and Building Data
+$ ---------------------------------------------------------
+
+"SITE-PARAMETERS 1" = SITE-PARAMETERS 
+   DAYLIGHT-SAVINGS = NO
+   ..
+
+"BUILD-PARAMETERS 1" = BUILD-PARAMETERS
+   AZIMUTH          = 180
+   GROSS-AREA       = 60000
+   ..
+
+
+$ ---------------------------------------------------------
+$              Materials / Layers / Constructions
+$ ---------------------------------------------------------
+
+"GP01" = MATERIAL        
+   TYPE             = PROPERTIES
+   THICKNESS        = 0.0417
+   CONDUCTIVITY     = 0.0926
+   DENSITY          = 50
+   SPECIFIC-HEAT    = 0.2
+   ..
+"CC03" = MATERIAL        
+   TYPE             = PROPERTIES
+   THICKNESS        = 0.3333
+   CONDUCTIVITY     = 0.7576
+   DENSITY          = 140
+   SPECIFIC-HEAT    = 0.2
+   ..
+"CC07" = MATERIAL        
+   TYPE             = PROPERTIES
+   THICKNESS        = 1
+   CONDUCTIVITY     = 0.7576
+   DENSITY          = 140
+   SPECIFIC-HEAT    = 0.2
+   ..
+"CC04" = MATERIAL        
+   TYPE             = PROPERTIES
+   THICKNESS        = 0.5
+   CONDUCTIVITY     = 0.7576
+   DENSITY          = 140
+   SPECIFIC-HEAT    = 0.2
+   ..
+"CT11" = MATERIAL        
+   TYPE             = PROPERTIES
+   THICKNESS        = 0.0313
+   CONDUCTIVITY     = 1.0416
+   DENSITY          = 120
+   SPECIFIC-HEAT    = 0.2
+   ..
+"LT01" = MATERIAL        
+   TYPE             = RESISTANCE
+   RESISTANCE       = 0.05
+   ..
+"AL21" = MATERIAL        
+   TYPE             = RESISTANCE
+   RESISTANCE       = 0.89
+   ..
+
+"FLOOR-LA" = LAYERS          
+   INSIDE-FILM-RES  = 0.61
+   MATERIAL         = ( "CC03", "CT11" )
+   ..
+"SLAB-LA" = LAYERS          
+   INSIDE-FILM-RES  = 0.61
+   MATERIAL         = ( "CC04", "LT01" )
+   ..
+"INT-WALL-LA" = LAYERS          
+   MATERIAL         = ( "GP01", "AL21", "GP01" )
+   ..
+"INT-FLR-LA" = LAYERS          
+   MATERIAL         = ( "CC04" )
+   ..
+"INT-ROOF-LA" = LAYERS          
+   MATERIAL         = ( "CC04" )
+   ..
+"Layers-1" = LAYERS          
+   MATERIAL         = ( "CC03" )
+   ..
+"Layers-4" = LAYERS          
+   MATERIAL         = ( "CC07", "GP01" )
+   ..
+
+"DOOR-1" = CONSTRUCTION    
+   TYPE             = U-VALUE
+   U-VALUE          = 0.5
+   ..
+"SLAB-FLOOR" = CONSTRUCTION    
+   TYPE             = LAYERS
+   ABSORPTANCE      = 0.7
+   LAYERS           = "SLAB-LA"
+   ..
+"INT-WALL" = CONSTRUCTION    
+   TYPE             = LAYERS
+   ABSORPTANCE      = 0.7
+   LAYERS           = "INT-WALL-LA"
+   ..
+"INT-FLOOR" = CONSTRUCTION    
+   TYPE             = LAYERS
+   ABSORPTANCE      = 0.7
+   LAYERS           = "INT-FLR-LA"
+   ..
+"INT-ROOF" = CONSTRUCTION    
+   TYPE             = LAYERS
+   ABSORPTANCE      = 0.7
+   LAYERS           = "INT-ROOF-LA"
+   ..
+"Wall1" = CONSTRUCTION    
+   TYPE             = LAYERS
+   ABSORPTANCE      = 0.7
+   LAYERS           = "Layers-1"
+   ..
+"Wall4" = CONSTRUCTION    
+   TYPE             = LAYERS
+   ABSORPTANCE      = 0.7
+   LAYERS           = "Layers-4"
+   ..
+
+
+$ ---------------------------------------------------------
+$              Glass Types
+$ ---------------------------------------------------------
+
+"Glass-1e" = GLASS-TYPE      
+   TYPE             = SHADING-COEF
+   SHADING-COEF     = 0.6
+   GLASS-CONDUCT    = 0.827
+   ..
+
+
+$ ---------------------------------------------------------
+$              Window Layers
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Lamps / Luminaries / Lighting Systems
+$ ---------------------------------------------------------
+
+
+
+
+
+$ ---------------------------------------------------------
+$              Day Schedules
+$ ---------------------------------------------------------
+
+"Day Schedule   1" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.04, 0.12, 
+         0.28, 0.44, 0.45, 0.49, 0.52, 0.55, 0.6, 0.7, 0.68, 0.54, 0.32, 0.2, 
+         0.02, 0.02, 0.02 )
+   ..
+"Day Schedule   2" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0, 0, 0, 0.02, 0.02, 0.02, 0.02, 0.04, 0.12, 0.28, 
+         0.48, 0.49, 0.55, 0.58, 0.59, 0.64, 0.74, 0.72, 0.58, 0.34, 0.2, 
+         0.02, 0, 0 )
+   ..
+"Day Schedule   3" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0, 0, 0, 0.02, 0.02, 0.02, 0.02, 0.04, 0.12, 0.28, 
+         0.48, 0.49, 0.55, 0.58, 0.59, 0.64, 0.74, 0.72, 0.58, 0.34, 0.2, 
+         0.02, 0, 0 )
+   ..
+"Day Schedule   4" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0, 0, 0, 0, 0, 0, 0.02, 0.04, 0.12, 0.28, 0.48, 0.49, 
+         0.55, 0.58, 0.59, 0.64, 0.74, 0.72, 0.58, 0.34, 0.2, 0.02, 0, 0 )
+   ..
+"Day Schedule   5" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.24, 
+         0.58, 0.78, 0.78, 0.78, 0.78, 0.8, 0.82, 0.86, 0.86, 0.78, 0.7, 
+         0.34, 0.04, 0.14, 0.14 )
+   ..
+"Day Schedule   6" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.24, 
+         0.58, 0.78, 0.78, 0.78, 0.78, 0.8, 0.82, 0.86, 0.86, 0.78, 0.7, 
+         0.34, 0.04, 0.14, 0.14 )
+   ..
+"Day Schedule   7" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.24, 
+         0.58, 0.78, 0.78, 0.78, 0.78, 0.8, 0.82, 0.86, 0.86, 0.78, 0.7, 
+         0.34, 0.04, 0.14, 0.14 )
+   ..
+"Day Schedule   8" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0, 0, 0, 0, 0, 0, 0.02, 0.14, 0.24, 0.58, 0.82, 0.82, 
+         0.82, 0.82, 0.86, 0.86, 0.86, 0.86, 0.76, 0.68, 0.34, 0.04, 0, 0 )
+   ..
+"Day Schedule   9" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.16, 0.16, 0.16, 0.16, 0.16, 0.16, 0.18, 0.2, 0.22, 
+         0.7, 0.72, 0.72, 0.7, 0.7, 0.72, 0.72, 0.7, 0.7, 0.64, 0.62, 0.18, 
+         0.16, 0.16, 0.16 )
+   ..
+"Day Schedule  10" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.16, 0.16, 0.16, 0.16, 0.16, 0.16, 0.18, 0.2, 0.22, 
+         0.7, 0.72, 0.72, 0.7, 0.7, 0.72, 0.72, 0.7, 0.7, 0.64, 0.62, 0.18, 
+         0.16, 0.16, 0.16 )
+   ..
+"Day Schedule  11" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.16, 0.16, 0.16, 0.16, 0.16, 0.16, 0.18, 0.2, 0.22, 
+         0.7, 0.72, 0.72, 0.7, 0.7, 0.72, 0.72, 0.7, 0.7, 0.64, 0.62, 0.18, 
+         0.16, 0.16, 0.16 )
+   ..
+"Day Schedule  12" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.16, 0.16, 0.16, 0.16, 0.16, 0.16, 0.18, 0.2, 0.22, 
+         0.7, 0.72, 0.72, 0.7, 0.7, 0.72, 0.72, 0.7, 0.7, 0.64, 0.62, 0.18, 
+         0.16, 0.16, 0.16 )
+   ..
+"Day Schedule  13" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+         0, 0, 1, 1, 1, 1 )
+   ..
+"Day Schedule  14" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+         0, 0, 1, 1, 1, 1 )
+   ..
+"Day Schedule  15" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+         0, 0, 1, 1, 1, 1 )
+   ..
+"Day Schedule  16" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+         0, 0, 1, 1, 1, 1 )
+   ..
+"Day Schedule  17" = DAY-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   VALUES           = ( 95, 95, 95, 95, 95, 95, 95, 95, 95, 75, 75, 75, 75, 
+         75, 75, 75, 75, 75, 75, 75, 95, 95, 95, 95 )
+   ..
+"Day Schedule  18" = DAY-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   VALUES           = ( 95, 95, 95, 95, 95, 95, 95, 95, 95, 75, 75, 75, 75, 
+         75, 75, 75, 75, 75, 75, 75, 95, 95, 95, 95 )
+   ..
+"Day Schedule  19" = DAY-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   VALUES           = ( 95, 95, 95, 95, 95, 95, 95, 95, 95, 75, 75, 75, 75, 
+         75, 75, 75, 75, 75, 75, 75, 95, 95, 95, 95 )
+   ..
+"Day Schedule  20" = DAY-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   VALUES           = ( 95, 95, 95, 95, 95, 95, 95, 95, 95, 75, 75, 75, 75, 
+         75, 75, 75, 75, 75, 75, 75, 95, 95, 95, 95 )
+   ..
+"Day Schedule  21" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF
+   VALUES           = ( 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+         1, 1, 0, 0, 0, 0 )
+   ..
+"Day Schedule  22" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF
+   VALUES           = ( 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+         1, 1, 0, 0, 0, 0 )
+   ..
+"Day Schedule  23" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF
+   VALUES           = ( 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+         1, 1, 0, 0, 0, 0 )
+   ..
+"Day Schedule  24" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF
+   VALUES           = ( 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+         1, 1, 0, 0, 0, 0 )
+   ..
+"Day Schedule  25" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF
+   VALUES           = ( 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+         1, 1, 1, 1, 1, 1 )
+   ..
+"Day Schedule  26" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF
+   VALUES           = ( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+         0, 0, 0, 0, 0, 0 )
+   ..
+"Day Schedule  27" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+         1, 1, 1, 1, 1, 1 )
+   ..
+"Day Schedule  28" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF
+   VALUES           = ( 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+         0, 0, 0, 0, 0, 0 )
+   ..
+"Day Schedule  29" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF
+   VALUES           = ( 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+         0, 0, 0, 0, 0, 0 )
+   ..
+"Day Schedule  30" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF
+   VALUES           = ( 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+         0, 0, 0, 0, 0, 0 )
+   ..
+"Day Schedule  31" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF
+   VALUES           = ( 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 
+         0, 0, 0, 1, 0, 0 )
+   ..
+"Day Schedule  32" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF
+   VALUES           = ( 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 
+         0, 0, 1, 0, 0, 0 )
+   ..
+"Day Schedule  33" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF
+   VALUES           = ( 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 
+         0, 1, 0, 0, 0, 0 )
+   ..
+"Day Schedule  34" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF
+   VALUES           = ( 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 
+         0, 0, 0, 1, 0, 0 )
+   ..
+"Day Schedule  35" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF
+   VALUES           = ( 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 
+         0, 0, 0, 0, 1, 0 )
+   ..
+"Day Schedule  36" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF
+   VALUES           = ( 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 
+         0, 1, 0, 0, 0, 1 )
+   ..
+"Day Schedule  37" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF
+   VALUES           = ( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+         0, 0, 0, 0, 0, 0 )
+   ..
+"Day Schedule  38" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF
+   VALUES           = ( 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+         1, 1, 1, 1, 1, 1 )
+   ..
+"Day Schedule  39" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF
+   VALUES           = ( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+         0, 0, 0, 0, 0, 0 )
+   ..
+"Day Schedule  40" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF
+   VALUES           = ( 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+         1, 1, 1, 1, 1, 1 )
+   ..
+"Day Schedule  41" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF
+   VALUES           = ( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+         0, 0, 0, 0, 0, 0 )
+   ..
+
+$ ---------------------------------------------------------
+$              Week Schedules
+$ ---------------------------------------------------------
+
+"Week Schedule  1" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "Day Schedule   1", "Day Schedule   1", 
+         "Day Schedule   1", "Day Schedule   1", "Day Schedule   1", 
+         "Day Schedule   2", "Day Schedule   3", "Day Schedule   4" )
+   ..
+"Week Schedule  2" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "Day Schedule   5", "Day Schedule   5", 
+         "Day Schedule   5", "Day Schedule   5", "Day Schedule   5", 
+         "Day Schedule   6", "Day Schedule   7", "Day Schedule   8" )
+   ..
+"Week Schedule  3" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "Day Schedule   9", "Day Schedule   9", 
+         "Day Schedule   9", "Day Schedule   9", "Day Schedule   9", 
+         "Day Schedule  10", "Day Schedule  11", "Day Schedule  12" )
+   ..
+"Week Schedule  4" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "Day Schedule  13", "Day Schedule  13", 
+         "Day Schedule  13", "Day Schedule  13", "Day Schedule  13", 
+         "Day Schedule  14", "Day Schedule  15", "Day Schedule  16" )
+   ..
+"Week Schedule  5" = WEEK-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   DAY-SCHEDULES    = ( "Day Schedule  17", "Day Schedule  17", 
+         "Day Schedule  17", "Day Schedule  17", "Day Schedule  17", 
+         "Day Schedule  18", "Day Schedule  19", "Day Schedule  20" )
+   ..
+"Week Schedule  6" = WEEK-SCHEDULE-PD
+   TYPE             = ON/OFF
+   DAY-SCHEDULES    = ( "Day Schedule  21", "Day Schedule  21", 
+         "Day Schedule  21", "Day Schedule  21", "Day Schedule  21", 
+         "Day Schedule  22", "Day Schedule  23", "Day Schedule  24" )
+   ..
+"Week Schedule  7" = WEEK-SCHEDULE-PD
+   TYPE             = ON/OFF
+   DAY-SCHEDULES    = ( "Day Schedule  25", "Day Schedule  25", 
+         "Day Schedule  25", "Day Schedule  25", "Day Schedule  25", 
+         "Day Schedule  25", "Day Schedule  25", "Day Schedule  25" )
+   ..
+"Week Schedule  8" = WEEK-SCHEDULE-PD
+   TYPE             = ON/OFF
+   DAY-SCHEDULES    = ( "Day Schedule  26", "Day Schedule  26", 
+         "Day Schedule  26", "Day Schedule  26", "Day Schedule  26", 
+         "Day Schedule  26", "Day Schedule  26", "Day Schedule  26" )
+   ..
+"Week Schedule  9" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "Day Schedule  27", "Day Schedule  27", 
+         "Day Schedule  27", "Day Schedule  27", "Day Schedule  27", 
+         "Day Schedule  27", "Day Schedule  27", "Day Schedule  27" )
+   ..
+"Week Schedule 10" = WEEK-SCHEDULE-PD
+   TYPE             = ON/OFF
+   DAY-SCHEDULES    = ( "Day Schedule  28", "Day Schedule  28", 
+         "Day Schedule  28", "Day Schedule  28", "Day Schedule  28", 
+         "Day Schedule  28", "Day Schedule  28", "Day Schedule  28" )
+   ..
+"Week Schedule 11" = WEEK-SCHEDULE-PD
+   TYPE             = ON/OFF
+   DAY-SCHEDULES    = ( "Day Schedule  29", "Day Schedule  29", 
+         "Day Schedule  29", "Day Schedule  29", "Day Schedule  29", 
+         "Day Schedule  29", "Day Schedule  29", "Day Schedule  29" )
+   ..
+"Week Schedule 12" = WEEK-SCHEDULE-PD
+   TYPE             = ON/OFF
+   DAY-SCHEDULES    = ( "Day Schedule  30", "Day Schedule  30", 
+         "Day Schedule  30", "Day Schedule  30", "Day Schedule  30", 
+         "Day Schedule  30", "Day Schedule  30", "Day Schedule  30" )
+   ..
+"Week Schedule 13" = WEEK-SCHEDULE-PD
+   TYPE             = ON/OFF
+   DAY-SCHEDULES    = ( "Day Schedule  31", "Day Schedule  31", 
+         "Day Schedule  31", "Day Schedule  31", "Day Schedule  31", 
+         "Day Schedule  31", "Day Schedule  31", "Day Schedule  31" )
+   ..
+"Week Schedule 14" = WEEK-SCHEDULE-PD
+   TYPE             = ON/OFF
+   DAY-SCHEDULES    = ( "Day Schedule  32", "Day Schedule  32", 
+         "Day Schedule  32", "Day Schedule  32", "Day Schedule  32", 
+         "Day Schedule  32", "Day Schedule  32", "Day Schedule  32" )
+   ..
+"Week Schedule 15" = WEEK-SCHEDULE-PD
+   TYPE             = ON/OFF
+   DAY-SCHEDULES    = ( "Day Schedule  33", "Day Schedule  33", 
+         "Day Schedule  33", "Day Schedule  33", "Day Schedule  33", 
+         "Day Schedule  33", "Day Schedule  33", "Day Schedule  33" )
+   ..
+"Week Schedule 16" = WEEK-SCHEDULE-PD
+   TYPE             = ON/OFF
+   DAY-SCHEDULES    = ( "Day Schedule  34", "Day Schedule  34", 
+         "Day Schedule  34", "Day Schedule  34", "Day Schedule  34", 
+         "Day Schedule  34", "Day Schedule  34", "Day Schedule  34" )
+   ..
+"Week Schedule 17" = WEEK-SCHEDULE-PD
+   TYPE             = ON/OFF
+   DAY-SCHEDULES    = ( "Day Schedule  35", "Day Schedule  35", 
+         "Day Schedule  35", "Day Schedule  35", "Day Schedule  35", 
+         "Day Schedule  35", "Day Schedule  35", "Day Schedule  35" )
+   ..
+"Week Schedule 18" = WEEK-SCHEDULE-PD
+   TYPE             = ON/OFF
+   DAY-SCHEDULES    = ( "Day Schedule  36", "Day Schedule  36", 
+         "Day Schedule  36", "Day Schedule  36", "Day Schedule  36", 
+         "Day Schedule  36", "Day Schedule  36", "Day Schedule  36" )
+   ..
+"Week Schedule 19" = WEEK-SCHEDULE-PD
+   TYPE             = ON/OFF
+   DAY-SCHEDULES    = ( "Day Schedule  37", "Day Schedule  37", 
+         "Day Schedule  37", "Day Schedule  37", "Day Schedule  37", 
+         "Day Schedule  37", "Day Schedule  37", "Day Schedule  37" )
+   ..
+"Week Schedule 20" = WEEK-SCHEDULE-PD
+   TYPE             = ON/OFF
+   DAY-SCHEDULES    = ( "Day Schedule  38", "Day Schedule  38", 
+         "Day Schedule  38", "Day Schedule  38", "Day Schedule  38", 
+         "Day Schedule  38", "Day Schedule  38", "Day Schedule  38" )
+   ..
+"Week Schedule 21" = WEEK-SCHEDULE-PD
+   TYPE             = ON/OFF
+   DAY-SCHEDULES    = ( "Day Schedule  39", "Day Schedule  39", 
+         "Day Schedule  39", "Day Schedule  39", "Day Schedule  39", 
+         "Day Schedule  39", "Day Schedule  39", "Day Schedule  39" )
+   ..
+"Week Schedule 22" = WEEK-SCHEDULE-PD
+   TYPE             = ON/OFF
+   DAY-SCHEDULES    = ( "Day Schedule  40", "Day Schedule  40", 
+         "Day Schedule  40", "Day Schedule  40", "Day Schedule  40", 
+         "Day Schedule  40", "Day Schedule  40", "Day Schedule  40" )
+   ..
+"Week Schedule 23" = WEEK-SCHEDULE-PD
+   TYPE             = ON/OFF
+   DAY-SCHEDULES    = ( "Day Schedule  41", "Day Schedule  41", 
+         "Day Schedule  41", "Day Schedule  41", "Day Schedule  41", 
+         "Day Schedule  41", "Day Schedule  41", "Day Schedule  41" )
+   ..
+
+$ ---------------------------------------------------------
+$              Annual Schedules
+$ ---------------------------------------------------------
+
+"Occupancy Sales" = SCHEDULE-PD
+   TYPE             = FRACTION
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Week Schedule  1" )
+   ..
+"Lighting Sales" = SCHEDULE-PD
+   TYPE             = FRACTION
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Week Schedule  2" )
+   ..
+"Load Sales" = SCHEDULE-PD
+   TYPE             = FRACTION
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Week Schedule  3" )
+   ..
+"INFIL-SCH" = SCHEDULE-PD
+   TYPE             = FRACTION
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Week Schedule  4" )
+   ..
+"Cool Schedule" = SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Week Schedule  5" )
+   ..
+"Fan Operation" = SCHEDULE-PD
+   TYPE             = ON/OFF
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Week Schedule  6" )
+   ..
+"Always On" = SCHEDULE-PD
+   TYPE             = ON/OFF
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Week Schedule  7" )
+   ..
+"Always Off" = SCHEDULE-PD
+   TYPE             = ON/OFF
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Week Schedule  8" )
+   ..
+"Always 1" = SCHEDULE-PD
+   TYPE             = FRACTION
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Week Schedule  9" )
+   ..
+"DEF-2" = SCHEDULE-PD
+   TYPE             = ON/OFF
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Week Schedule 10" )
+   ..
+"DEF-3" = SCHEDULE-PD
+   TYPE             = ON/OFF
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Week Schedule 11" )
+   ..
+"DEF-4" = SCHEDULE-PD
+   TYPE             = ON/OFF
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Week Schedule 12" )
+   ..
+"DEF-6-14-22" = SCHEDULE-PD
+   TYPE             = ON/OFF
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Week Schedule 13" )
+   ..
+"DEF-5-13-21" = SCHEDULE-PD
+   TYPE             = ON/OFF
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Week Schedule 14" )
+   ..
+"DEF-4-12-20" = SCHEDULE-PD
+   TYPE             = ON/OFF
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Week Schedule 15" )
+   ..
+"DEF-X3" = SCHEDULE-PD
+   TYPE             = ON/OFF
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Week Schedule 16" )
+   ..
+"DEF-X4" = SCHEDULE-PD
+   TYPE             = ON/OFF
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Week Schedule 17" )
+   ..
+"DEF-X6" = SCHEDULE-PD
+   TYPE             = ON/OFF
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Week Schedule 18" )
+   ..
+"REP-SCH" = SCHEDULE-PD
+   TYPE             = ON/OFF
+   MONTH            = ( 2, 2, 7, 7, 12 )
+   DAY              = ( 1, 8, 7, 14, 31 )
+   WEEK-SCHEDULES   = ( "Week Schedule 19", "Week Schedule 20", 
+         "Week Schedule 21", "Week Schedule 22", "Week Schedule 23" )
+   ..
+
+
+$ ---------------------------------------------------------
+$              Polygons
+$ ---------------------------------------------------------
+
+"Poly_Groc" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 123.329, 0 )
+   V3               = ( 123.329, 316.228 )
+   V4               = ( 0, 316.228 )
+   ..
+"Poly_Off" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 18.9737, 0 )
+   V3               = ( 18.9737, 316.228 )
+   V4               = ( 0, 316.228 )
+   ..
+"Poly_Stor" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 47.4341, 0 )
+   V3               = ( 47.4341, 316.228 )
+   V4               = ( 0, 316.228 )
+   ..
+"1FloorPoly" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 189.737, 0 )
+   V3               = ( 189.737, 316.228 )
+   V4               = ( 0, 316.228 )
+   ..
+"Poly_Groc - Mirror" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 316.228, 0 )
+   V3               = ( 316.228, 123.329 )
+   V4               = ( 0, 123.329 )
+   ..
+"Poly_Off - Mirror" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 316.228, 0 )
+   V3               = ( 316.228, 18.9737 )
+   V4               = ( 0, 18.9737 )
+   ..
+"Poly_Stor - Mirror" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 316.228, 0 )
+   V3               = ( 316.228, 47.4341 )
+   V4               = ( 0, 47.4341 )
+   ..
+
+
+$ ---------------------------------------------------------
+$              Wall Parameters
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Fixed and Building Shades
+$ ---------------------------------------------------------
+
+
+
+
+$ ---------------------------------------------------------
+$              Misc Cost Related Objects
+$ ---------------------------------------------------------
+
+
+
+"BASELINE 1" = BASELINE        
+   ..
+
+
+$ *********************************************************
+$ **                                                     **
+$ **      Floors / Spaces / Walls / Windows / Doors      **
+$ **                                                     **
+$ *********************************************************
+
+SET-DEFAULT FOR EXTERIOR-WALL   
+   CONSTRUCTION     = "Wall1"
+   ..
+
+SET-DEFAULT FOR WINDOW          
+   X                = {PARENT("WIDTH")/2 - LOCAL("WIDTH")/2}
+   Y                = 
+{if ((PARENT("HEIGHT") - 1 - LOCAL("HEIGHT")) > 0)
+                       then (PARENT("HEIGHT") - 1 - LOCAL("HEIGHT"))
+                       else (PARENT("HEIGHT") - LOCAL("HEIGHT"))
+                       endif}
+   ..
+
+SET-DEFAULT FOR INTERIOR-WALL   
+   CONSTRUCTION     = "INT-WALL"
+   ..
+
+"FirstFloor" = FLOOR           
+   X                = 0
+   Y                = 0
+   Z                = 0
+   AZIMUTH          = 0
+   POLYGON          = "1FloorPoly"
+   SHAPE            = POLYGON
+   FLOOR-HEIGHT     = 45.9318
+   SPACE-HEIGHT     = 45.9318
+   ..
+"Grocery" = SPACE           
+   X                = 0
+   Y                = 0
+   Z                = 0
+   AZIMUTH          = 0
+   SHAPE            = POLYGON
+   FLOOR-WEIGHT     = 70
+   ZONE-TYPE        = CONDITIONED
+   PEOPLE-SCHEDULE  = "Occupancy Sales"
+   LIGHTING-SCHEDUL = ( "Lighting Sales" )
+   EQUIP-SCHEDULE   = ( "Load Sales" )
+   INF-SCHEDULE     = "INFIL-SCH"
+   LIGHTING-TYPE    = ( REC-FLUOR-NV )
+   INF-METHOD       = AIR-CHANGE
+   AIR-CHANGES/HR   = 0.25
+   PEOPLE-HG-LAT    = 200
+   PEOPLE-HG-SENS   = 250
+   EQUIP-LATENT     = ( 0 )
+   EQUIP-SENSIBLE   = ( 1 )
+   LIGHTING-W/AREA  = ( 0.22296 )
+   EQUIPMENT-W/AREA = ( 0.33444 )
+   AREA/PERSON      = 44.1335
+   POLYGON          = "Poly_Groc"
+   ..
+"Groc Ext Wall1" = EXTERIOR-WALL   
+   LOCATION         = SPACE-V1
+   ..
+"Entrance Window" = WINDOW          
+   GLASS-TYPE       = "Glass-1e"
+   HEIGHT           = 7.5
+   WIDTH            = 133.333
+   SETBACK          = 32.8084
+   ..
+"Groc Ext Wall2" = EXTERIOR-WALL   
+   LOCATION         = SPACE-V3
+   ..
+"Groc Ext Wall3" = EXTERIOR-WALL   
+   LOCATION         = SPACE-V4
+   ..
+"Groc Ceiling" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Wall4"
+   LOCATION         = TOP
+   ..
+"Groc Int Wall 1" = INTERIOR-WALL   
+   NEXT-TO          = "Office"
+   LOCATION         = SPACE-V2
+   ..
+"Groc Floor" = UNDERGROUND-WALL
+   CONSTRUCTION     = "SLAB-FLOOR"
+   LOCATION         = BOTTOM
+   ..
+"Office" = SPACE           
+   X                = 123.329
+   Y                = 0
+   Z                = 0
+   AZIMUTH          = 0
+   SHAPE            = POLYGON
+   FLOOR-WEIGHT     = 70
+   ZONE-TYPE        = CONDITIONED
+   PEOPLE-SCHEDULE  = "Occupancy Sales"
+   LIGHTING-SCHEDUL = ( "Lighting Sales" )
+   EQUIP-SCHEDULE   = ( "Load Sales" )
+   INF-SCHEDULE     = "INFIL-SCH"
+   LIGHTING-TYPE    = ( REC-FLUOR-NV )
+   INF-METHOD       = AIR-CHANGE
+   AIR-CHANGES/HR   = 0.25
+   PEOPLE-HG-LAT    = 200
+   PEOPLE-HG-SENS   = 250
+   EQUIP-LATENT     = ( 0 )
+   EQUIP-SENSIBLE   = ( 1 )
+   LIGHTING-W/AREA  = ( 0.17651 )
+   EQUIPMENT-W/AREA = ( 0.16722 )
+   AREA/PERSON      = 107.643
+   POLYGON          = "Poly_Off"
+   ..
+"Off Ext Wall 1" = EXTERIOR-WALL   
+   LOCATION         = SPACE-V1
+   ..
+"Off Ext Wall 2" = EXTERIOR-WALL   
+   LOCATION         = SPACE-V3
+   ..
+"Off  Ceiling" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Wall4"
+   LOCATION         = TOP
+   ..
+"Off Int Wall 1" = INTERIOR-WALL   
+   NEXT-TO          = "Storage"
+   LOCATION         = SPACE-V2
+   ..
+"Off Floor" = UNDERGROUND-WALL
+   CONSTRUCTION     = "SLAB-FLOOR"
+   LOCATION         = BOTTOM
+   ..
+"Storage" = SPACE           
+   X                = 142.303
+   Y                = 0
+   Z                = 0
+   AZIMUTH          = 0
+   SHAPE            = POLYGON
+   FLOOR-WEIGHT     = 70
+   ZONE-TYPE        = UNCONDITIONED
+   PEOPLE-SCHEDULE  = "Occupancy Sales"
+   LIGHTING-SCHEDUL = ( "Lighting Sales" )
+   EQUIP-SCHEDULE   = ( "Load Sales" )
+   INF-SCHEDULE     = "INFIL-SCH"
+   LIGHTING-TYPE    = ( REC-FLUOR-NV )
+   INF-METHOD       = AIR-CHANGE
+   AIR-CHANGES/HR   = 0.25
+   PEOPLE-HG-LAT    = 200
+   PEOPLE-HG-SENS   = 250
+   EQUIP-LATENT     = ( 0 )
+   EQUIP-SENSIBLE   = ( 1 )
+   LIGHTING-W/AREA  = ( 0.14864 )
+   EQUIPMENT-W/AREA = ( 0.1858 )
+   AREA/PERSON      = 10764.3
+   POLYGON          = "Poly_Stor"
+   ..
+"Stor Ext Wall 1" = EXTERIOR-WALL   
+   LOCATION         = SPACE-V1
+   ..
+"Stor Ext Wall 2" = EXTERIOR-WALL   
+   LOCATION         = SPACE-V2
+   ..
+"Stor Ext Wall 3" = EXTERIOR-WALL   
+   LOCATION         = SPACE-V3
+   ..
+"Stor Ceiling" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Wall4"
+   LOCATION         = TOP
+   ..
+"Stor Floor" = UNDERGROUND-WALL
+   CONSTRUCTION     = "SLAB-FLOOR"
+   LOCATION         = BOTTOM
+   ..
+
+
+$ *********************************************************
+$ **                                                     **
+$ **                Performance Curves                   **
+$ **                                                     **
+$ *********************************************************
+
+
+
+$ *********************************************************
+$ **                                                     **
+$ **              Meters                                 **
+$ **                                                     **
+$ *********************************************************
+
+"EM1" = METER           
+   TYPE             = ELECTRIC
+   ..
+"FM1" = METER           
+   TYPE             = FUEL
+   ..
+
+
+$ ---------------------------------------------------------
+$              Master Meters
+$ ---------------------------------------------------------
+
+"MASTER-METERS 1" = MASTER-METERS   
+   MSTR-ELEC-METER  = "EM1"
+   MSTR-FUEL-METER  = "FM1"
+   ..
+
+
+$ *********************************************************
+$ **                                                     **
+$ **      HVAC Circulation Loops / Plant Equipment       **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$              Pumps
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Heat Exchangers
+$ ---------------------------------------------------------
+
+
+
+$ *********************************************************
+$ **                                                     **
+$ **             Refrigeration Equipment                 **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$                        Fluids
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$                     Refrigerants
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$         Refrigeration Systems and assigned equipment
+$ ---------------------------------------------------------
+
+"Refg System 5" = REFG-SYSTEM     
+   REFRIGERANT      = "R-22"
+   DESIGN-SCT       = 105
+   SCT-CTRL         = FIXED
+   SCT-SETPT        = 95
+   SCT-THROTTLE     = 5
+   ..
+"Condenser 5" = CONDENSER       
+   TYPE             = EVAPORATIVE
+   CAPACITY-RATIO   = 1.2
+   CAPACITY-CTRL    = VAR-SPEED-FAN
+   REFG-SYSTEM      = "Refg System 5"
+   EQUIPMENT-REPORT = YES
+   ..
+"Liquid Trunk 5" = REFG-CIRCUIT    
+   TYPE             = LIQUID
+   ATTACH-TO        = REFG-SYSTEM
+   REFG-SYSTEM      = "Refg System 5"
+   EQUIPMENT-REPORT = YES
+   ..
+"HS Trunk 5" = REFG-CIRCUIT    
+   TYPE             = DISCHARGE
+   ATTACH-TO        = REFG-SYSTEM
+   REFG-SYSTEM      = "Refg System 5"
+   EQUIPMENT-REPORT = YES
+   ..
+"Rack SST:F1" = SUCTION-GROUP   
+   TYPE             = PARALLEL
+   DESIGN-SST       = 8
+   DISCHARGE-CIRCUI = "HS Trunk 5"
+   TEMP-CTRL        = FIXED
+   TEMP-SETPT       = 3
+   TEMP-THROTTLE    = 10
+   EQUIPMENT-REPORT = YES
+   ..
+"Suction Trunk 6" = REFG-CIRCUIT    
+   TYPE             = SUCTION
+   ATTACH-TO        = SUCTION-GROUP
+   SUCTION-GROUP    = "Rack SST:F1"
+   EQUIPMENT-REPORT = YES
+   ..
+"Comp SST:F1:1" = COMPRESSOR      
+   LIBRARY-ENTRY "M3DS31500"
+   SUCTION-GROUP    = "Rack SST:F1"
+   EQUIPMENT-REPORT = YES
+   ..
+"Comp SST:F1:2" = COMPRESSOR      
+   LIBRARY-ENTRY "M4DA32000"
+   SUCTION-GROUP    = "Rack SST:F1"
+   EQUIPMENT-REPORT = YES
+   ..
+"Comp SST:F1:3" = COMPRESSOR      
+   LIBRARY-ENTRY "M4DA32000"
+   SUCTION-GROUP    = "Rack SST:F1"
+   EQUIPMENT-REPORT = YES
+   ..
+"Refg System 4" = REFG-SYSTEM     
+   REFRIGERANT      = "R-22"
+   DESIGN-SCT       = 105
+   SCT-CTRL         = FIXED
+   SCT-SETPT        = 95
+   SCT-THROTTLE     = 5
+   ..
+"Condenser 4" = CONDENSER       
+   TYPE             = EVAPORATIVE
+   CAPACITY-RATIO   = 1.2
+   CAPACITY-CTRL    = VAR-SPEED-FAN
+   REFG-SYSTEM      = "Refg System 4"
+   EQUIPMENT-REPORT = YES
+   ..
+"Liquid Trunk 4" = REFG-CIRCUIT    
+   TYPE             = LIQUID
+   ATTACH-TO        = REFG-SYSTEM
+   REFG-SYSTEM      = "Refg System 4"
+   EQUIPMENT-REPORT = YES
+   ..
+"HS Trunk 4" = REFG-CIRCUIT    
+   TYPE             = DISCHARGE
+   ATTACH-TO        = REFG-SYSTEM
+   REFG-SYSTEM      = "Refg System 4"
+   EQUIPMENT-REPORT = YES
+   ..
+"Rack SST:E1" = SUCTION-GROUP   
+   TYPE             = PARALLEL
+   DESIGN-SST       = 2
+   DISCHARGE-CIRCUI = "HS Trunk 4"
+   TEMP-CTRL        = FIXED
+   TEMP-SETPT       = -3
+   TEMP-THROTTLE    = 10
+   EQUIPMENT-REPORT = YES
+   ..
+"Suction Trunk 5" = REFG-CIRCUIT    
+   TYPE             = SUCTION
+   ATTACH-TO        = SUCTION-GROUP
+   SUCTION-GROUP    = "Rack SST:E1"
+   EQUIPMENT-REPORT = YES
+   ..
+"Comp SST:E1:1" = COMPRESSOR      
+   LIBRARY-ENTRY "M2DD30500"
+   SUCTION-GROUP    = "Rack SST:E1"
+   EQUIPMENT-REPORT = YES
+   ..
+"Comp SST:E1:2" = COMPRESSOR      
+   LIBRARY-ENTRY "M4DA32000"
+   SUCTION-GROUP    = "Rack SST:E1"
+   EQUIPMENT-REPORT = YES
+   ..
+"Comp SST:E1:3" = COMPRESSOR      
+   LIBRARY-ENTRY "M4DA32000"
+   SUCTION-GROUP    = "Rack SST:E1"
+   EQUIPMENT-REPORT = YES
+   ..
+"Refg System 3" = REFG-SYSTEM     
+   REFRIGERANT      = "R-22"
+   DESIGN-SCT       = 105
+   SCT-CTRL         = FIXED
+   SCT-SETPT        = 95
+   SCT-THROTTLE     = 5
+   ..
+"Condenser 3" = CONDENSER       
+   TYPE             = EVAPORATIVE
+   CAPACITY-RATIO   = 1.2
+   CAPACITY-CTRL    = VAR-SPEED-FAN
+   REFG-SYSTEM      = "Refg System 3"
+   EQUIPMENT-REPORT = YES
+   ..
+"5F61" = SUBCOOLER       
+   TYPE             = MECHANICAL
+   ATTACH-TO        = REFG-SYSTEM
+   REFG-SYSTEM      = "Refg System 3"
+   DESIGN-SUBCOOL-T = 60
+   TEMP-CTRL        = LOCAL-EPR
+   TEMP-SETPT       = 60
+   SUCTION-CIRCUIT  = "Suction Trunk 6"
+   LIQUID-CIRCUIT   = "Liquid Trunk 5"
+   EQUIPMENT-REPORT = YES
+   ..
+"Liquid Trunk 3" = REFG-CIRCUIT    
+   TYPE             = LIQUID
+   ATTACH-TO        = SUBCOOLER
+   SUBCOOLER        = "5F61"
+   EQUIPMENT-REPORT = YES
+   ..
+"HS Trunk 3" = REFG-CIRCUIT    
+   TYPE             = DISCHARGE
+   ATTACH-TO        = REFG-SYSTEM
+   REFG-SYSTEM      = "Refg System 3"
+   EQUIPMENT-REPORT = YES
+   ..
+"Rack SST:C1" = SUCTION-GROUP   
+   TYPE             = PARALLEL
+   DESIGN-SST       = -34
+   DISCHARGE-CIRCUI = "HS Trunk 3"
+   TEMP-CTRL        = FIXED
+   TEMP-SETPT       = -39
+   TEMP-THROTTLE    = 10
+   EQUIPMENT-REPORT = YES
+   ..
+"Suction Trunk 4" = REFG-CIRCUIT    
+   TYPE             = SUCTION
+   ATTACH-TO        = SUCTION-GROUP
+   SUCTION-GROUP    = "Rack SST:C1"
+   EQUIPMENT-REPORT = YES
+   ..
+"Comp SST:C1:1" = COMPRESSOR      
+   LIBRARY-ENTRY "L4DT32200"
+   SUCTION-GROUP    = "Rack SST:C1"
+   EQUIPMENT-REPORT = YES
+   ..
+"Comp SST:C1:2" = COMPRESSOR      
+   LIBRARY-ENTRY "L4DT32200"
+   SUCTION-GROUP    = "Rack SST:C1"
+   EQUIPMENT-REPORT = YES
+   ..
+"Comp SST:C1:3" = COMPRESSOR      
+   LIBRARY-ENTRY "L4DT32200"
+   SUCTION-GROUP    = "Rack SST:C1"
+   EQUIPMENT-REPORT = YES
+   ..
+"Comp SST:C1:5" = COMPRESSOR      
+   LIKE = "Comp SST:C1:3"
+   ..
+"Refg System 2" = REFG-SYSTEM     
+   REFRIGERANT      = "R-22"
+   DESIGN-SCT       = 105
+   SCT-CTRL         = FIXED
+   SCT-SETPT        = 95
+   SCT-THROTTLE     = 5
+   ..
+"Condenser 2" = CONDENSER       
+   TYPE             = EVAPORATIVE
+   CAPACITY-RATIO   = 1.2
+   CAPACITY-CTRL    = VAR-SPEED-FAN
+   REFG-SYSTEM      = "Refg System 2"
+   EQUIPMENT-REPORT = YES
+   ..
+"Liquid Trunk 2" = REFG-CIRCUIT    
+   TYPE             = LIQUID
+   ATTACH-TO        = REFG-SYSTEM
+   REFG-SYSTEM      = "Refg System 2"
+   EQUIPMENT-REPORT = YES
+   ..
+"HS Trunk 2" = REFG-CIRCUIT    
+   TYPE             = DISCHARGE
+   ATTACH-TO        = REFG-SYSTEM
+   REFG-SYSTEM      = "Refg System 2"
+   EQUIPMENT-REPORT = YES
+   ..
+"Rack SST:D1" = SUCTION-GROUP   
+   TYPE             = PARALLEL
+   DESIGN-SST       = 9
+   DISCHARGE-CIRCUI = "HS Trunk 2"
+   TEMP-CTRL        = FIXED
+   TEMP-SETPT       = 4
+   TEMP-THROTTLE    = 10
+   EQUIPMENT-REPORT = YES
+   ..
+"Suction Trunk 3" = REFG-CIRCUIT    
+   TYPE             = SUCTION
+   ATTACH-TO        = SUCTION-GROUP
+   SUCTION-GROUP    = "Rack SST:D1"
+   EQUIPMENT-REPORT = YES
+   ..
+"Comp SST:D1:1" = COMPRESSOR      
+   LIBRARY-ENTRY "M4DA32000"
+   SUCTION-GROUP    = "Rack SST:D1"
+   EQUIPMENT-REPORT = YES
+   ..
+"Comp SST:D1:2" = COMPRESSOR      
+   LIBRARY-ENTRY "M4DA32000"
+   SUCTION-GROUP    = "Rack SST:D1"
+   EQUIPMENT-REPORT = YES
+   ..
+"Comp SST:D1:3" = COMPRESSOR      
+   LIBRARY-ENTRY "M4DA32000"
+   SUCTION-GROUP    = "Rack SST:D1"
+   EQUIPMENT-REPORT = YES
+   ..
+"Refg System 1" = REFG-SYSTEM     
+   REFRIGERANT      = "R-22"
+   DESIGN-SCT       = 105
+   SCT-CTRL         = FIXED
+   SCT-SETPT        = 95
+   SCT-THROTTLE     = 5
+   ..
+"Condenser 1" = CONDENSER       
+   TYPE             = EVAPORATIVE
+   CAPACITY-RATIO   = 1.2
+   CAPACITY-CTRL    = VAR-SPEED-FAN
+   REFG-SYSTEM      = "Refg System 1"
+   EQUIPMENT-REPORT = YES
+   ..
+"2D23" = SUBCOOLER       
+   TYPE             = MECHANICAL
+   ATTACH-TO        = REFG-SYSTEM
+   REFG-SYSTEM      = "Refg System 1"
+   DESIGN-SUBCOOL-T = 50
+   TEMP-CTRL        = LOCAL-EPR
+   TEMP-SETPT       = 50
+   SUCTION-CIRCUIT  = "Suction Trunk 3"
+   LIQUID-CIRCUIT   = "Liquid Trunk 2"
+   EQUIPMENT-REPORT = YES
+   ..
+"Liquid Trunk 1" = REFG-CIRCUIT    
+   TYPE             = LIQUID
+   ATTACH-TO        = SUBCOOLER
+   SUBCOOLER        = "2D23"
+   EQUIPMENT-REPORT = YES
+   ..
+"HS Trunk 1" = REFG-CIRCUIT    
+   TYPE             = DISCHARGE
+   ATTACH-TO        = REFG-SYSTEM
+   REFG-SYSTEM      = "Refg System 1"
+   EQUIPMENT-REPORT = YES
+   ..
+"Rack SST:A1" = SUCTION-GROUP   
+   TYPE             = PARALLEL
+   DESIGN-SST       = -34
+   DISCHARGE-CIRCUI = "HS Trunk 1"
+   TEMP-CTRL        = FIXED
+   TEMP-SETPT       = -39
+   TEMP-THROTTLE    = 10
+   EQUIPMENT-REPORT = YES
+   ..
+"Suction Trunk 1" = REFG-CIRCUIT    
+   TYPE             = SUCTION
+   ATTACH-TO        = SUCTION-GROUP
+   SUCTION-GROUP    = "Rack SST:A1"
+   EQUIPMENT-REPORT = YES
+   ..
+"Rack SST:B1" = SUCTION-GROUP   
+   TYPE             = PARALLEL
+   DESIGN-SST       = -25
+   DISCHARGE-CIRCUI = "HS Trunk 1"
+   TEMP-CTRL        = FIXED
+   TEMP-SETPT       = -28
+   TEMP-THROTTLE    = 10
+   EQUIPMENT-REPORT = YES
+   ..
+"Suction Trunk 2" = REFG-CIRCUIT    
+   TYPE             = SUCTION
+   ATTACH-TO        = SUCTION-GROUP
+   SUCTION-GROUP    = "Rack SST:B1"
+   EQUIPMENT-REPORT = YES
+   ..
+"Comp SST:A1:1" = COMPRESSOR      
+   LIBRARY-ENTRY "L4DA31000"
+   SUCTION-GROUP    = "Rack SST:A1"
+   EQUIPMENT-REPORT = YES
+   ..
+"Comp SST:B1:2" = COMPRESSOR      
+   LIBRARY-ENTRY "L4DT32200"
+   SUCTION-GROUP    = "Rack SST:B1"
+   EQUIPMENT-REPORT = YES
+   ..
+"Comp SST:B1:3" = COMPRESSOR      
+   LIBRARY-ENTRY "L4DT32200"
+   SUCTION-GROUP    = "Rack SST:B1"
+   EQUIPMENT-REPORT = YES
+   ..
+"Comp SST:B1:4" = COMPRESSOR      
+   LIBRARY-ENTRY "L4DT32200"
+   SUCTION-GROUP    = "Rack SST:B1"
+   EQUIPMENT-REPORT = YES
+   ..
+"Comp SST:B1:5" = COMPRESSOR      
+   LIKE = "Comp SST:B1:4"
+   ..
+
+
+$ ---------------------------------------------------------
+$              Chillers
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Boilers
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Domestic Water Heaters
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Heat Rejection
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Tower Free Cooling
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Electric Generators
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Thermal Storage
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Ground Loop Heat Exchangers
+$ ---------------------------------------------------------
+
+
+
+$ *********************************************************
+$ **                                                     **
+$ **               HVAC Systems / Zones                  **
+$ **                                                     **
+$ *********************************************************
+
+"HVAC System 1a" = SYSTEM          
+   TYPE             = PSZ
+   HEAT-SOURCE      = ELECTRIC
+   MAX-SUPPLY-T     = 110
+   HEAT-SET-T       = 110
+   HEATING-SCHEDULE = "Always Off"
+   MIN-SUPPLY-T     = 55
+   COOLING-SCHEDULE = "Always On"
+   MAX-HUMIDITY     = 55
+   FAN-SCHEDULE     = "Fan Operation"
+   SUPPLY-DELTA-T   = 1.815
+   SUPPLY-KW/FLOW   = 0
+   NIGHT-CYCLE-CTRL = CYCLE-ON-ANY
+   REHEAT-DELTA-T   = 15
+   COOLING-CAPACITY = 780000
+   COOLING-EIR      = 0.345445
+   COOL-SH-CAP      = 616200
+   CONTROL-ZONE     = "GroceryZ"
+   ..
+"GroceryZ" = ZONE            
+   TYPE             = CONDITIONED
+   EXHAUST-FLOW     = 4400
+   COOL-TEMP-SCH    = "Cool Schedule"
+   SPACE            = "Grocery"
+   ..
+"HVAC System 1b" = SYSTEM          
+   TYPE             = PSZ
+   HEAT-SOURCE      = ELECTRIC
+   MAX-SUPPLY-T     = 110
+   HEAT-SET-T       = 110
+   HEATING-SCHEDULE = "Always Off"
+   MIN-SUPPLY-T     = 55
+   COOLING-SCHEDULE = "Always On"
+   MAX-HUMIDITY     = 55
+   FAN-SCHEDULE     = "Fan Operation"
+   SUPPLY-DELTA-T   = 1.815
+   SUPPLY-KW/FLOW   = 0
+   NIGHT-CYCLE-CTRL = CYCLE-ON-ANY
+   REHEAT-DELTA-T   = 15
+   COOLING-CAPACITY = 120000
+   COOLING-EIR      = 0.474028
+   COOL-SH-CAP      = 96000
+   CONTROL-ZONE     = "OfficeZ"
+   ..
+"OfficeZ" = ZONE            
+   TYPE             = CONDITIONED
+   EXHAUST-FLOW     = 660
+   COOL-TEMP-SCH    = "Cool Schedule"
+   SPACE            = "Office"
+   ..
+"StorageZ" = ZONE            
+   TYPE             = UNCONDITIONED
+   SPACE            = "Storage"
+   ..
+
+
+$ ---------------------------------------------------------
+$                  Refrigeration Fixtures
+$ ---------------------------------------------------------
+
+"5F49" = REFG-FIXTURE    
+   LIBRARY-ENTRY "Hill-5D"
+   LINE-UP-LENGTH   = 44
+   ZONE             = "GroceryZ"
+   LIGHTING-SCH     = "Lighting Sales"
+   DESIGN-SUPPLY-T  = 20
+   TEMP-CTRL        = THERMOSTAT
+   TEMP-SETPT       = 20
+   DEFROST-SCH      = "DEF-X3"
+   DEFROST-DURATION = 30
+   NUM-DEFROSTS/DAY = 3
+   LIQUID-CIRCUIT   = "Liquid Trunk 5"
+   SUCTION-CIRCUIT  = "Suction Trunk 6"
+   ..
+"5F50" = REFG-FIXTURE    
+   LIBRARY-ENTRY "Hill-5D"
+   LINE-UP-LENGTH   = 44
+   ZONE             = "GroceryZ"
+   LIGHTING-SCH     = "Lighting Sales"
+   DESIGN-SUPPLY-T  = 20
+   TEMP-CTRL        = THERMOSTAT
+   TEMP-SETPT       = 20
+   DEFROST-SCH      = "DEF-X3"
+   DEFROST-DURATION = 30
+   NUM-DEFROSTS/DAY = 3
+   LIQUID-CIRCUIT   = "Liquid Trunk 5"
+   SUCTION-CIRCUIT  = "Suction Trunk 6"
+   ..
+"5F51" = REFG-FIXTURE    
+   LIBRARY-ENTRY "Hussmann-DSRP"
+   LINE-UP-LENGTH   = 24
+   ZONE             = "GroceryZ"
+   LIGHTING-SCH     = "Lighting Sales"
+   DESIGN-SUPPLY-T  = 20
+   TEMP-CTRL        = THERMOSTAT
+   TEMP-SETPT       = 20
+   DEFROST-SCH      = "DEF-X3"
+   DEFROST-DURATION = 59
+   NUM-DEFROSTS/DAY = 3
+   LIQUID-CIRCUIT   = "Liquid Trunk 5"
+   SUCTION-CIRCUIT  = "Suction Trunk 6"
+   ..
+"5F52" = REFG-FIXTURE    
+   LIBRARY-ENTRY "Hussmann-DSRP"
+   LINE-UP-LENGTH   = 16
+   ZONE             = "GroceryZ"
+   LIGHTING-SCH     = "Lighting Sales"
+   DESIGN-SUPPLY-T  = 20
+   TEMP-CTRL        = THERMOSTAT
+   TEMP-SETPT       = 20
+   DEFROST-SCH      = "DEF-X3"
+   DEFROST-DURATION = 59
+   NUM-DEFROSTS/DAY = 3
+   LIQUID-CIRCUIT   = "Liquid Trunk 5"
+   SUCTION-CIRCUIT  = "Suction Trunk 6"
+   ..
+"4E38 & 4E39" = REFG-FIXTURE    
+   LIBRARY-ENTRY "Hill-HLHM"
+   LINE-UP-LENGTH   = 72
+   ZONE             = "GroceryZ"
+   LIGHTING-SCH     = "Lighting Sales"
+   DESIGN-SUPPLY-T  = 18
+   TEMP-CTRL        = THERMOSTAT
+   TEMP-SETPT       = 18
+   DEFROST-SCH      = "DEF-X3"
+   DEFROST-DURATION = 36
+   NUM-DEFROSTS/DAY = 3
+   LIQUID-CIRCUIT   = "Liquid Trunk 4"
+   SUCTION-CIRCUIT  = "Suction Trunk 5"
+   ..
+"4E40" = REFG-FIXTURE    
+   LIBRARY-ENTRY "Tyler-RCCD"
+   LINE-UP-LENGTH   = 12
+   ZONE             = "GroceryZ"
+   LIGHTING-SCH     = "Lighting Sales"
+   DESIGN-SUPPLY-T  = 19
+   TEMP-CTRL        = THERMOSTAT
+   TEMP-SETPT       = 19
+   DEFROST-SCH      = "DEF-X4"
+   NUM-DEFROSTS/DAY = 4
+   LIQUID-CIRCUIT   = "Liquid Trunk 4"
+   SUCTION-CIRCUIT  = "Suction Trunk 5"
+   ..
+"4E41" = REFG-FIXTURE    
+   LIBRARY-ENTRY "Tyler-RCCD"
+   LINE-UP-LENGTH   = 12
+   ZONE             = "GroceryZ"
+   LIGHTING-SCH     = "Lighting Sales"
+   DESIGN-SUPPLY-T  = 38
+   TEMP-CTRL        = THERMOSTAT
+   TEMP-SETPT       = 38
+   DEFROST-SCH      = "DEF-2"
+   LIQUID-CIRCUIT   = "Liquid Trunk 4"
+   SUCTION-CIRCUIT  = "Suction Trunk 5"
+   ..
+"4E42-4E47" = REFG-FIXTURE    
+   LIBRARY-ENTRY "Hill-5D"
+   LINE-UP-LENGTH   = 44
+   ZONE             = "GroceryZ"
+   LIGHTING-SCH     = "Lighting Sales"
+   DESIGN-SUPPLY-T  = 20
+   TEMP-CTRL        = THERMOSTAT
+   TEMP-SETPT       = 20
+   DEFROST-SCH      = "DEF-X3"
+   DEFROST-DURATION = 30
+   NUM-DEFROSTS/DAY = 3
+   LIQUID-CIRCUIT   = "Liquid Trunk 4"
+   SUCTION-CIRCUIT  = "Suction Trunk 5"
+   ..
+"4E45" = REFG-FIXTURE    
+   LIBRARY-ENTRY "Hill-5D"
+   LINE-UP-LENGTH   = 16
+   ZONE             = "GroceryZ"
+   LIGHTING-SCH     = "Lighting Sales"
+   DESIGN-SUPPLY-T  = 20
+   TEMP-CTRL        = THERMOSTAT
+   TEMP-SETPT       = 20
+   DEFROST-SCH      = "DEF-X6"
+   DEFROST-DURATION = 46
+   NUM-DEFROSTS/DAY = 6
+   LIQUID-CIRCUIT   = "Liquid Trunk 4"
+   SUCTION-CIRCUIT  = "Suction Trunk 5"
+   ..
+"4E46" = REFG-FIXTURE    
+   LIBRARY-ENTRY "Hussmann-CSDM"
+   LINE-UP-LENGTH   = 28
+   ZONE             = "GroceryZ"
+   LIGHTING-SCH     = "Lighting Sales"
+   DESIGN-SUPPLY-T  = 14
+   TEMP-CTRL        = THERMOSTAT
+   TEMP-SETPT       = 14
+   DEFROST-SCH      = "DEF-2"
+   LIQUID-CIRCUIT   = "Liquid Trunk 4"
+   SUCTION-CIRCUIT  = "Suction Trunk 5"
+   ..
+"4E48" = REFG-FIXTURE    
+   LIBRARY-ENTRY "Hussmann-CGDF"
+   LINE-UP-LENGTH   = 16
+   ZONE             = "GroceryZ"
+   LIGHTING-SCH     = "Lighting Sales"
+   DESIGN-SUPPLY-T  = 14
+   TEMP-CTRL        = THERMOSTAT
+   TEMP-SETPT       = 14
+   DEFROST-SCH      = "DEF-2"
+   LIQUID-CIRCUIT   = "Liquid Trunk 4"
+   SUCTION-CIRCUIT  = "Suction Trunk 5"
+   ..
+"3C25-3C27" = REFG-FIXTURE    
+   LIBRARY-ENTRY "Hill-ORZC"
+   NUMBER-OF-DOORS  = 54
+   ZONE             = "GroceryZ"
+   LIGHTING-SCH     = "Lighting Sales"
+   DESIGN-SUPPLY-T  = -18
+   TEMP-CTRL        = THERMOSTAT
+   TEMP-SETPT       = -18
+   DEFROST-SCH      = "DEF-2"
+   LIQUID-CIRCUIT   = "Liquid Trunk 3"
+   SUCTION-CIRCUIT  = "Suction Trunk 4"
+   ..
+"3C28-3C29" = REFG-FIXTURE    
+   LIBRARY-ENTRY "Hill-ORZC"
+   NUMBER-OF-DOORS  = 5
+   ZONE             = "GroceryZ"
+   LIGHTING-SCH     = "Lighting Sales"
+   DESIGN-SUPPLY-T  = -22
+   TEMP-CTRL        = THERMOSTAT
+   TEMP-SETPT       = -22
+   DEFROST-SCH      = "DEF-2"
+   LIQUID-CIRCUIT   = "Liquid Trunk 3"
+   SUCTION-CIRCUIT  = "Suction Trunk 4"
+   ..
+"3C30 & 3C32" = REFG-FIXTURE    
+   LIBRARY-ENTRY "Hill-WIZFK"
+   LINE-UP-LENGTH   = 32
+   ZONE             = "GroceryZ"
+   LIGHTING-SCH     = "Lighting Sales"
+   DESIGN-SUPPLY-T  = -22
+   TEMP-CTRL        = THERMOSTAT
+   TEMP-SETPT       = -22
+   DEFROST-SCH      = "DEF-2"
+   LIQUID-CIRCUIT   = "Liquid Trunk 3"
+   SUCTION-CIRCUIT  = "Suction Trunk 4"
+   ..
+"3C31 & 3C33" = REFG-FIXTURE    
+   LIBRARY-ENTRY "Hill-WIZFK"
+   LINE-UP-LENGTH   = 12
+   ZONE             = "GroceryZ"
+   LIGHTING-SCH     = "Lighting Sales"
+   DESIGN-SUPPLY-T  = -22
+   TEMP-CTRL        = THERMOSTAT
+   TEMP-SETPT       = -22
+   DEFROST-SCH      = "DEF-2"
+   LIQUID-CIRCUIT   = "Liquid Trunk 3"
+   SUCTION-CIRCUIT  = "Suction Trunk 4"
+   ..
+"3C34" = REFG-FIXTURE    
+   LIBRARY-ENTRY "Hill-5Z"
+   LINE-UP-LENGTH   = 8
+   ZONE             = "GroceryZ"
+   LIGHTING-SCH     = "Lighting Sales"
+   DESIGN-SUPPLY-T  = -15
+   TEMP-CTRL        = THERMOSTAT
+   TEMP-SETPT       = -15
+   DEFROST-SCH      = "DEF-X6"
+   DEFROST-DURATION = 59
+   NUM-DEFROSTS/DAY = 6
+   LIQUID-CIRCUIT   = "Liquid Trunk 3"
+   SUCTION-CIRCUIT  = "Suction Trunk 4"
+   ..
+"2D13-2D18" = REFG-FIXTURE    
+   LIBRARY-ENTRY "Hill-5D"
+   LINE-UP-LENGTH   = 148
+   ZONE             = "GroceryZ"
+   LIGHTING-SCH     = "Lighting Sales"
+   DESIGN-SUPPLY-T  = 21
+   TEMP-CTRL        = THERMOSTAT
+   TEMP-SETPT       = 21
+   DEFROST-SCH      = "DEF-X3"
+   NUM-DEFROSTS/DAY = 3
+   LIQUID-CIRCUIT   = "Liquid Trunk 2"
+   SUCTION-CIRCUIT  = "Suction Trunk 3"
+   ..
+"1A1" = REFG-FIXTURE    
+   LIBRARY-ENTRY "Hill-WIZFK"
+   LINE-UP-LENGTH   = 30
+   ZONE             = "GroceryZ"
+   LIGHTING-SCH     = "Lighting Sales"
+   DESIGN-SUPPLY-T  = -22
+   TEMP-CTRL        = THERMOSTAT
+   TEMP-SETPT       = -22
+   DEFROST-SCH      = "DEF-2"
+   LIQUID-CIRCUIT   = "Liquid Trunk 1"
+   SUCTION-CIRCUIT  = "Suction Trunk 1"
+   ..
+"1B2-1B6" = REFG-FIXTURE    
+   LIBRARY-ENTRY "Hill-ORZC"
+   NUMBER-OF-DOORS  = 66
+   ZONE             = "GroceryZ"
+   LIGHTING-SCH     = "Lighting Sales"
+   DESIGN-SUPPLY-T  = -11
+   TEMP-CTRL        = LOCAL-EPR
+   TEMP-SETPT       = -11
+   DEFROST-SCH      = "DEF-2"
+   LIQUID-CIRCUIT   = "Liquid Trunk 1"
+   SUCTION-CIRCUIT  = "Suction Trunk 2"
+   ..
+"1B7-1B10" = REFG-FIXTURE    
+   LIBRARY-ENTRY "Hill-WIZFK"
+   LINE-UP-LENGTH   = 44
+   ZONE             = "GroceryZ"
+   LIGHTING-SCH     = "Lighting Sales"
+   DESIGN-SUPPLY-T  = -11
+   TEMP-CTRL        = LOCAL-EPR
+   TEMP-SETPT       = -11
+   DEFROST-SCH      = "DEF-4"
+   LIQUID-CIRCUIT   = "Liquid Trunk 1"
+   SUCTION-CIRCUIT  = "Suction Trunk 2"
+   ..
+"1B11" = REFG-FIXTURE    
+   LIBRARY-ENTRY "Hill-5Z"
+   LINE-UP-LENGTH   = 40
+   ZONE             = "GroceryZ"
+   LIGHTING-SCH     = "Lighting Sales"
+   DESIGN-SUPPLY-T  = -5
+   TEMP-CTRL        = LOCAL-EPR
+   TEMP-SETPT       = -5
+   DEFROST-SCH      = "DEF-X6"
+   DEFROST-DURATION = 59
+   NUM-DEFROSTS/DAY = 6
+   LIQUID-CIRCUIT   = "Liquid Trunk 1"
+   SUCTION-CIRCUIT  = "Suction Trunk 2"
+   ..
+
+
+$ *********************************************************
+$ **                                                     **
+$ **                  Process Loads                      **
+$ **                                                     **
+$ *********************************************************
+
+
+
+$ *********************************************************
+$ **                                                     **
+$ **                Metering & Misc HVAC                 **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$              Equipment Controls
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Load Management
+$ ---------------------------------------------------------
+
+
+
+
+$ -----------------> SIM-PARAMETERS here?  <------------------
+
+$ *********************************************************
+$ **                                                     **
+$ **                    Utility Rates                    **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$              Ratchets
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Block Charges
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Utility Rates
+$ ---------------------------------------------------------
+
+
+
+$ *********************************************************
+$ **                                                     **
+$ **                 Output Reporting                    **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$              Loads Non-Hourly Reporting
+$ ---------------------------------------------------------
+
+LOADS-REPORT    
+   VERIFICATION     = ( ALL-VERIFICATION )
+   SUMMARY          = ( ALL-SUMMARY )
+   ..
+
+
+$ ---------------------------------------------------------
+$              Systems Non-Hourly Reporting
+$ ---------------------------------------------------------
+
+SYSTEMS-REPORT  
+   VERIFICATION     = ( ALL-VERIFICATION )
+   SUMMARY          = ( ALL-SUMMARY )
+   ..
+
+
+$ ---------------------------------------------------------
+$              Plant Non-Hourly Reporting
+$ ---------------------------------------------------------
+
+PLANT-REPORT    
+   VERIFICATION     = ( ALL-VERIFICATION )
+   SUMMARY          = ( ALL-SUMMARY )
+   DUMP-OPTIONS     = ( DEBUG, SIMULATION )
+   ..
+
+
+$ ---------------------------------------------------------
+$              Economics Non-Hourly Reporting
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Hourly Reporting
+$ ---------------------------------------------------------
+
+"RB-ZONE" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "GroceryZ"
+   VARIABLE-LIST    = ( 6, 72, 73, 74 )
+   ..
+"RB 1A1" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "1A1"
+   VARIABLE-LIST    = ( 2, 3, 6, 47, 48 )
+   ..
+"RB Rack SST:A1" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "Rack SST:A1"
+   VARIABLE-LIST    = ( 2, 7, 8 )
+   ..
+"RB Comp SST:A1:1" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "Comp SST:A1:1"
+   VARIABLE-LIST    = ( 2, 3, 6, 12 )
+   ..
+"RB 1B2-1B6" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "1B2-1B6"
+   VARIABLE-LIST    = ( 2, 3, 6, 47, 48 )
+   ..
+"RB 1B7-1B10" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "1B7-1B10"
+   VARIABLE-LIST    = ( 2, 3, 6, 47, 48 )
+   ..
+"RB 1B11" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "1B11"
+   VARIABLE-LIST    = ( 2, 3, 6, 47, 48 )
+   ..
+"RB Rack SST:B1" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "Rack SST:B1"
+   VARIABLE-LIST    = ( 2, 7, 8 )
+   ..
+"RB Comp SST:B1:2" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "Comp SST:B1:2"
+   VARIABLE-LIST    = ( 2, 3, 6, 12 )
+   ..
+"RB Comp SST:B1:3" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "Comp SST:B1:3"
+   VARIABLE-LIST    = ( 2, 3, 6, 12 )
+   ..
+"RB Comp SST:B1:4" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "Comp SST:B1:4"
+   VARIABLE-LIST    = ( 2, 3, 6, 12 )
+   ..
+"RB Condenser 1" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "Condenser 1"
+   VARIABLE-LIST    = ( 3, 4, 5, 9 )
+   ..
+"RB 2D13-2D18" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "2D13-2D18"
+   VARIABLE-LIST    = ( 2, 3, 6, 47, 48 )
+   ..
+"RB Rack SST:D1" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "Rack SST:D1"
+   VARIABLE-LIST    = ( 2, 7, 8 )
+   ..
+"RB Comp SST:D1:1" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "Comp SST:D1:1"
+   VARIABLE-LIST    = ( 2, 3, 6, 12 )
+   ..
+"RB Comp SST:D1:2" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "Comp SST:D1:2"
+   VARIABLE-LIST    = ( 2, 3, 6, 12 )
+   ..
+"RB Comp SST:D1:3" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "Comp SST:D1:3"
+   VARIABLE-LIST    = ( 2, 3, 6, 12 )
+   ..
+"RB 2D23" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "2D23"
+   VARIABLE-LIST    = ( 1, 2, 3, 5, 6, 12, 18 )
+   ..
+"RB Condenser 2" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "Condenser 2"
+   VARIABLE-LIST    = ( 3, 4, 5, 9 )
+   ..
+"RB 3C25-3C27" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "3C25-3C27"
+   VARIABLE-LIST    = ( 2, 3, 6, 47, 48 )
+   ..
+"RB Rack SST:C1" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "Rack SST:C1"
+   VARIABLE-LIST    = ( 2, 7, 8 )
+   ..
+"RB Comp SST:C1:1" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "Comp SST:C1:1"
+   VARIABLE-LIST    = ( 2, 3, 6, 12 )
+   ..
+"RB Comp SST:C1:2" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "Comp SST:C1:2"
+   VARIABLE-LIST    = ( 2, 3, 6, 12 )
+   ..
+"RB Comp SST:C1:3" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "Comp SST:C1:3"
+   VARIABLE-LIST    = ( 2, 3, 6, 12 )
+   ..
+"RB 3C28-3C29" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "3C28-3C29"
+   VARIABLE-LIST    = ( 2, 3, 6, 47, 48 )
+   ..
+"RB 3C30 & 3C32" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "3C30 & 3C32"
+   VARIABLE-LIST    = ( 2, 3, 6, 47, 48 )
+   ..
+"RB 3C31 & 3C33" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "3C31 & 3C33"
+   VARIABLE-LIST    = ( 2, 3, 6, 47, 48 )
+   ..
+"RB 3C34" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "3C34"
+   VARIABLE-LIST    = ( 2, 3, 6, 47, 48 )
+   ..
+"RB Condenser 3" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "Condenser 3"
+   VARIABLE-LIST    = ( 3, 4, 5, 9 )
+   ..
+"RB 4E38 & 4E39" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "4E38 & 4E39"
+   VARIABLE-LIST    = ( 2, 3, 6, 47, 48 )
+   ..
+"RB Rack SST:E1" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "Rack SST:E1"
+   VARIABLE-LIST    = ( 2, 7, 8 )
+   ..
+"RB Comp SST:E1:1" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "Comp SST:E1:1"
+   VARIABLE-LIST    = ( 2, 3, 6, 12 )
+   ..
+"RB Comp SST:E1:2" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "Comp SST:E1:2"
+   VARIABLE-LIST    = ( 2, 3, 6, 12 )
+   ..
+"RB Comp SST:E1:3" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "Comp SST:E1:3"
+   VARIABLE-LIST    = ( 2, 3, 6, 12 )
+   ..
+"RB 4E40" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "4E40"
+   VARIABLE-LIST    = ( 2, 3, 6, 47, 48 )
+   ..
+"RB 4E41" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "4E41"
+   VARIABLE-LIST    = ( 2, 3, 6, 47, 48 )
+   ..
+"RB 4E42-4E47" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "4E42-4E47"
+   VARIABLE-LIST    = ( 2, 3, 6, 47, 48 )
+   ..
+"RB 4E45" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "4E45"
+   VARIABLE-LIST    = ( 2, 3, 6, 47, 48 )
+   ..
+"RB 4E46" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "4E46"
+   VARIABLE-LIST    = ( 2, 3, 6, 47, 48 )
+   ..
+"RB 4E48" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "4E48"
+   VARIABLE-LIST    = ( 2, 3, 6, 47, 48 )
+   ..
+"RB Condenser 4" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "Condenser 4"
+   VARIABLE-LIST    = ( 3, 4, 5, 9 )
+   ..
+"RB 5F49" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "5F49"
+   VARIABLE-LIST    = ( 2, 3, 6, 47, 48 )
+   ..
+"RB Rack SST:F1" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "Rack SST:F1"
+   VARIABLE-LIST    = ( 2, 7, 8 )
+   ..
+"RB Comp SST:F1:1" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "Comp SST:F1:1"
+   VARIABLE-LIST    = ( 2, 3, 6, 12 )
+   ..
+"RB Comp SST:F1:2" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "Comp SST:F1:2"
+   VARIABLE-LIST    = ( 2, 3, 6, 12 )
+   ..
+"RB Comp SST:F1:3" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "Comp SST:F1:3"
+   VARIABLE-LIST    = ( 2, 3, 6, 12 )
+   ..
+"RB 5F50" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "5F50"
+   VARIABLE-LIST    = ( 2, 3, 6, 47, 48 )
+   ..
+"RB 5F51" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "5F51"
+   VARIABLE-LIST    = ( 2, 3, 6, 47, 48 )
+   ..
+"RB 5F52" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "5F52"
+   VARIABLE-LIST    = ( 2, 3, 6, 47, 48 )
+   ..
+"RB 5F61" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "5F61"
+   VARIABLE-LIST    = ( 1, 2, 3, 5, 6, 12, 18 )
+   ..
+"RB Condenser 5" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "Condenser 5"
+   VARIABLE-LIST    = ( 3, 4, 5, 9 )
+   ..
+
+"System 1" = HOURLY-REPORT   
+   REPORT-SCHEDULE  = "REP-SCH"
+   REPORT-BLOCK     = ( "RB-ZONE", "RB 1A1", "RB Rack SST:A1", 
+         "RB Comp SST:A1:1", "RB 1B2-1B6", "RB 1B7-1B10", "RB 1B11", 
+         "RB Rack SST:B1", "RB Comp SST:B1:2", "RB Comp SST:B1:3", 
+         "RB Comp SST:B1:4", "RB Condenser 1" )
+   ..
+"System 2" = HOURLY-REPORT   
+   REPORT-SCHEDULE  = "REP-SCH"
+   REPORT-BLOCK     = ( "RB-ZONE", "RB 2D13-2D18", "RB Rack SST:D1", 
+         "RB Comp SST:D1:1", "RB Comp SST:D1:2", "RB Comp SST:D1:3", 
+         "RB 2D23", "RB Condenser 2" )
+   ..
+"System 3" = HOURLY-REPORT   
+   REPORT-SCHEDULE  = "REP-SCH"
+   REPORT-BLOCK     = ( "RB-ZONE", "RB 3C25-3C27", "RB Rack SST:C1", 
+         "RB Comp SST:C1:1", "RB Comp SST:C1:2", "RB Comp SST:C1:3", 
+         "RB 3C28-3C29", "RB 3C30 & 3C32", "RB 3C31 & 3C33", "RB 3C34", 
+         "RB Condenser 3" )
+   ..
+"System 4" = HOURLY-REPORT   
+   REPORT-SCHEDULE  = "REP-SCH"
+   REPORT-BLOCK     = ( "RB-ZONE", "RB 4E38 & 4E39", "RB Rack SST:E1", 
+         "RB Comp SST:E1:1", "RB Comp SST:E1:2", "RB Comp SST:E1:3", 
+         "RB 4E40", "RB 4E41", "RB 4E42-4E47", "RB 4E45", "RB 4E46", 
+         "RB 4E48", "RB Condenser 4" )
+   ..
+"System 5" = HOURLY-REPORT   
+   REPORT-SCHEDULE  = "REP-SCH"
+   REPORT-BLOCK     = ( "RB-ZONE", "RB 5F49", "RB Rack SST:F1", 
+         "RB Comp SST:F1:1", "RB Comp SST:F1:2", "RB Comp SST:F1:3", 
+         "RB 5F50", "RB 5F51", "RB 5F52", "RB 5F61", "RB Condenser 5" )
+   ..
+
+
+$ ---------------------------------------------------------
+$              THE END
+$ ---------------------------------------------------------
+
+END ..
+COMPUTE ..
+STOP ..

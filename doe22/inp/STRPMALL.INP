@@ -1,0 +1,2081 @@
+INPUT ..
+
+
+$ ---------------------------------------------------------
+$              Abort, Diagnostics
+$ ---------------------------------------------------------
+
+
+
+
+$ ---------------------------------------------------------
+$              Global Parameters, User Defined Defaults
+$ ---------------------------------------------------------
+
+
+
+
+$ ---------------------------------------------------------
+$              Title, Run Periods, Design Days, Holidays
+$ ---------------------------------------------------------
+
+
+"Entire Year" = RUN-PERIOD-PD   
+   BEGIN-MONTH      = 1
+   BEGIN-DAY        = 1
+   BEGIN-YEAR       = 1996
+   END-MONTH        = 12
+   END-DAY          = 31
+   END-YEAR         = 1996
+   ..
+
+
+
+
+$ ---------------------------------------------------------
+$              Site and Building Data
+$ ---------------------------------------------------------
+
+SITE-PARAMETERS 
+   LATITUDE         = 33.9
+   LONGITUDE        = 118.5
+   TIME-ZONE        = 8
+   ALTITUDE         = 100
+   ..
+
+BUILD-PARAMETERS
+   AZIMUTH          = 0
+   GROSS-AREA       = 36200
+   ..
+
+
+
+$ ---------------------------------------------------------
+$              Materials / Layers / Constructions
+$ ---------------------------------------------------------
+
+"MAT-2FT-GND" = MATERIAL        
+   TYPE             = PROPERTIES
+   THICKNESS        = 2
+   CONDUCTIVITY     = 0.5
+   DENSITY          = 100
+   SPECIFIC-HEAT    = 0.25
+   ..
+"MAT-R11M" = MATERIAL        
+   TYPE             = RESISTANCE
+   RESISTANCE       = 5.5
+   ..
+
+"LAY-FLSOG" = LAYERS          
+   MATERIAL         = ( "MAT-2FT-GND", "Conc HW 140lb 4in (CC14)", 
+        "Carpet & Rubber Pad (CP02)" )
+   THICKNESS        = ( 2, 0.333 )
+   ..
+"LAY-WACON" = LAYERS          
+   MATERIAL         = ( "Conc LW 80lb 6in (CC25)", "Air Lay <4in Vert (AL21)", 
+        "MAT-R11M", "GypBd 5/8in (GP02)" )
+   THICKNESS        = ( 0.5, 0.052, 0, 0.052 )
+   ..
+"LAY-RFCON" = LAYERS          
+   MATERIAL         = ( "Gravel 1in (RG02)", "Blt-Up Roof 3/8in (BR01)", 
+        "Conc HW 140lb 4in (CC03)" )
+   THICKNESS        = ( 0.083, 0.0313, 0.333 )
+   ..
+"LAY-IW" = LAYERS          
+   INSIDE-FILM-RES  = 0.76
+   MATERIAL         = ( "GypBd 5/8in (GP02)", "Air Lay <4in Vert (AL21)", 
+        "GypBd 5/8in (GP02)" )
+   ..
+"LAY-CEIL" = LAYERS          
+   MATERIAL         = ( "GypBd 5/8in (GP02)" )
+   ..
+
+"FLOOR-CONS" = CONSTRUCTION    
+   TYPE             = LAYERS
+   LAYERS           = "LAY-FLSOG"
+   ..
+"PWALL-CONS" = CONSTRUCTION    
+   TYPE             = LAYERS
+   LAYERS           = "LAY-WACON"
+   ..
+"ROOF-CONS" = CONSTRUCTION    
+   TYPE             = LAYERS
+   LAYERS           = "LAY-RFCON"
+   ..
+"CEIL-CONS" = CONSTRUCTION    
+   TYPE             = LAYERS
+   LAYERS           = "LAY-CEIL"
+   ..
+"CON-IWALL" = CONSTRUCTION    
+   TYPE             = LAYERS
+   LAYERS           = "LAY-IW"
+   ..
+"DR1-CONS" = CONSTRUCTION    
+   TYPE             = U-VALUE
+   U-VALUE          = 0.59
+   ..
+
+
+$ ---------------------------------------------------------
+$              Glass Types
+$ ---------------------------------------------------------
+
+"GLASS-DR-CONS" = GLASS-TYPE      
+   TYPE             = GLASS-TYPE-CODE
+   GLASS-TYPE-CODE  = "1203"
+   GLASS-CONDUCT    = 1.47
+   ..
+"G-CLR" = GLASS-TYPE      
+   TYPE             = GLASS-TYPE-CODE
+   GLASS-TYPE-CODE  = "1205"
+   ..
+
+
+$ ---------------------------------------------------------
+$              Window Layers
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Lamps / Luminaries / Lighting Systems
+$ ---------------------------------------------------------
+
+
+
+
+
+$ ---------------------------------------------------------
+$              Day Schedules
+$ ---------------------------------------------------------
+
+"Ret Occ WD Nrm" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0, 0, 0, 0, 0, 0, 0, 0.13, 0.25, 0.63, 0.63, 0.88, 
+         0.88, 0.88, 0.88, 1, 0.88, 0.63, 0.38, 0.38, 0, 0, 0, 0 )
+   ..
+"Ret Occ WE-H Nrm" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0, 0, 0, 0, 0, 0, 0, 0, 0.13, 0.25, 0.63, 0.75, 0.92, 
+         0.92, 0.92, 1, 1, 0.75, 0.63, 0.38, 0.38, 0, 0, 0 )
+   ..
+"Ret Occ Day Dec" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0, 0, 0, 0, 0, 0, 0, 0.13, 0.25, 0.63, 0.63, 0.88, 
+         0.88, 0.88, 1, 1, 1, 1, 1, 0.63, 0.63, 0.38, 0, 0 )
+   ..
+"Ret Lght WD Nrm" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.25, 0.38, 
+         0.7, 0.94, 0.98, 1, 0.98, 0.94, 0.94, 0.94, 0.94, 0.59, 0.32, 0.15, 
+         0.15, 0.15, 0.15 )
+   ..
+"Ret Lght WEH Nrm" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.25, 
+         0.4, 0.6, 0.9, 1, 0.98, 0.96, 0.94, 0.94, 0.94, 0.63, 0.57, 0.45, 
+         0.15, 0.15, 0.15 )
+   ..
+"Ret Lght Day Dec" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.25, 0.32, 0.63, 
+         0.87, 1, 1, 1, 1, 0.99, 0.94, 0.92, 0.92, 0.9, 0.63, 0.4, 0.2, 0.2 )
+   ..
+"Ret Eqp WD Nrm" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.23, 0.32, 
+         0.58, 0.83, 1, 1, 1, 0.97, 0.92, 0.88, 0.86, 0.54, 0.33, 0.15, 0.15, 
+         0.15, 0.15 )
+   ..
+"Ret Eqp WE-H Nrm" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.3, 
+         0.4, 0.6, 0.83, 0.97, 0.95, 0.9, 0.82, 0.73, 0.65, 0.52, 0.4, 0.33, 
+         0.15, 0.15, 0.15 )
+   ..
+"Ret Eqp Day Dec" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.21, 0.21, 0.21, 0.21, 0.21, 0.21, 0.21, 0.25, 0.32, 
+         0.58, 0.83, 1, 1, 0.99, 0.97, 0.91, 0.88, 0.86, 0.79, 0.67, 0.58, 
+         0.34, 0.21, 0.21 )
+   ..
+"Ret Infil Day" = DAY-SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   VALUES           = ( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+         0, 0, 0, 0, 0, 0 )
+   ..
+"Office Occup WD" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0, 0, 0, 0, 0, 0, 0.35, 0.85, 0.95, 0.95, 0.95, 0.78, 
+         0.78, 0.95, 0.95, 0.95, 0.88, 0.36, 0, 0, 0, 0, 0, 0 )
+   ..
+"Office Occup WEH" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0, 0, 0, 0, 0, 0, 0, 0, 0.13, 0.25, 0.43, 0.45, 0.42, 
+         0.32, 0.22, 0, 0, 0, 0, 0, 0, 0, 0, 0 )
+   ..
+"Office Light WD" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.45, 0.82, 0.9, 0.9, 
+         0.9, 0.85, 0.85, 0.9, 0.9, 0.9, 0.86, 0.5, 0.1, 0.1, 0.1, 0.1, 0.1, 
+         0.1 )
+   ..
+"Office Light WEH" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.25, 0.4, 
+         0.45, 0.53, 0.52, 0.42, 0.3, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 
+         0.1 )
+   ..
+"Office Equip WD" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.23, 0.32, 
+         0.58, 0.83, 1, 1, 0.99, 0.96, 0.91, 0.88, 0.86, 0.54, 0.33, 0.15, 
+         0.15, 0.15, 0.15 )
+   ..
+"Office Equip WEH" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.2, 
+         0.3, 0.31, 0.3, 0.32, 0.19, 0.19, 0.15, 0.15, 0.15, 0.15, 0.15, 
+         0.15, 0.15, 0.15, 0.15 )
+   ..
+"Office Infil WD" = DAY-SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   VALUES           = ( 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 
+         1, 1, 1, 1, 1, 1 )
+   ..
+"Office Infil WEH" = DAY-SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   VALUES           = ( 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+         1, 1, 1, 1, 1, 1 )
+   ..
+"Always On Day" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF
+   VALUES           = ( 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+         1, 1, 1, 1, 1, 1 )
+   ..
+"New Occ WD Nrm" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0, 0, 0, 0, 0, 0, 0, 0.13, 0.25, 0.63, 0.63, 0.88, 
+         0.88, 0.88, 0.88, 1, 0.88, 0.63, 0.38, 0.38, 0, 0, 0, 0 )
+   ..
+"New Occ WE-H Nrm" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0, 0, 0, 0, 0, 0, 0, 0, 0.13, 0.25, 0.63, 0.75, 0.92, 
+         0.92, 0.92, 1, 1, 0.75, 0.63, 0.38, 0.38, 0, 0, 0 )
+   ..
+"New Occ Day Dec" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0, 0, 0, 0, 0, 0, 0, 0.13, 0.25, 0.63, 0.63, 0.88, 
+         0.88, 0.88, 1, 1, 1, 1, 1, 0.63, 0.63, 0.38, 0, 0 )
+   ..
+"New Lght WD Nrm" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.25, 0.38, 
+         0.7, 0.94, 0.98, 1, 0.98, 0.94, 0.94, 0.94, 0.94, 0.59, 0.32, 0.15, 
+         0.15, 0.15, 0.15 )
+   ..
+"New Lght WEH Nrm" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.25, 
+         0.4, 0.6, 0.9, 1, 0.98, 0.96, 0.94, 0.94, 0.94, 0.63, 0.57, 0.45, 
+         0.15, 0.15, 0.15 )
+   ..
+"New Lght Day Dec" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.25, 0.32, 0.63, 
+         0.87, 1, 1, 1, 1, 0.99, 0.94, 0.92, 0.92, 0.9, 0.63, 0.4, 0.2, 0.2 )
+   ..
+"New Eqp WD Nrm" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.23, 0.32, 
+         0.58, 0.83, 1, 1, 1, 0.97, 0.92, 0.88, 0.86, 0.54, 0.33, 0.15, 0.15, 
+         0.15, 0.15 )
+   ..
+"New Eqp WE-H Nrm" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.3, 
+         0.4, 0.6, 0.83, 0.97, 0.95, 0.9, 0.82, 0.73, 0.65, 0.52, 0.4, 0.33, 
+         0.15, 0.15, 0.15 )
+   ..
+"New Eqp Day Dec" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.21, 0.21, 0.21, 0.21, 0.21, 0.21, 0.21, 0.25, 0.32, 
+         0.58, 0.83, 1, 1, 0.99, 0.97, 0.91, 0.88, 0.86, 0.79, 0.67, 0.58, 
+         0.34, 0.21, 0.21 )
+   ..
+"New Infil Day" = DAY-SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   VALUES           = ( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+         0, 0, 0, 0, 0, 0 )
+   ..
+"Hourly Room Temp" = DAY-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   VALUES           = ( 74, 74, 74, 74, 74, 74, 74, 74, 74, 74, 74, 74, 74, 
+         74, 74, 74, 74, 74, 74, 74, 74, 74, 74, 74 )
+   ..
+
+$ ---------------------------------------------------------
+$              Week Schedules
+$ ---------------------------------------------------------
+
+"Ret Occ Week Nrm" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "Ret Occ WD Nrm", "Ret Occ WD Nrm", "Ret Occ WD Nrm", 
+         "Ret Occ WD Nrm", "Ret Occ WD Nrm", "Ret Occ WE-H Nrm", 
+         "Ret Occ WE-H Nrm", "Ret Occ WE-H Nrm" )
+   ..
+"Ret Occ Week Dec" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "Ret Occ Day Dec", "Ret Occ Day Dec", 
+         "Ret Occ Day Dec", "Ret Occ Day Dec", "Ret Occ Day Dec", 
+         "Ret Occ Day Dec", "Ret Occ Day Dec", "Ret Occ Day Dec" )
+   ..
+"Ret Lght Wk Nrm" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "Ret Lght WD Nrm", "Ret Lght WD Nrm", 
+         "Ret Lght WD Nrm", "Ret Lght WD Nrm", "Ret Lght WD Nrm", 
+         "Ret Lght WEH Nrm", "Ret Lght WEH Nrm", "Ret Lght WEH Nrm" )
+   ..
+"Ret Lght Wk Dec" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "Ret Lght Day Dec", "Ret Lght Day Dec", 
+         "Ret Lght Day Dec", "Ret Lght Day Dec", "Ret Lght Day Dec", 
+         "Ret Lght Day Dec", "Ret Lght Day Dec", "Ret Lght Day Dec" )
+   ..
+"Ret Eqp Week Nrm" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "Ret Eqp WD Nrm", "Ret Eqp WD Nrm", "Ret Eqp WD Nrm", 
+         "Ret Eqp WD Nrm", "Ret Eqp WD Nrm", "Ret Eqp WE-H Nrm", 
+         "Ret Eqp WE-H Nrm", "Ret Eqp WE-H Nrm" )
+   ..
+"Ret Eqp Week Dec" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "Ret Eqp Day Dec", "Ret Eqp Day Dec", 
+         "Ret Eqp Day Dec", "Ret Eqp Day Dec", "Ret Eqp Day Dec", 
+         "Ret Eqp Day Dec", "Ret Eqp Day Dec", "Ret Eqp Day Dec" )
+   ..
+"Ret Infil Week" = WEEK-SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   DAY-SCHEDULES    = ( "Ret Infil Day", "Ret Infil Day", "Ret Infil Day", 
+         "Ret Infil Day", "Ret Infil Day", "Ret Infil Day", "Ret Infil Day", 
+         "Ret Infil Day" )
+   ..
+"Office Occ Week" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "Office Occup WD", "Office Occup WD", 
+         "Office Occup WD", "Office Occup WD", "Office Occup WD", 
+         "Office Occup WEH", "Office Occup WEH", "Office Occup WEH" )
+   ..
+"Office Lght Week" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "Office Light WD", "Office Light WD", 
+         "Office Light WD", "Office Light WD", "Office Light WD", 
+         "Office Light WEH", "Office Light WEH", "Office Light WEH" )
+   ..
+"Office Equip Wk" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "Office Equip WD", "Office Equip WD", 
+         "Office Equip WD", "Office Equip WD", "Office Equip WD", 
+         "Office Equip WEH", "Office Equip WEH", "Office Equip WEH" )
+   ..
+"Office Infil Wk" = WEEK-SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   DAY-SCHEDULES    = ( "Office Infil WD", "Office Infil WD", 
+         "Office Infil WD", "Office Infil WD", "Office Infil WD", 
+         "Office Infil WEH", "Office Infil WEH", "Office Infil WEH" )
+   ..
+"Always On Week" = WEEK-SCHEDULE-PD
+   TYPE             = ON/OFF
+   DAY-SCHEDULES    = ( "Always On Day", "Always On Day", "Always On Day", 
+         "Always On Day", "Always On Day", "Always On Day", "Always On Day", 
+         "Always On Day" )
+   ..
+"New Occ Week Nrm" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "New Occ WD Nrm", "New Occ WD Nrm", "New Occ WD Nrm", 
+         "New Occ WD Nrm", "New Occ WD Nrm", "New Occ WE-H Nrm", 
+         "New Occ WE-H Nrm", "New Occ WE-H Nrm" )
+   ..
+"New Occ Week Dec" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "New Occ Day Dec", "New Occ Day Dec", 
+         "New Occ Day Dec", "New Occ Day Dec", "New Occ Day Dec", 
+         "New Occ Day Dec", "New Occ Day Dec", "New Occ Day Dec" )
+   ..
+"New Lght Wk Nrm" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "New Lght WD Nrm", "New Lght WD Nrm", 
+         "New Lght WD Nrm", "New Lght WD Nrm", "New Lght WD Nrm", 
+         "New Lght WEH Nrm", "New Lght WEH Nrm", "New Lght WEH Nrm" )
+   ..
+"New Lght Wk Dec" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "New Lght Day Dec", "New Lght Day Dec", 
+         "New Lght Day Dec", "New Lght Day Dec", "New Lght Day Dec", 
+         "New Lght Day Dec", "New Lght Day Dec", "New Lght Day Dec" )
+   ..
+"New Eqp Week Nrm" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "New Eqp WD Nrm", "New Eqp WD Nrm", "New Eqp WD Nrm", 
+         "New Eqp WD Nrm", "New Eqp WD Nrm", "New Eqp WE-H Nrm", 
+         "New Eqp WE-H Nrm", "New Eqp WE-H Nrm" )
+   ..
+"New Eqp Week Dec" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "New Eqp Day Dec", "New Eqp Day Dec", 
+         "New Eqp Day Dec", "New Eqp Day Dec", "New Eqp Day Dec", 
+         "New Eqp Day Dec", "New Eqp Day Dec", "New Eqp Day Dec" )
+   ..
+"New Infil Week" = WEEK-SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   DAY-SCHEDULES    = ( "New Infil Day", "New Infil Day", "New Infil Day", 
+         "New Infil Day", "New Infil Day", "New Infil Day", "New Infil Day", 
+         "New Infil Day" )
+   ..
+"Weekly Room Temp" = WEEK-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   DAY-SCHEDULES    = ( "Hourly Room Temp", "Hourly Room Temp" )
+   ..
+
+$ ---------------------------------------------------------
+$              Annual Schedules
+$ ---------------------------------------------------------
+
+"Retail Occupancy" = SCHEDULE-PD
+   TYPE             = FRACTION
+   MONTH            = ( 11, 12 )
+   DAY              = ( 30, 31 )
+   WEEK-SCHEDULES   = ( "Ret Occ Week Nrm", "Ret Occ Week Dec" )
+   ..
+"Retail Lighting" = SCHEDULE-PD
+   TYPE             = FRACTION
+   MONTH            = ( 11, 12 )
+   DAY              = ( 30, 31 )
+   WEEK-SCHEDULES   = ( "Ret Lght Wk Nrm", "Ret Lght Wk Dec" )
+   ..
+"Retail Equipment" = SCHEDULE-PD
+   TYPE             = FRACTION
+   MONTH            = ( 11, 12 )
+   DAY              = ( 30, 31 )
+   WEEK-SCHEDULES   = ( "Ret Eqp Week Nrm", "Ret Eqp Week Dec" )
+   ..
+"Ret Infiltration" = SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Ret Infil Week" )
+   ..
+"Office Occupancy" = SCHEDULE-PD
+   TYPE             = FRACTION
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Office Occ Week" )
+   ..
+"Office Lighting" = SCHEDULE-PD
+   TYPE             = FRACTION
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Office Lght Week" )
+   ..
+"Office Equipment" = SCHEDULE-PD
+   TYPE             = FRACTION
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Office Equip Wk" )
+   ..
+"Off Infiltration" = SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Office Infil Wk" )
+   ..
+"Always On Sched" = SCHEDULE-PD
+   TYPE             = ON/OFF
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Always On Week" )
+   ..
+"Newail Occupancy" = SCHEDULE-PD
+   TYPE             = FRACTION
+   MONTH            = ( 11, 12 )
+   DAY              = ( 30, 31 )
+   WEEK-SCHEDULES   = ( "New Occ Week Nrm", "New Occ Week Dec" )
+   ..
+"Newail Lighting" = SCHEDULE-PD
+   TYPE             = FRACTION
+   MONTH            = ( 11, 12 )
+   DAY              = ( 30, 31 )
+   WEEK-SCHEDULES   = ( "New Lght Wk Nrm", "New Lght Wk Dec" )
+   ..
+"Newail Equipment" = SCHEDULE-PD
+   TYPE             = FRACTION
+   MONTH            = ( 11, 12 )
+   DAY              = ( 30, 31 )
+   WEEK-SCHEDULES   = ( "New Eqp Week Nrm", "New Eqp Week Dec" )
+   ..
+"New Infiltration" = SCHEDULE-PD
+   TYPE             = MULTIPLIER
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "New Infil Week" )
+   ..
+"Room Temp" = SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Weekly Room Temp" )
+   ..
+
+
+$ ---------------------------------------------------------
+$              Polygons
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Wall Parameters
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Fixed and Building Shades
+$ ---------------------------------------------------------
+
+
+"Shade 1a" = BUILDING-SHADE  
+   X                = 10
+   Y                = 300
+   Z                = 0
+   HEIGHT           = 25
+   WIDTH            = 100
+   AZIMUTH          = 180
+   ..
+"Shade 1b" = BUILDING-SHADE  
+   X                = 110
+   Y                = 300
+   Z                = 0
+   HEIGHT           = 25
+   WIDTH            = 60
+   AZIMUTH          = 90
+   ..
+"Shade 2a" = BUILDING-SHADE  
+   X                = 360
+   Y                = 10
+   Z                = 0
+   HEIGHT           = 15
+   WIDTH            = 75
+   AZIMUTH          = 90
+   ..
+"Shade 2b" = BUILDING-SHADE  
+   X                = 360
+   Y                = 85
+   Z                = 0
+   HEIGHT           = 15
+   WIDTH            = 50
+   AZIMUTH          = 180
+   ..
+
+
+$ ---------------------------------------------------------
+$              Misc Cost Related Objects
+$ ---------------------------------------------------------
+
+
+
+BASELINE        
+   ..
+
+
+$ *********************************************************
+$ **                                                     **
+$ **      Floors / Spaces / Walls / Windows / Doors      **
+$ **                                                     **
+$ *********************************************************
+
+"Floor 1" = FLOOR      SHAPE = NO-SHAPE     
+   MULTIPLIER       = 1
+   X                = 0
+   Y                = 0
+   Z                = 0
+   AZIMUTH          = 0
+   ..
+"Space 1" = SPACE           
+   X                = 10
+   Y                = 225
+   Z                = 0
+   AZIMUTH          = 0
+   HEIGHT           = 10
+   SHAPE            = BOX
+   WIDTH            = 60
+   DEPTH            = 50
+   PEOPLE-SCHEDULE  = "Retail Occupancy"
+   LIGHTING-SCHEDUL = ( "Retail Lighting" )
+   EQUIP-SCHEDULE   = ( "Retail Equipment" )
+   INF-SCHEDULE     = "Ret Infiltration"
+   INF-METHOD       = AIR-CHANGE
+   PEOPLE-HG-LAT    = 190
+   PEOPLE-HG-SENS   = 230
+   EQUIP-LATENT     = ( 0.02 )
+   EQUIP-SENSIBLE   = ( 0.8 )
+   SOURCE-LATENT    = 0.02
+   SOURCE-SENSIBLE  = 0.5
+   LIGHTING-W/AREA  = ( 2.3135 )
+   EQUIPMENT-W/AREA = ( 1.5125 )
+   AREA/PERSON      = 200
+   ..
+"Spc:1 > South Wall" = EXTERIOR-WALL   
+   CONSTRUCTION     = "PWALL-CONS"
+   X                = 0
+   Y                = 0
+   Z                = 0
+   HEIGHT           = 10
+   WIDTH            = 60
+   AZIMUTH          = 180
+   SURFACE-TYPE     = WALL
+   ..
+"Spc:1 Wall:S > Win 1" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 2.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:1 Wall:S > Win 2" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 10.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:1 Wall:S > Door 1" = WINDOW          
+   GLASS-TYPE       = "GLASS-DR-CONS"
+   X                = 18.5
+   Y                = 0
+   HEIGHT           = 7
+   WIDTH            = 3
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:1 Wall:S > Door 2" = WINDOW          
+   GLASS-TYPE       = "GLASS-DR-CONS"
+   X                = 21.5
+   Y                = 0
+   HEIGHT           = 7
+   WIDTH            = 3
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:1 Wall:S > Win 3" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 24.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:1 Wall:S > Win 4" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 32.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:1 Wall:S > Win 5" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 40.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:1 Wall:S > Win 6" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 48.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:1 > North Wall" = EXTERIOR-WALL   
+   CONSTRUCTION     = "PWALL-CONS"
+   X                = 60
+   Y                = 50
+   Z                = 0
+   HEIGHT           = 10
+   WIDTH            = 60
+   AZIMUTH          = 0
+   SURFACE-TYPE     = WALL
+   ..
+"Spc:1 > West Wall" = EXTERIOR-WALL   
+   CONSTRUCTION     = "PWALL-CONS"
+   X                = 0
+   Y                = 50
+   Z                = 0
+   HEIGHT           = 10
+   WIDTH            = 50
+   AZIMUTH          = 270
+   SURFACE-TYPE     = WALL
+   ..
+"Spc:1 > North Floor" = EXTERIOR-WALL   
+   CONSTRUCTION     = "FLOOR-CONS"
+   X                = 60
+   Y                = 49
+   Z                = 0
+   HEIGHT           = 1
+   WIDTH            = 60
+   AZIMUTH          = 0
+   TILT             = 180
+   SURFACE-TYPE     = FLOOR
+   ..
+"Spc:1 > South Floor" = EXTERIOR-WALL   
+   CONSTRUCTION     = "FLOOR-CONS"
+   X                = 0
+   Y                = 1
+   Z                = 0
+   HEIGHT           = 1
+   WIDTH            = 60
+   AZIMUTH          = 180
+   TILT             = 180
+   SURFACE-TYPE     = FLOOR
+   ..
+"Spc:1 > West Floor" = EXTERIOR-WALL   
+   CONSTRUCTION     = "FLOOR-CONS"
+   X                = 1
+   Y                = 50
+   Z                = 0
+   HEIGHT           = 1
+   WIDTH            = 50
+   AZIMUTH          = 270
+   TILT             = 180
+   SURFACE-TYPE     = FLOOR
+   ..
+"Spc:1 > Roof" = EXTERIOR-WALL   
+   CONSTRUCTION     = "ROOF-CONS"
+   X                = 0
+   Y                = 0
+   Z                = 10
+   HEIGHT           = 50
+   WIDTH            = 60
+   AZIMUTH          = 180
+   TILT             = 0
+   SURFACE-TYPE     = ROOF
+   ..
+"Spc:1 > East Wall" = INTERIOR-WALL   
+   NEXT-TO          = "Space 2"
+   CONSTRUCTION     = "CON-IWALL"
+   X                = 60
+   Y                = 0
+   Z                = 0
+   HEIGHT           = 10
+   WIDTH            = 50
+   AZIMUTH          = 90
+   SURFACE-TYPE     = WALL
+   ..
+"Space 2" = SPACE           
+   X                = 70
+   Y                = 225
+   Z                = 0
+   AZIMUTH          = 0
+   HEIGHT           = 10
+   SHAPE            = BOX
+   WIDTH            = 60
+   DEPTH            = 50
+   PEOPLE-SCHEDULE  = "Office Occupancy"
+   LIGHTING-SCHEDUL = ( "Office Lighting" )
+   EQUIP-SCHEDULE   = ( "Office Equipment" )
+   INF-SCHEDULE     = "Off Infiltration"
+   INF-METHOD       = AIR-CHANGE
+   PEOPLE-HG-LAT    = 190
+   PEOPLE-HG-SENS   = 230
+   EQUIP-LATENT     = ( 0.02 )
+   EQUIP-SENSIBLE   = ( 0.8 )
+   SOURCE-LATENT    = 0.02
+   SOURCE-SENSIBLE  = 0.5
+   LIGHTING-W/AREA  = ( 2.3135 )
+   EQUIPMENT-W/AREA = ( 1.5125 )
+   AREA/PERSON      = 200
+   ..
+"Spc:2 > South Wall" = EXTERIOR-WALL   
+   CONSTRUCTION     = "PWALL-CONS"
+   X                = 0
+   Y                = 0
+   Z                = 0
+   HEIGHT           = 10
+   WIDTH            = 60
+   AZIMUTH          = 180
+   SURFACE-TYPE     = WALL
+   ..
+"Spc:2 Wall:S > Win 1" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 2.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:2 Wall:S > Win 2" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 10.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:2 Wall:S > Door 1" = WINDOW          
+   GLASS-TYPE       = "GLASS-DR-CONS"
+   X                = 18.5
+   Y                = 0
+   HEIGHT           = 7
+   WIDTH            = 3
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:2 Wall:S > Door 2" = WINDOW          
+   GLASS-TYPE       = "GLASS-DR-CONS"
+   X                = 21.5
+   Y                = 0
+   HEIGHT           = 7
+   WIDTH            = 3
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:2 Wall:S > Win 3" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 24.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:2 Wall:S > Win 4" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 32.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:2 Wall:S > Win 5" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 40.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:2 Wall:S > Win 6" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 48.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:2 > North Wall" = EXTERIOR-WALL   
+   CONSTRUCTION     = "PWALL-CONS"
+   X                = 60
+   Y                = 50
+   Z                = 0
+   HEIGHT           = 10
+   WIDTH            = 60
+   AZIMUTH          = 0
+   SURFACE-TYPE     = WALL
+   ..
+"Spc:2 > North Floor" = EXTERIOR-WALL   
+   CONSTRUCTION     = "FLOOR-CONS"
+   X                = 60
+   Y                = 49
+   Z                = 0
+   HEIGHT           = 1
+   WIDTH            = 60
+   AZIMUTH          = 0
+   TILT             = 180
+   SURFACE-TYPE     = FLOOR
+   ..
+"Spc:2 > South Floor" = EXTERIOR-WALL   
+   CONSTRUCTION     = "FLOOR-CONS"
+   X                = 0
+   Y                = 1
+   Z                = 0
+   HEIGHT           = 1
+   WIDTH            = 60
+   AZIMUTH          = 180
+   TILT             = 180
+   SURFACE-TYPE     = FLOOR
+   ..
+"Spc:2 > Roof" = EXTERIOR-WALL   
+   CONSTRUCTION     = "ROOF-CONS"
+   X                = 0
+   Y                = 0
+   Z                = 10
+   HEIGHT           = 50
+   WIDTH            = 60
+   AZIMUTH          = 180
+   TILT             = 0
+   SURFACE-TYPE     = ROOF
+   ..
+"Spc:2 > East Wall" = INTERIOR-WALL   
+   NEXT-TO          = "Space 3"
+   CONSTRUCTION     = "CON-IWALL"
+   X                = 60
+   Y                = 0
+   Z                = 0
+   HEIGHT           = 10
+   WIDTH            = 50
+   AZIMUTH          = 90
+   SURFACE-TYPE     = WALL
+   ..
+"Space 3" = SPACE           
+   X                = 130
+   Y                = 225
+   Z                = 0
+   AZIMUTH          = 0
+   HEIGHT           = 10
+   SHAPE            = BOX
+   WIDTH            = 60
+   DEPTH            = 50
+   PEOPLE-SCHEDULE  = "Retail Occupancy"
+   LIGHTING-SCHEDUL = ( "Retail Lighting" )
+   EQUIP-SCHEDULE   = ( "Retail Equipment" )
+   INF-SCHEDULE     = "Ret Infiltration"
+   INF-METHOD       = AIR-CHANGE
+   PEOPLE-HG-LAT    = 190
+   PEOPLE-HG-SENS   = 230
+   EQUIP-LATENT     = ( 0.02 )
+   EQUIP-SENSIBLE   = ( 0.8 )
+   SOURCE-LATENT    = 0.02
+   SOURCE-SENSIBLE  = 0.5
+   LIGHTING-W/AREA  = ( 2.3135 )
+   EQUIPMENT-W/AREA = ( 1.5125 )
+   AREA/PERSON      = 200
+   ..
+"Spc:3 > South Wall" = EXTERIOR-WALL   
+   CONSTRUCTION     = "PWALL-CONS"
+   X                = 0
+   Y                = 0
+   Z                = 0
+   HEIGHT           = 10
+   WIDTH            = 60
+   AZIMUTH          = 180
+   SURFACE-TYPE     = WALL
+   ..
+"Spc:3 Wall:S > Win 1" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 2.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:3 Wall:S > Win 2" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 10.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:3 Wall:S > Door 1" = WINDOW          
+   GLASS-TYPE       = "GLASS-DR-CONS"
+   X                = 18.5
+   Y                = 0
+   HEIGHT           = 7
+   WIDTH            = 3
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:3 Wall:S > Door 2" = WINDOW          
+   GLASS-TYPE       = "GLASS-DR-CONS"
+   X                = 21.5
+   Y                = 0
+   HEIGHT           = 7
+   WIDTH            = 3
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:3 Wall:S > Win 3" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 24.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:3 Wall:S > Win 4" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 32.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:3 Wall:S > Win 5" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 40.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:3 Wall:S > Win 6" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 48.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:3 > North Wall" = EXTERIOR-WALL   
+   CONSTRUCTION     = "PWALL-CONS"
+   X                = 60
+   Y                = 50
+   Z                = 0
+   HEIGHT           = 10
+   WIDTH            = 60
+   AZIMUTH          = 0
+   SURFACE-TYPE     = WALL
+   ..
+"Spc:3 > North Floor" = EXTERIOR-WALL   
+   CONSTRUCTION     = "FLOOR-CONS"
+   X                = 60
+   Y                = 49
+   Z                = 0
+   HEIGHT           = 1
+   WIDTH            = 60
+   AZIMUTH          = 0
+   TILT             = 180
+   SURFACE-TYPE     = FLOOR
+   ..
+"Spc:3 > South Floor" = EXTERIOR-WALL   
+   CONSTRUCTION     = "FLOOR-CONS"
+   X                = 0
+   Y                = 1
+   Z                = 0
+   HEIGHT           = 1
+   WIDTH            = 60
+   AZIMUTH          = 180
+   TILT             = 180
+   SURFACE-TYPE     = FLOOR
+   ..
+"Spc:3 > Roof" = EXTERIOR-WALL   
+   CONSTRUCTION     = "ROOF-CONS"
+   X                = 0
+   Y                = 0
+   Z                = 10
+   HEIGHT           = 50
+   WIDTH            = 60
+   AZIMUTH          = 180
+   TILT             = 0
+   SURFACE-TYPE     = ROOF
+   ..
+"Spc:3 > East Wall" = INTERIOR-WALL   
+   NEXT-TO          = "Space 4"
+   CONSTRUCTION     = "CON-IWALL"
+   X                = 60
+   Y                = 0
+   Z                = 0
+   HEIGHT           = 10
+   WIDTH            = 50
+   AZIMUTH          = 90
+   SURFACE-TYPE     = WALL
+   ..
+"Space 4" = SPACE           
+   X                = 190
+   Y                = 225
+   Z                = 0
+   AZIMUTH          = 0
+   HEIGHT           = 10
+   SHAPE            = BOX
+   WIDTH            = 70
+   DEPTH            = 50
+   PEOPLE-SCHEDULE  = "Office Occupancy"
+   LIGHTING-SCHEDUL = ( "Office Lighting" )
+   EQUIP-SCHEDULE   = ( "Office Equipment" )
+   INF-SCHEDULE     = "Off Infiltration"
+   INF-METHOD       = AIR-CHANGE
+   PEOPLE-HG-LAT    = 190
+   PEOPLE-HG-SENS   = 230
+   EQUIP-LATENT     = ( 0.02 )
+   EQUIP-SENSIBLE   = ( 0.8 )
+   SOURCE-LATENT    = 0.02
+   SOURCE-SENSIBLE  = 0.5
+   LIGHTING-W/AREA  = ( 2.3135 )
+   EQUIPMENT-W/AREA = ( 1.5125 )
+   AREA/PERSON      = 200
+   ..
+"Spc:4 > South Wall" = EXTERIOR-WALL   
+   CONSTRUCTION     = "PWALL-CONS"
+   X                = 0
+   Y                = 0
+   Z                = 0
+   HEIGHT           = 10
+   WIDTH            = 70
+   AZIMUTH          = 180
+   SURFACE-TYPE     = WALL
+   ..
+"Spc:4 Wall:S > Win 1" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 2.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:4 Wall:S > Win 2" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 10.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:4 Wall:S > Door 1" = WINDOW          
+   GLASS-TYPE       = "GLASS-DR-CONS"
+   X                = 18.5
+   Y                = 0
+   HEIGHT           = 7
+   WIDTH            = 3
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:4 Wall:S > Door 2" = WINDOW          
+   GLASS-TYPE       = "GLASS-DR-CONS"
+   X                = 21.5
+   Y                = 0
+   HEIGHT           = 7
+   WIDTH            = 3
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:4 Wall:S > Win 3" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 24.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:4 Wall:S > Win 4" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 32.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:4 Wall:S > Win 5" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 40.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:4 Wall:S > Win 6" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 48.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:4 Wall:S > Win 7" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 56.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:4 > North Wall" = EXTERIOR-WALL   
+   CONSTRUCTION     = "PWALL-CONS"
+   X                = 70
+   Y                = 50
+   Z                = 0
+   HEIGHT           = 10
+   WIDTH            = 70
+   AZIMUTH          = 0
+   SURFACE-TYPE     = WALL
+   ..
+"Spc:4 > North Floor" = EXTERIOR-WALL   
+   CONSTRUCTION     = "FLOOR-CONS"
+   X                = 70
+   Y                = 49
+   Z                = 0
+   HEIGHT           = 1
+   WIDTH            = 70
+   AZIMUTH          = 0
+   TILT             = 180
+   SURFACE-TYPE     = FLOOR
+   ..
+"Spc:4 > South Floor" = EXTERIOR-WALL   
+   CONSTRUCTION     = "FLOOR-CONS"
+   X                = 0
+   Y                = 1
+   Z                = 0
+   HEIGHT           = 1
+   WIDTH            = 70
+   AZIMUTH          = 180
+   TILT             = 180
+   SURFACE-TYPE     = FLOOR
+   ..
+"Spc:4 > Roof" = EXTERIOR-WALL   
+   CONSTRUCTION     = "ROOF-CONS"
+   X                = 0
+   Y                = 0
+   Z                = 10
+   HEIGHT           = 50
+   WIDTH            = 70
+   AZIMUTH          = 180
+   TILT             = 0
+   SURFACE-TYPE     = ROOF
+   ..
+"Spc:4 > East Wall" = INTERIOR-WALL   
+   NEXT-TO          = "Space 5"
+   CONSTRUCTION     = "CON-IWALL"
+   X                = 70
+   Y                = 0
+   Z                = 0
+   HEIGHT           = 10
+   WIDTH            = 50
+   AZIMUTH          = 90
+   SURFACE-TYPE     = WALL
+   ..
+"Space 5" = SPACE           
+   X                = 260
+   Y                = 135
+   Z                = 0
+   AZIMUTH          = 0
+   HEIGHT           = 10
+   SHAPE            = BOX
+   WIDTH            = 80
+   DEPTH            = 140
+   PEOPLE-SCHEDULE  = "Retail Occupancy"
+   LIGHTING-SCHEDUL = ( "Retail Lighting" )
+   EQUIP-SCHEDULE   = ( "Retail Equipment" )
+   INF-SCHEDULE     = "Ret Infiltration"
+   INF-METHOD       = AIR-CHANGE
+   PEOPLE-HG-LAT    = 190
+   PEOPLE-HG-SENS   = 230
+   EQUIP-LATENT     = ( 0.02 )
+   EQUIP-SENSIBLE   = ( 0.8 )
+   SOURCE-LATENT    = 0.02
+   SOURCE-SENSIBLE  = 0.5
+   LIGHTING-W/AREA  = ( 2.3135 )
+   EQUIPMENT-W/AREA = ( 1.5125 )
+   AREA/PERSON      = 200
+   ..
+"Spc:5 > West Wall" = EXTERIOR-WALL   
+   CONSTRUCTION     = "PWALL-CONS"
+   X                = 0
+   Y                = 90
+   Z                = 0
+   HEIGHT           = 10
+   WIDTH            = 90
+   AZIMUTH          = 270
+   SURFACE-TYPE     = WALL
+   ..
+"Spc:5 Wall:W > Win 1" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 2.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:5 Wall:W > Win 2" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 10.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:5 Wall:W > Door 1" = WINDOW          
+   GLASS-TYPE       = "GLASS-DR-CONS"
+   X                = 18.5
+   Y                = 0
+   HEIGHT           = 7
+   WIDTH            = 3
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:5 Wall:W > Door 2" = WINDOW          
+   GLASS-TYPE       = "GLASS-DR-CONS"
+   X                = 21.5
+   Y                = 0
+   HEIGHT           = 7
+   WIDTH            = 3
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:5 Wall:W > Win 3" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 24.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:5 Wall:W > Win 4" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 32.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:5 Wall:W > Win 5" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 40.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:5 Wall:W > Win 6" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 48.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:5 Wall:W > Win 7" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 56.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:5 Wall:W > Win 8" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 64.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:5 Wall:W > Win 9" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 72.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:5 Wall:W > Win 10" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 80.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:5 > North Wall" = EXTERIOR-WALL   
+   CONSTRUCTION     = "PWALL-CONS"
+   X                = 80
+   Y                = 140
+   Z                = 0
+   HEIGHT           = 10
+   WIDTH            = 80
+   AZIMUTH          = 0
+   SURFACE-TYPE     = WALL
+   ..
+"Spc:5 > East Wall" = EXTERIOR-WALL   
+   CONSTRUCTION     = "PWALL-CONS"
+   X                = 80
+   Y                = 0
+   Z                = 0
+   HEIGHT           = 10
+   WIDTH            = 140
+   AZIMUTH          = 90
+   SURFACE-TYPE     = WALL
+   ..
+"Spc:5 > North Floor" = EXTERIOR-WALL   
+   CONSTRUCTION     = "FLOOR-CONS"
+   X                = 80
+   Y                = 139
+   Z                = 0
+   HEIGHT           = 1
+   WIDTH            = 80
+   AZIMUTH          = 0
+   TILT             = 180
+   SURFACE-TYPE     = FLOOR
+   ..
+"Spc:5 > East Floor" = EXTERIOR-WALL   
+   CONSTRUCTION     = "FLOOR-CONS"
+   X                = 79
+   Y                = 0
+   Z                = 0
+   HEIGHT           = 1
+   WIDTH            = 140
+   AZIMUTH          = 90
+   TILT             = 180
+   SURFACE-TYPE     = FLOOR
+   ..
+"Spc:5 > West Floor" = EXTERIOR-WALL   
+   CONSTRUCTION     = "FLOOR-CONS"
+   X                = 1
+   Y                = 90
+   Z                = 0
+   HEIGHT           = 1
+   WIDTH            = 90
+   AZIMUTH          = 270
+   TILT             = 180
+   SURFACE-TYPE     = FLOOR
+   ..
+"Spc:5 > Roof" = EXTERIOR-WALL   
+   CONSTRUCTION     = "ROOF-CONS"
+   X                = 0
+   Y                = 0
+   Z                = 10
+   HEIGHT           = 140
+   WIDTH            = 80
+   AZIMUTH          = 180
+   TILT             = 0
+   SURFACE-TYPE     = ROOF
+   ..
+"Spc:5 > South Wall" = INTERIOR-WALL   
+   NEXT-TO          = "Space 6"
+   CONSTRUCTION     = "CON-IWALL"
+   X                = 0
+   Y                = 0
+   Z                = 0
+   HEIGHT           = 10
+   WIDTH            = 80
+   AZIMUTH          = 180
+   SURFACE-TYPE     = WALL
+   ..
+"Space 6" = SPACE           
+   X                = 260
+   Y                = 10
+   Z                = 0
+   AZIMUTH          = 0
+   HEIGHT           = 10
+   SHAPE            = BOX
+   WIDTH            = 80
+   DEPTH            = 125
+   PEOPLE-SCHEDULE  = "Retail Occupancy"
+   LIGHTING-SCHEDUL = ( "Retail Lighting" )
+   EQUIP-SCHEDULE   = ( "Retail Equipment" )
+   INF-SCHEDULE     = "Ret Infiltration"
+   INF-METHOD       = AIR-CHANGE
+   PEOPLE-HG-LAT    = 190
+   PEOPLE-HG-SENS   = 230
+   EQUIP-LATENT     = ( 0.02 )
+   EQUIP-SENSIBLE   = ( 0.8 )
+   SOURCE-LATENT    = 0.02
+   SOURCE-SENSIBLE  = 0.5
+   LIGHTING-W/AREA  = ( 2.3135 )
+   EQUIPMENT-W/AREA = ( 1.5125 )
+   AREA/PERSON      = 200
+   ..
+"Spc:6 > West Wall" = EXTERIOR-WALL   
+   CONSTRUCTION     = "PWALL-CONS"
+   X                = 0
+   Y                = 125
+   Z                = 0
+   HEIGHT           = 10
+   WIDTH            = 125
+   AZIMUTH          = 270
+   SURFACE-TYPE     = WALL
+   ..
+"Spc:6 Wall:W > Win 1" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 2.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:6 Wall:W > Win 2" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 10.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:6 Wall:W > Win 3" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 18.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:6 Wall:W > Door 1" = WINDOW          
+   GLASS-TYPE       = "GLASS-DR-CONS"
+   X                = 26.5
+   Y                = 0
+   HEIGHT           = 7
+   WIDTH            = 3
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:6 Wall:W > Door 2" = WINDOW          
+   GLASS-TYPE       = "GLASS-DR-CONS"
+   X                = 29.5
+   Y                = 0
+   HEIGHT           = 7
+   WIDTH            = 3
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:6 Wall:W > Win 4" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 32.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:6 Wall:W > Win 5" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 40.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:6 Wall:W > Win 6" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 48.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:6 Wall:W > Win 7" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 56.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:6 Wall:W > Win 8" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 64.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:6 Wall:W > Win 9" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 72.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:6 Wall:W > Win 10" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 80.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:6 Wall:W > Door 3" = WINDOW          
+   GLASS-TYPE       = "GLASS-DR-CONS"
+   X                = 88.5
+   Y                = 0
+   HEIGHT           = 7
+   WIDTH            = 3
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:6 Wall:W > Door 4" = WINDOW          
+   GLASS-TYPE       = "GLASS-DR-CONS"
+   X                = 91.5
+   Y                = 0
+   HEIGHT           = 7
+   WIDTH            = 3
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:6 Wall:W > Win 11" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 94.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:6 Wall:W > Win 12" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 102.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:6 Wall:W > Win 13" = WINDOW          
+   GLASS-TYPE       = "G-CLR"
+   FRAME-WIDTH      = 0.25
+   X                = 110.5
+   Y                = 2
+   HEIGHT           = 5
+   WIDTH            = 7.5
+   SETBACK          = 0.25
+   FRAME-CONDUCT    = 3.037
+   ..
+"Spc:6 > East Wall" = EXTERIOR-WALL   
+   CONSTRUCTION     = "PWALL-CONS"
+   X                = 80
+   Y                = 0
+   Z                = 0
+   HEIGHT           = 10
+   WIDTH            = 125
+   AZIMUTH          = 90
+   SURFACE-TYPE     = WALL
+   ..
+"Spc:6 > South Wall" = EXTERIOR-WALL   
+   CONSTRUCTION     = "PWALL-CONS"
+   X                = 0
+   Y                = 0
+   Z                = 0
+   HEIGHT           = 10
+   WIDTH            = 80
+   AZIMUTH          = 180
+   SURFACE-TYPE     = WALL
+   ..
+"Spc:6 > South Floor" = EXTERIOR-WALL   
+   CONSTRUCTION     = "FLOOR-CONS"
+   X                = 0
+   Y                = 1
+   Z                = 0
+   HEIGHT           = 1
+   WIDTH            = 80
+   AZIMUTH          = 180
+   TILT             = 180
+   SURFACE-TYPE     = FLOOR
+   ..
+"Spc:6 > East Floor" = EXTERIOR-WALL   
+   CONSTRUCTION     = "FLOOR-CONS"
+   X                = 79
+   Y                = 0
+   Z                = 0
+   HEIGHT           = 1
+   WIDTH            = 140
+   AZIMUTH          = 90
+   TILT             = 180
+   SURFACE-TYPE     = FLOOR
+   ..
+"Spc:6 > West Floor" = EXTERIOR-WALL   
+   CONSTRUCTION     = "FLOOR-CONS"
+   X                = 1
+   Y                = 140
+   Z                = 0
+   HEIGHT           = 1
+   WIDTH            = 140
+   AZIMUTH          = 270
+   TILT             = 180
+   SURFACE-TYPE     = FLOOR
+   ..
+"Spc:6 > Roof" = EXTERIOR-WALL   
+   CONSTRUCTION     = "ROOF-CONS"
+   X                = 0
+   Y                = 0
+   Z                = 10
+   HEIGHT           = 125
+   WIDTH            = 80
+   AZIMUTH          = 180
+   TILT             = 0
+   SURFACE-TYPE     = ROOF
+   ..
+
+
+$ *********************************************************
+$ **                                                     **
+$ **                       Meters                        **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$              Electric Meters
+$ ---------------------------------------------------------
+
+"EM1" = ELEC-METER      
+   TYPE             = UTILITY
+   SOURCE-SITE-EFF  = 0.37
+   ..
+
+
+$ ---------------------------------------------------------
+$              Fuel Meters
+$ ---------------------------------------------------------
+
+"FM1" = FUEL-METER      
+   TYPE             = NATURAL-GAS
+   SOURCE-SITE-EFF  = 0.98
+   ..
+
+
+$ ---------------------------------------------------------
+$              Steam Meters
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Chilled Water Meters
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Master Meters
+$ ---------------------------------------------------------
+
+MASTER-METERS   
+   MSTR-ELEC-METER  = "EM1"
+   MSTR-FUEL-METER  = "FM1"
+   ..
+
+
+$ *********************************************************
+$ **                                                     **
+$ **      HVAC Circulation Loops / Plant Equipment       **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$              Curve Fits
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Pumps
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Circulation Loops
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Chillers
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Boilers
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Domestic Water Heaters
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Heat Rejection
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Tower Free Cooling
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Electric Generators
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Thermal Storage
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Heat Exchangers
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Ground Loop Heat Exchangers
+$ ---------------------------------------------------------
+
+
+
+$ *********************************************************
+$ **                                                     **
+$ **               HVAC Systems / Zones                  **
+$ **                                                     **
+$ *********************************************************
+
+"System 1" = SYSTEM          
+   TYPE             = PSZ
+   CONTROL-ZONE     = "Zone 1"
+   ..
+"Zone 1" = ZONE            
+   TYPE             = CONDITIONED
+   OA-FLOW/PER      = 7
+   HEAT-TEMP-SCH    = "Room Temp"
+   COOL-TEMP-SCH    = "Room Temp"
+   SPACE            = "Space 1"
+   ..
+"System 2" = SYSTEM          
+   TYPE             = PSZ
+   CONTROL-ZONE     = "Zone 2"
+   ..
+"Zone 2" = ZONE            
+   LIKE = "Zone 1"
+   SPACE            = "Space 2"
+   ..
+"System 3" = SYSTEM          
+   TYPE             = PSZ
+   CONTROL-ZONE     = "Zone 3"
+   ..
+"Zone 3" = ZONE            
+   LIKE = "Zone 1"
+   SPACE            = "Space 3"
+   ..
+"System 4" = SYSTEM          
+   TYPE             = PSZ
+   CONTROL-ZONE     = "Zone 4"
+   ..
+"Zone 4" = ZONE            
+   LIKE = "Zone 1"
+   SPACE            = "Space 4"
+   ..
+"System 5" = SYSTEM          
+   TYPE             = PSZ
+   CONTROL-ZONE     = "Zone 5"
+   ..
+"Zone 5" = ZONE            
+   LIKE = "Zone 1"
+   SPACE            = "Space 5"
+   ..
+"System 6" = SYSTEM          
+   TYPE             = PSZ
+   CONTROL-ZONE     = "Zone 6"
+   ..
+"Zone 6" = ZONE            
+   LIKE = "Zone 1"
+   SPACE            = "Space 6"
+   ..
+
+
+$ *********************************************************
+$ **                                                     **
+$ **                Metering & Misc HVAC                 **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$              Equipment Controls
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Load Management
+$ ---------------------------------------------------------
+
+
+
+$ *********************************************************
+$ **                                                     **
+$ **                    Utility Rates                    **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$              Ratchets
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Block Charges
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Utility Rates
+$ ---------------------------------------------------------
+
+
+
+$ *********************************************************
+$ **                                                     **
+$ **                 Output Reporting                    **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$              Loads Non-Hourly Reporting
+$ ---------------------------------------------------------
+
+LOADS-REPORT    
+   VERIFICATION     = ( ALL-VERIFICATION )
+   SUMMARY          = ( ALL-SUMMARY )
+   ..
+
+
+$ ---------------------------------------------------------
+$              Systems Non-Hourly Reporting
+$ ---------------------------------------------------------
+
+SYSTEMS-REPORT  
+   VERIFICATION     = ( ALL-VERIFICATION )
+   SUMMARY          = ( ALL-SUMMARY )
+   ..
+
+
+$ ---------------------------------------------------------
+$              Plant Non-Hourly Reporting
+$ ---------------------------------------------------------
+
+PLANT-REPORT    
+   VERIFICATION     = ( ALL-VERIFICATION )
+   SUMMARY          = ( ALL-SUMMARY )
+   ..
+
+
+$ ---------------------------------------------------------
+$              Economics Non-Hourly Reporting
+$ ---------------------------------------------------------
+
+ECONOMICS-REPORT
+   VERIFICATION     = ( ALL-VERIFICATION )
+   SUMMARY          = ( ALL-SUMMARY )
+   ..
+
+
+$ ---------------------------------------------------------
+$              Hourly Reporting
+$ ---------------------------------------------------------
+
+"Elec Enduse Block" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "EM1"
+   VARIABLE-LIST    = ( 1, 3, 4, 5, 7, 8, 20 )
+   ..
+"Fuel Enduse Block" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "FM1"
+   VARIABLE-LIST    = ( 1, 2, 3, 4, 5, 6, 7, 8, 11, 20 )
+   ..
+
+"Elec Enduse Report" = HOURLY-REPORT   
+   REPORT-SCHEDULE  = "Always On Sched"
+   REPORT-BLOCK     = ( "Elec Enduse Block" )
+   ..
+"Fuel Enduse Report" = HOURLY-REPORT   
+   REPORT-SCHEDULE  = "Always On Sched"
+   REPORT-BLOCK     = ( "Fuel Enduse Block" )
+   ..
+
+
+$ ---------------------------------------------------------
+$              THE END
+$ ---------------------------------------------------------
+
+END ..
+COMPUTE ..
+STOP ..
+

@@ -1,0 +1,1154 @@
+      PROGRAM  KEYWDT                                                           KEYWDT   2
+C              THIS PROGRAM CREATES THE FILE BDLKEY FOR BDL.                    -130     1
+C Portions Copyright (c) 1997 by Lawrence Berkeley National Laboratory and      -130     2
+C Portions Copyright (c) 1997 by James J. Hirsch. All Rights Reserved.          -130     3
+C Portions developed under University of California/USDOE Purchase Order        -130     4
+C #4607010 with JJ Hirsch and covered by above copyrights.                      -130     5
+C              THE INPUT IS STRUCTURED AS FOLLOWS                               -130     6
+C     RECORD   COLS   TYP     DESCRIPTION                        END OF REC     KEYWDT  10
+C              START    1       *                                               KEYWDT  11
+C              2-4     A3    NAME OF PROCESSOR DATA IS FOR                      KEYWDT  12
+C              30-32   I3    SIZE OF SYMBOL TABLE TO BE SAVED                   KEYWDT  13
+C                                                                               KEYWDT  14
+C              SYMBOLS  1       BLANK                                           KEYWDT  15
+C              2-17    4A4   NAME OF SYMBOL                             END     KEYWDT  16
+C              30-32   I3    POSITION IN TABLE                          0       KEYWDT  17
+C              35-37   I3    TYPE OF SYMBOL                             0       KEYWDT  18
+C              40-42   I3    VALUE OF SYMBOL                            0       KEYWDT  19
+C                                                                               KEYWDT  20
+C              COMMANDS 1       A1    1-COMM 2-SUBCOM BLANK-KEY                 KEYWDT  21
+C              AND    2-17    4A4   NAME OF ITEM                               EKEYWDT  22
+C              KEYWORDS 20-27   2A4   ABRV. OF ITEM                             KEYWDT  23
+C              30-32   I3    INDEX-COMM    UNITS-KEY                    0       KEYWDT  24
+C              35-37   I3    TYPE -COMM    TYPE -KEY                    0       KEYWDT  25
+C              40-42   I3    LEVEL-COMM    LEN  -KEY                    0       KEYWDT  26
+C              50-59   F10.4 MAX  -COMM    MIN  -KEY                    0.0     KEYWDT  27
+C              60-69   F10.4 0.0  -COMM    MAX  -KEY                    0.0     KEYWDT  28
+C              70-79   F10.4 0.0  -COMM    DEFAULT-KEY                  0.0     KEYWDT  29
+C                                                                               KEYWDT  30
+C                  FOR KEYWORDS WITH A LENGTH GREATER THAN                      KEYWDT  31
+C                     ONE, THE 2ND AND FOLLOWING DEFAULT                        KEYWDT  32
+C                     VALUES (ALL MUST BE SPECIFIED) ARE                        KEYWDT  33
+C                     PUT ON THE LINES FOLLOWING THE KEYWORD                    KEYWDT  34
+C                     DEFINITION.   UP TO SEVEN (7) DEFAULTS                    KEYWDT  35
+C                     ARE PLACED ON EACH FOLLOWING CARD IN                      KEYWDT  36
+C                     THE FORMAT 10X,7F10.4 (TEN BLANKS                         KEYWDT  37
+C                     FOLLOWED BY UP TO SEVEN F10.4 VALUES)                     KEYWDT  38
+C                                                                               KEYWDT  39
+C                   FOR THE SDL SYSTEM COMMAND 4 EXTRA CARDS FOLLOW             KEYWDT  40
+C                     ANY DEFAULT CARDS.  THIS CARD CONTAINS THE 32             KEYWDT  41
+C                     SYSTEM-TYPE DEPENDENT DEFAULT VALUES FOR THE              KEYWDT  42
+C                     KEYWORD. (ONE FOR EACH SYSTEM-TYPE)  THESE ARE            KEYWDT  43
+C                     READ WITH THREE 8F10.1 FORMATED READS                     KEYWDT  44
+C                                                                               KEYWDT  45
+C       FOUR BINARY RECORDS ARE WRITTEN FOR EACH DATA SET                       KEYWDT  46
+C                                                                               KEYWDT  47
+C              REC 1  NSYMTB,MSYMTB,NCONTX,ICONTX,NOPCDT,                       KEYWDT  48
+C                IDFT,NDFT,MA                                                   KEYWDT  49
+C              REC 2  ((ISYMTB(I,J),I=1,16),J=1,NSYMTB),                        SYMSIZ   1
+C                ((KONTXT(I,J),I=1,16),J=ICONTX,NCONTX),                        KEYSIZ   3
+C                ((IOPCDT(I,J),I=1,16),J=1,NOPCDT),                             KEYWDT  52
+C                (AA(I),I=IDFT,NDFT)                                            KEYWDT  53
+C                ISRDFI, ISRDFJ,                                                KEYWDT  54
+C                ((ISRDFT(I,J), I=1,ISRDFI), J=1,ISRDFJ)                        KEYWDT  55
+C              REC 3= 3, LREC, NOVL,  3                                         KEYWDT  56
+C              REC 4= LSYMT, LCONT, LLITT, LLABT                                KEYWDT  57
+C                     , NGLBT, ((IGLBT(I,J), I=1,8), J=1,NGLBT)                 KEYWDT  58
+C                                                                               KEYWDT  59
+C       TOTAL OF 17 RECORDS ON BDLKEY ( 1 + 4*4 )                               KEYWDT  60
+C                                                                               KEYWDT  61
+C                                                                               KEYWDT  62
+      COMMON  /DFTS/         DFTS (5 000 000),NDFTS(4, 500000),                 -048a    1
+     $                       IDFTS(500000),                                     -048a    2
+     1                       UNDEF(4),NDEFA(4,5),IHOLL(10),IOVRL(4),            /DFTS/   3
+     2                       IKTYPE(4,20),LASTU(2)                              FIX2     1
+      INTEGER                KDFTS(5 000 000),IUNDEF(4)                         -048a    3
+      EQUIVALENCE            (DFTS(1),KDFTS(1)),(UNDEF(1),IUNDEF(1))            -037     2
+      COMMON  /FILESK/ INFILE, IOUTPT, KEYFIL, ITMPFL, IOUTP2                   /FILESK/ 2
+      COMMON /IUNITS/ VKONV(300),IUNITS(4,300)                                  UNITS1   1
+      COMMON  /OPCDT/        OPCDT (24,120), NOPCDT                             REFG23   1
+      INTEGER                IOPCDT(24,120)                                     REFG23   2
+      EQUIVALENCE            (OPCDT(1,1),IOPCDT(1,1))                           /OPCDT/  4
+      COMMON  /SIZE/         MA,NALEFT,NSYMTB,MSYMTB,NCONTX,ICONTX,             /SIZE/   2
+     1                       IDFT,NDFT                                          /SIZE/   3
+      COMMON  //             IA(50 000 000)                                     -048a    4
+      REAL                   AA(50 000 000),CONTXT(16,2),SYMTB(16,2)            -048a    5
+      INTEGER                KONTXT(16,18750),ISYMTB(16,18750)                  SUBTY3   1
+      EQUIVALENCE            (IA(1),AA(1)),                                     //       5
+     1                       (CONTXT(1,1),KONTXT(1,1)),                         //       6
+     2                       (CONTXT(1,1),AA(1)),                               //       7
+     3                       (SYMTB(1,1),ISYMTB(1,1)),                          //       8
+     4                       (SYMTB(1,1),AA(1))                                 //       9
+      INTEGER IREF(5,1)                                                         FIX2     2
+      EQUIVALENCE (IREF(1,1),IA(1))                                             REFSZ1   2
+      DIMENSION BUF(9,300),IBUF(9,300)                                          UNITS1   2
+      EQUIVALENCE (BUF(1,1),IBUF(1,1))                                          KEYWDT  70
+      DIMENSION NAME(8), IABV(2), ISRIN(4,32), ISRC(4)                          -048     1
+      CHARACTER*16 VALUEC                                                       KEYWDT  72
+      DIMENSION    VALUER(4)                                                    KEYWDT  73
+      EQUIVALENCE (VALUEC,VALUER)                                               KEYWDT  74
+      INTEGER ISUBF(120)                                                        -048y    1
+C     include 'fsublib.fi'                                                      COMB01   8
+C--- *** NOTE *** THE FOLLOWING LINE SHOULD MATCH SDL                           KEYWDT  75
+      COMMON  /DFTS1/        ISRDFI, ISRDFJ, ISRDFT(700,32)                     COMPLY   3
+      REAL                   SRDFT(700,32),SRIN(4,32)                           COMPLY   4
+      EQUIVALENCE  (ISRDFT(1,1),SRDFT(1,1)),(ISRIN(1,1),SRIN(1,1))              KEYWDT  78
+      INTEGER IBLANK                                                            KEYSIZ   4
+      INTEGER                NAMTYP(8,32)                                       COMB01  11
+      DATA IBLANK /4H    /                                                      KEYSIZ   5
+C              DATA THE NUMBER OF INF KEYWORDS IN THE SPACE COMMAND,            KEYWDT  81
+      DATA ISRC/1H ,1HR,1HU,1HS/                                                KEYWDT  87
+      DATA ISRDFI/700/, ISRDFJ/32/                                              COMPLY   5
+C---                                                                            KEYWDT  89
+      IHOLL(2) = ISRC(1)                                                        COMB01  13
+      IPNUM   = 0                                                               KEYWDT  94
+      IBLNK   = ISRC(1)                                                         KEYWDT  95
+      IDFT    = 0                                                               KEYWDT  96
+      NDFT    = 0                                                               KEYWDT  97
+      INFILE  = 5                                                               KEYWDT  98
+      IOUTPT = 2                                                                KEYWDT  99
+      IOUTP2 = 12                                                               KEYWDT 100
+      KEYFIL  = 3                                                               KEYWDT 101
+      ITMPFL = 17                                                               KEYWDT 102
+      IREFW = 5                                                                 FIX2     3
+      IEND = 0                                                                  FIX1     1
+      IOPcmd = 0                                                                FIX1     2
+C>>>>>                                                                          KEYWDT 103
+      OPEN( INFILE, FILE='DKEY.cmp' , STATUS='UNKNOWN' )                        -048     2
+      OPEN( IOUTPT, FILE='BDLKEY.out'                                           -048     3
+     1                       ,carriagecontrol='FORTRAN'                         -048     4
+     2                               , STATUS='UNKNOWN' )                       KEYWDT 106
+      OPEN( IOUTP2, FILE='KEYFUN.'                                              KEYWDT 107
+     1                       ,carriagecontrol='FORTRAN'                         -048     5
+     2                               , STATUS='UNKNOWN' )                       KEYWDT 109
+      OPEN( KEYFIL, FILE='BDLKEY.bin', FORM='UNFORMATTED',                      -048     6
+     $      RECL=550000,RECORDTYPE='variable', STATUS='UNKNOWN' )               COMPLY   7
+C>>>>>                                                                          KEYWDT 112
+    5 READ (INFILE,999) K,(IBUF(J,K),J=2,9),BUF(1,K)                            KEYWDT 113
+  999 FORMAT(I4,4X,4A4,4X,4A4,4X,F12.6)                                         KEYWDT 115
+      IF(K.NE.300)GOTO 5                                                        UNITS1   3
+      WRITE(KEYFIL)BUF                                                          KEYWDT 117
+      DO I=0,299                                                                -037     3
+        Ilastu = 300-I                                                          -037     4
+        IF((IBUF(2,Ilastu).ne.LASTU(1)).and.                                    -037     5
+     $     (IBUF(3,Ilastu).ne.LASTU(2))) EXIT                                   -037     6
+      ENDDO                                                                     -037     7
+      WRITE(IOUTPT,999) (K,(IBUF(J,K),J=2,9),BUF(1,K),K=1,Ilastu)               -037     8
+      DO I = 1,300                                                              FIX2     8
+        VKONV(I)=BUF(1,I)                                                       FIX2     9
+        DO J = 1,4                                                              FIX2    10
+          IUNITS(J,I)=IBUF(J+5,I)                                               FIX2    11
+        ENDDO                                                                   FIX2    12
+      ENDDO                                                                     FIX2    13
+      WRITE(IOUTPT,9030,ERR=99001)(J,VKONV(J),                                  FIX2    14
+     1                           (IUNITS(I,J),I=1,4),J=1,Ilastu)                FIX2    15
+99001 CONTINUE                                                                  KEYWDT 124
+  100 NSYMTB = 0                                                                KEYWDT 125
+      NCONTX = 0                                                                KEYWDT 126
+      NOPCDT = 0                                                                KEYWDT 127
+      NDFT   = 0                                                                KEYWDT 128
+      READ(INFILE,8000,END=700) ICTRL,IPN,MSYMTB                                KEYWDT 129
+      DO 105 I=1,50000                                                          KEYWDT 130
+  105 IA(I)  = 0                                                                KEYWDT 131
+C              FIND OUT WHICH PROGRAM                                           KEYWDT 132
+      DO 110 I=1,1                                                              COMB01  16
+      IF(IPN .EQ. IOVRL(I))  GOTO 120                                           KEYWDT 134
+  110 CONTINUE                                                                  KEYWDT 135
+      WRITE(IOUTPT,8010,ERR=99002)IPN                                           KEYWDT 136
+99002 CONTINUE                                                                  KEYWDT 137
+      STOP                                                                      KEYWDT 138
+  120 IF(I .EQ. IPNUM+1)  GOTO 140                                              KEYWDT 139
+C     write( 2, '('' PROGRAM:  ''a4)' )  IPN                                    KEYWDT 140
+      write( *, '('' PROGRAM:  ''a4)' )  IPN                                    PCnt     1
+C              WRITE SOME NEEDED BLANK RECORDS                                  KEYWDT 142
+      IEND   = (I-IPNUM)*2                                                      KEYWDT 143
+      DO 130 J=1,IEND                                                           KEYWDT 144
+  130 WRITE (KEYFIL)                                                            KEYWDT 145
+  140 IPNUM  = I                                                                KEYWDT 146
+C              READ THE SYMBOL TABLE ENTRIES                                    KEYWDT 147
+  150 READ(INFILE,8020) ICTRL,(NAME(I),I=1,8),INDEX,ITYPE,IVAL                  COMB01  17
+C              CHECK FOR *END TO GET COMMANDS                                   KEYWDT 149
+      IF(ICTRL .EQ. IHOLL(1))  GOTO 190                                         KEYWDT 150
+      IF(INDEX.GT.0)  GOTO 160                                                  KEYWDT 151
+C              ILLEGAL INDEX OR TYPE                                            KEYWDT 152
+      WRITE(IOUTPT,8030,ERR=99003)(NAME(I),I=1,4),INDEX,ITYPE,IVAL              KEYWDT 153
+99003 CONTINUE                                                                  KEYWDT 154
+      GOTO 150                                                                  KEYWDT 155
+C              SEE IF NEW ENTRY IF PAST CURRENT END OF TABLE.                   KEYWDT 156
+  160 NSYMTB = MAX0(NSYMTB,INDEX)                                               KEYWDT 157
+      IF(ISYMTB(1,INDEX) .EQ. 0)  GOTO 170                                      KEYWDT 158
+C              SOMETHING IN THIS POSITION ALREADY                               KEYWDT 159
+      WRITE(IOUTPT,8040,ERR=99004)INDEX,(ISYMTB(I,INDEX),I=1,4),                KEYWDT 160
+     .                             (NAME(I), I=1,4)                             KEYWDT 161
+99004 CONTINUE                                                                  KEYWDT 162
+  170 DO I=1,8                                                                  COMB01  18
+          ISYMTB(I,INDEX) = NAME(I)                                             SYMSIZ   3
+      END DO                                                                    SYMSIZ   5
+      ISYMTB(9,INDEX) = ITYPE                                                   SYMSIZ   6
+      ISYMTB(10,INDEX) = -1                                                     SYMSIZ   7
+      ISYMTB(11,INDEX) = -1                                                     SYMSIZ   8
+      ISYMTB(12,INDEX) = IVAL                                                   SYMSIZ   9
+      ISYMTB(13,INDEX) = 0                                                      SYMSIZ  10
+      ISYMTB(14,INDEX) = 0                                                      SYMSIZ  11
+      ISYMTB(15,INDEX) = 0                                                      SYMSIZ  12
+      ISYMTB(16,INDEX) = 0                                                      SYMSIZ  13
+      GOTO 150                                                                  KEYWDT 169
+  190 CONTINUE                                                                  KEYWDT 170
+      NUMTYP = 0                                                                COMB01  19
+C              COMPUTE START OF THE CONTEXT TABLE                               KEYWDT 171
+      ICONTX = ((MSYMTB*16)/16) + 1                                             KEYSIZ   6
+      NCONTX = ICONTX - 1                                                       KEYWDT 173
+  200 CONTINUE                                                                  KEYWDT 174
+C              READ A RECORD OF COMMAND/KEYWORD                                 KEYWDT 175
+      READ(INFILE,8050) ICTRL,(NAME(I),I=1,4),(IABV(I),I=1,2),                  KEYWDT 176
+     1                  I1,I2,I3,F1,F2,F3                                       KEYWDT 177
+C              SEE WHAT TYPE OF THING IT IS ($, ,1,2,3)                         COMB01  20
+      DO 210 IOP=1,5                                                            KEYWDT 179
+      IF(ICTRL .EQ. IHOLL(IOP))  GOTO 220                                       KEYWDT 180
+  210 CONTINUE                                                                  KEYWDT 181
+C              NOT A LEGAL THING                                                KEYWDT 182
+      WRITE(IOUTPT,8060,ERR=99005)ICTRL,(NAME(I),I=1,4),(IABV(I),I=1,2),        KEYWDT 183
+     .                      I1, I2, I3, F1, F2, F3                              KEYWDT 184
+      PRINT 8061,ICTRL,(NAME(I),I=1,4),(IABV(I),I=1,2)                          KEYWDT 185
+ 8061 FORMAT('**** ERROR **** ILLEGAL FIRST CHARACTER ON LINE'/                 KEYWDT 186
+     $       '**** LINE STARTING: ',a1,4a4,2a4)                                 KEYWDT 187
+      CALL ABT                                                                  KEYWDT 188
+99005 CONTINUE                                                                  KEYWDT 189
+      GOTO 200                                                                  KEYWDT 190
+  220 GOTO (600,400,300,300,500),IOP                                            KEYWDT 191
+C              PROCESS A COMMAND OR SUB-COMMAND                                 KEYWDT 192
+  300 IF( NUMTYP .eq. 0 .or. IOP .ne. 3 )  GOTO 309                             COMB01  21
+C              Last COMMAND had TYPE dependent defaults;                        SUBTY3   2
+C              store them away.                                                 SUBTY3   3
+      IKEY   = IOPCDT(9,NCOM)                                                   COMB01  23
+      NKEY   = IOPCDT(10,NCOM)                                                  COMB01  24
+      LKEY   = IKEY + NKEY - 1                                                  COMB01  25
+      LVAL   = KONTXT(12,NCONTX) + KONTXT(9,NCONTX) - 1                         COMB01  26
+C              Reset last default value to start of last MAIN command           COMB01  27
+C              so that they get over-written starting with the first            COMB01  28
+C              TYPE's defaults                                                  COMB01  29
+      NDFT   = IOPCDT(15,NCOM) - 1                                              COMB01  30
+C              Copy full default array from first TYPE since                    COMB01  31
+C              only the first value of lists are in TYPE defaults               COMB01  32
+      DO I=2,NUMTYP                                                             COMB01  33
+        CALL MOVEN( DFTS(IOPCDT(15,NCOM)),DFTS(NDFT+1+LVAL*(I-1)),LVAL)         COMB01  34
+      ENDDO                                                                     COMB01  35
+      DO I=1,NUMTYP                                                             COMB01  36
+        Ioldval = 0                                                             COMB01  37
+        Iskeyx  = 1                                                             COMB01  38
+C              Now put TYPE default in first keyword value array                COMB01  39
+C              (skipping equivalence'd keywords)                                COMB01  40
+        DO J=1,NKEY                                                             COMB01  41
+          IF(KONTXT(12,IKEY+J-1) .gt. Ioldval)  THEN                            COMB01  42
+            DFTS(NDFT+KONTXT(12,IKEY+J-1)) = SRDFT(Iskeyx,I)                    COMB01  43
+            IF((KONTXT(9,IKEY+J-1) .gt. 1) .and.                                -037     9
+     $         (ISRDFT(Iskeyx,I) .eq. IUNDEF(2))) THEN                          -037    10
+              nnn = KONTXT(9,IKEY+J-1) - 1                                      -037    11
+              DO jjj=1,nnn                                                      -037    12
+                DFTS(NDFT+KONTXT(12,IKEY+J-1)+jjj) = UNDEF(2)                   -037    13
+              ENDDO                                                             -037    14
+            ENDIF                                                               -037    15
+            Iskeyx  = Iskeyx + 1                                                COMB01  44
+          ENDIF                                                                 COMB01  45
+          Ioldval = KONTXT(12,IKEY+J-1)                                         COMB01  46
+        ENDDO                                                                   COMB01  47
+        NDFT = NDFT + LVAL                                                      COMB01  48
+      ENDDO                                                                     COMB01  49
+C               Zero out TYPE array for new command                             COMB01  50
+      n = ISRDFI*ISRDFJ                                                         COMB01  51
+      DO i=1,n                                                                  COMB01  52
+        ISRDFT(i,1) = 0                                                         COMB01  53
+      ENDDO                                                                     COMB01  54
+      NUMTYP = 0                                                                COMB01  55
+  309 IF (IEND.EQ.1) GO TO 610                                                  FIX1     3
+      IOPcmd = IOP                                                              FIX1     4
+      NSCOM = 0                                                                 FIX1     5
+      IF(IOP .NE. 4)  GOTO 310                                                  KEYWDT 194
+      IF((IOP .EQ. 4) .AND. (NAME(1) .NE. IBLNK))  GOTO 310                     KEYWDT 195
+C              JUST END SUBCOMMAND IF NO NAME                                   KEYWDT 196
+      GOTO 200                                                                  KEYWDT 197
+  310 NOPCDT = NOPCDT + 1                                                       KEYWDT 198
+C              MOVE IN DATA TO OPCDT (OPCODE TABLE)                             KEYWDT 199
+      DO 320 I=1,4                                                              KEYWDT 200
+  320 IOPCDT(I,NOPCDT) = NAME(I)                                                KEYWDT 201
+C     write( 2, '(''   COMMAND:  ''4a4)' )  (NAME(i),i=1,4)                     KEYWDT 202
+      write( *, '(''   COMMAND:  ''4a4)' )  (NAME(i),i=1,4)                     PCnt     2
+      DO 330 I=1,2                                                              KEYWDT 204
+  330 IOPCDT(I+4,NOPCDT) = IABV(I)                                              KEYWDT 205
+      IOPCDT(7 ,NOPCDT) = I1                                                    KEYWDT 206
+      IOPCDT(8 ,NOPCDT) = I3                                                    KEYWDT 207
+      IOPCDT(9 ,NOPCDT) = NCONTX + 1                                            KEYWDT 208
+      IOPCDT(10,NOPCDT) = 0                                                     KEYWDT 209
+      IOPCDT(11,NOPCDT) = I2                                                    KEYWDT 210
+      IOPCDT(22,NOPCDT) = 0                                                     ATTRF2   1
+      IF(IOP .NE. 4)  JKEY   = 0                                                KEYWDT 211
+      IRFLG  = 0                                                                KEYWDT 212
+C              SEE IF IT USES ANOTHER REF TABLE                                 KEYWDT 213
+      IF(F1 .GT. 0.0)  GOTO 350                                                 KEYWDT 214
+      I      = INT(F1-.1)                                                       KEYWDT 215
+      IOPCDT(12,NOPCDT) = -(NOPCDT+I)                                           KEYWDT 216
+      DO 340 I=13,16                                                            KEYWDT 217
+  340 IOPCDT(I,NOPCDT) = 0                                                      KEYWDT 218
+      GOTO 200                                                                  KEYWDT 219
+  350 CONTINUE                                                                  KEYWDT 220
+      IOPCDT(12,NOPCDT) = INT(F1+0.1)                                           KEYWDT 221
+      IOPCDT(13,NOPCDT) = 0                                                     KEYWDT 222
+      IOPCDT(14,NOPCDT) = 0                                                     KEYWDT 223
+      IOPCDT(15,NOPCDT) = NDFT + 1                                              KEYWDT 224
+      IF(IOP .EQ. 4)  IOPCDT(15,NOPCDT) = IOPCDT(15,NOPCDT-1)                   KEYWDT 225
+      IOPCDT(16,NOPCDT) = 0                                                     KEYWDT 226
+C              SAVE COMMAND NUMBER OR SUBCOMMAND NUMBER                         KEYWDT 227
+      IF(IOP .EQ. 3)  NCOM = NOPCDT                                             KEYWDT 228
+      IF(IOP .EQ. 4)  NSCOM = NOPCDT                                            KEYWDT 229
+      IF (IOP.EQ.4) THEN                                                        4XAA     3
+          ISUBF(NOPCDT) = 1                                                     4XAA     4
+      ELSE                                                                      4XAA     5
+          ISUBF(NOPCDT) = 0                                                     4XAA     6
+      END IF                                                                    4XAA     7
+C              INITIALIZE VALUE ARRAY POINTER                                   KEYWDT 230
+      IF(IOP .EQ. 3)  NCVAL = 1                                                 KEYWDT 231
+      READ (INFILE,9060) (IOPCDT(I,NOPCDT),I=17,24)                             OPLST1   3
+ 9060 FORMAT(27X,8I5)                                                           OPLST1   4
+      IF (IOP.EQ.3) THEN                                                        SUBTY3   4
+          NUMTYP = IOPCDT(24,nopcdt)                                            SUBTY3   5
+          IF (IOPCDT(24,nopcdt).LE.1) NUMTYP = 0                                SUBTY3   6
+      END IF                                                                    SUBTY3   7
+      GOTO 200                                                                  KEYWDT 232
+C              PROCESS A KEYWORD                                                KEYWDT 233
+  400 write( *, '(''     KEYWORD:  ''4a4)' )  (NAME(i),i=1,4)                   PCnt     3
+C     write( 2, '(''     KEYWORD:  ''4a4)' )  (NAME(i),i=1,4)                   KEYWDT 235
+      IF(NOPCDT .GT. 0)  GOTO 410                                               KEYWDT 236
+C              NO COMMAND TO ATTACH IT TO                                       KEYWDT 237
+      WRITE(IOUTPT,8070,ERR=99006)(NAME(I),I=1,4),(IABV(I),I=1,2)               KEYWDT 238
+99006 CONTINUE                                                                  KEYWDT 239
+      GOTO 200                                                                  KEYWDT 240
+  410 NCONTX = NCONTX + 1                                                       KEYWDT 241
+      JKEY   = JKEY + 1                                                         KEYWDT 242
+      IOPCDT(10,NCOM) = IOPCDT(10,NCOM) + 1                                     KEYWDT 243
+      IF(NSCOM .NE. 0)                                                          KEYWDT 244
+     1IOPCDT(10,NSCOM) = IOPCDT(10,NSCOM) + 1                                   KEYWDT 245
+C              MOVE IN ALL THE DATA                                             KEYWDT 246
+      DO 420 I=1,4                                                              KEYWDT 247
+  420 KONTXT(I,NCONTX) = NAME(I)                                                KEYWDT 248
+      DO 430 I=1,2                                                              KEYWDT 249
+  430 KONTXT(I+4,NCONTX) = IABV(I)                                              KEYWDT 250
+      KONTXT(7 ,NCONTX) = I1                                                    KEYWDT 251
+      KONTXT(8 ,NCONTX) = I2                                                    KEYWDT 252
+      KONTXT(9 ,NCONTX) = I3                                                    KEYWDT 253
+      CONTXT(10,NCONTX) = F1                                                    KEYWDT 254
+      CONTXT(11,NCONTX) = F2                                                    KEYWDT 255
+      KONTXT(12,NCONTX) = NCVAL                                                 KEYWDT 256
+      K15_1 = 0                                                                 SUBTY4   1
+      K15_2 = 0                                                                 SUBTY4   2
+      K15_3 = 0                                                                 SUBTY4   3
+      READ(INFILE,9070) ICONT                                                   SUBTYP   2
+      BACKSPACE INFILE                                                          SUBTYP   3
+      IF (ICONT.NE.IHOLL(7)) THEN                                               SUBTYP   4
+          KONTXT(13,NCONTX) = 0                                                 SUBTYP   5
+          KONTXT(14,NCONTX) = 0                                                 SUBTYP   6
+          KONTXT(15,NCONTX) = 0                                                 SUBTYP   7
+          KONTXT(16,NCONTX) = 0                                                 SUBTYP   8
+      ELSE                                                                      SUBTYP   9
+          READ(INFILE,9080) KONTXT(13,NCONTX),KONTXT(14,NCONTX),                SUBTY4   4
+     1        K15_1,K15_2,K15_3,KONTXT(16,NCONTX)                               SUBTY4   5
+          KONTXT(15,NCONTX) = IPACK3(K15_1,K15_2,K15_3,1024)                    SUBTY4   6
+      END IF                                                                    SUBTYP  11
+      IF(I3.GE.0) GO TO 431                                                     KEYWDT 257
+      KONTXT(9,NCONTX)=-I3                                                      KEYWDT 258
+      NCVAL  = NCVAL+I3                                                         KEYWDT 259
+      KONTXT(12,NCONTX)=NCVAL                                                   KEYWDT 260
+      JKEY   = JKEY-1                                                           KEYWDT 261
+      GO TO 485                                                                 KEYWDT 262
+C              STORE DEFAULT VALUES                                             KEYWDT 263
+  431 CONTINUE                                                                  KEYWDT 264
+      NDFT   = NDFT + 1                                                         KEYWDT 265
+      DFTS(NDFT) = F3                                                           KEYWDT 266
+      IF((I2.eq.2).or.(I2.eq.3).or.(I2.eq.8).or.(I2.eq.10)) THEN                FIX2    16
+        if(dfts(NDFT) .gt. 0.) then                                             KEYWDT 268
+          IF(ISYMTB(9,INT(DFTS(NDFT)+.1)).ne.int(f1+.1)) THEN                   SYMSIZ  14
+            write(*,9902) (IOPCDT(jj,NCOM),jj=1,4)                              REFG23   3
+     $                 ,(KONTXT(jj,NCONTX),jj=1,4),1                            REFG23   4
+     $                 ,(ISYMTB(jj,INT(DFTS(NDFT)+.1)),jj=1,4)                  REFG23   5
+            write(IOUTPT,9902) (IOPCDT(jj,NCOM),jj=1,4)                         REFG23   6
+     $                 ,(KONTXT(jj,NCONTX),jj=1,4),1                            REFG23   7
+     $                 ,(ISYMTB(jj,INT(DFTS(NDFT)+.1)),jj=1,4)                  REFG23   8
+          ENDIF                                                                 KEYWDT 274
+        ENDIF                                                                   KEYWDT 275
+      ENDIF                                                                     KEYWDT 276
+      IF(I3 .EQ. 1)  GOTO 434                                                   KEYWDT 277
+      NCRDS  = (I3-1)/7                                                         KEYWDT 278
+      ND     = I3 - 1                                                           KEYWDT 279
+      IF(NCRDS*7 .LT. ND)  NCRDS = NCRDS + 1                                    KEYWDT 280
+      DO 432 J=1,NCRDS                                                          KEYWDT 281
+      N      = 7                                                                KEYWDT 282
+      IF(ND .LT. 7)  N = ND                                                     KEYWDT 283
+      IS     = NDFT + 1                                                         KEYWDT 284
+      IE     = NDFT + N                                                         KEYWDT 285
+      READ(INFILE,8090) (DFTS(I), I=IS,IE)                                      KEYWDT 286
+      IF((I2.eq.2).or.(I2.eq.3).or.(I2.eq.8).or.(I2.eq.10).or.                  FIX2    17
+     $    (I2.eq.12).or.(I2.eq.13).or.(I2.eq.18)) THEN                          COMB01  59
+        do i=is,ie                                                              KEYWDT 288
+          if(dfts(i) .gt. 0.) then                                              KEYWDT 289
+            IF(ISYMTB(9,INT(DFTS(i)+.1)).ne.int(f1+.1)) THEN                    SYMSIZ  15
+            write(*,9902) (IOPCDT(jj,NCOM),jj=1,4)                              REFG23   9
+     $                 ,(KONTXT(jj,NCONTX),jj=1,4),i-is+2                       REFG23  10
+     $                 ,(ISYMTB(jj,INT(DFTS(i)+.1)),jj=1,4)                     REFG23  11
+            write(IOUTPT,9902) (IOPCDT(jj,NCOM),jj=1,4)                         REFG23  12
+     $                 ,(KONTXT(jj,NCONTX),jj=1,4),i-is+2                       REFG23  13
+     $                 ,(ISYMTB(jj,INT(DFTS(i)+.1)),jj=1,4)                     REFG23  14
+ 9902       format(' In ',4A4,' keyword default is wrong symbol type: '/        REFG23  15
+     $             10X,4A4,' DFTS(',I2,') = ',4a4 )                             REFG23  16
+            ENDIF                                                               KEYWDT 297
+          ENDIF                                                                 KEYWDT 298
+        enddo                                                                   KEYWDT 299
+      ENDIF                                                                     KEYWDT 300
+      ND     = ND - N                                                           KEYWDT 301
+  432 NDFT   = NDFT + N                                                         KEYWDT 302
+C              IF TYP command READ SPECIAL DEFAULTS                             COMB01  60
+  434 IF ( NUMTYP .eq. 0 ) GO TO 499                                            COMB01  61
+      READ (INFILE,9000) (SRDFT(JKEY,I),I=1,NUMTYP)                             COMB01  62
+      IF((I2.NE.2).AND.(I2.NE.3).AND.(I2.NE.8).and.(I2.NE.10).and.              FIX2    18
+     $   (I2.NE.12).AND.(I2.NE.13).AND.(I2.NE.18))  GOTO 490                    COMB01  64
+      DO 480 I=1,NUMTYP                                                         COMB01  65
+      IF(SRDFT(JKEY,I) .GT. 0.0) THEN                                           KEYWDT 308
+         ISRDFT(JKEY,I) = INT(SRDFT(JKEY,I)+0.1)                                KEYWDT 309
+         IF(ISYMTB(9,ISRDFT(JKEY,I) ).ne.int(f1)) THEN                          SYMSIZ  16
+            write(*,9901) (IOPCDT(jj,NCOM),jj=1,4)                              REFG23  17
+     $                 ,(KONTXT(jj,NCONTX),jj=1,4),i                            REFG23  18
+     $                 ,(ISYMTB(jj,ISRDFT(JKEY,I)),jj=1,4)                      REFG23  19
+            write(IOUTPT,9901) (IOPCDT(jj,NCOM),jj=1,4)                         REFG23  20
+     $                 ,(KONTXT(jj,NCONTX),jj=1,4),i                            REFG23  21
+     $                 ,(ISYMTB(jj,ISRDFT(JKEY,I)),jj=1,4)                      REFG23  22
+ 9901       format(' In ',4A4,' keyword default is wrong symbol type: '/        REFG23  23
+     $             10X,4A4,' SRDFT(',I2,') = ',4a4 )                            REFG23  24
+          ENDIF                                                                 KEYWDT 317
+      ENDIF                                                                     KEYWDT 318
+  480 CONTINUE                                                                  KEYWDT 319
+  490 CONTINUE                                                                  KEYWDT 320
+  499 CONTINUE                                                                  KEYWDT 321
+C              ICREMENT VALUE ARRAY POINTER                                     KEYWDT 334
+  485 NCVAL  = NCVAL+IABS(I3)                                                   KEYWDT 335
+C              SEE WHAT TYPE OF KEYWORD IT IS                                   KEYWDT 336
+      IF((I2 .GT. 0) .AND. (I2 .LT. 9))  GOTO 435                               KEYWDT 337
+      IF((I2 .GT. 9) .AND. (I2 .LT. 14))  GOTO 435                              FIX2    19
+      IF((I2 .GT.14) .AND. (I2 .LT. 19))  GOTO 435                              FIX2    20
+      IF (I2 .EQ.20)  GOTO 435                                                  FIX2    21
+C              NOT A LEGAL TYPE                                                 KEYWDT 338
+      WRITE(IOUTPT,8080,ERR=99007)(NAME(I),I=1,4),I2                            KEYWDT 339
+99007 CONTINUE                                                                  KEYWDT 340
+      GOTO 200                                                                  KEYWDT 341
+  435 GOTO (440,450,450,460,440,440,470,450,440,450,440,450,450,440,440,        FIX2    22
+     1      440,440,450,440,450),I2                                             OPLST1   8
+  440 GOTO 200                                                                  KEYWDT 343
+  450 KONTXT(10,NCONTX) = INT(F1+0.1)                                           KEYWDT 344
+      KONTXT(11,NCONTX) = INT(F2+0.1)                                           KEYWDT 345
+      IF(I3.LT.0) GO TO 200                                                     KEYWDT 346
+C              CONVERT DEFAULTS TO INTEGERS                                     KEYWDT 347
+      IS     = NDFT - I3 + 1                                                    KEYWDT 348
+      IE     = NDFT                                                             KEYWDT 349
+      DO 455 I=IS,IE                                                            KEYWDT 350
+      IF(DFTS(I) .GT. 0.0)  KDFTS(I) = INT(DFTS(I) + 0.1)                       KEYWDT 351
+  455 CONTINUE                                                                  KEYWDT 352
+      GOTO 200                                                                  KEYWDT 353
+  460 KONTXT(10,NCONTX) = INT(F1+0.1)                                           KEYWDT 354
+      KONTXT(11,NCONTX) = INT(F2+0.1)                                           KEYWDT 355
+      GOTO 200                                                                  KEYWDT 356
+  470 GOTO 200                                                                  KEYWDT 357
+C              NEXT SET OF TYPE KEYWORDS                                        SUBTY3   8
+  500 NCVAL = 1                                                                 SUBTY3   9
+      IOPCDT(10,NCOM) = 0                                                       SUBTY3  10
+      GO TO 200                                                                 SUBTY3  11
+C              FOUND *END   NOW SET IA DEFAULT/TABLE POINTERS                   KEYWDT 360
+  600 IEND = 1                                                                  FIX1     6
+      IOP = IOPcmd                                                              FIX1     7
+      GO TO 300                                                                 FIX1     8
+  610 IDFT   = NCONTX*16 + 1                                                    FIX1     9
+      NDFT = 4*NDFT + IDFT - 1                                                  4XAA     8
+      MA = IREFW*((NDFT/IREFW)+1) + 1                                           REFSZ1   4
+      IREFX = (NDFT/IREFW)+1 + 1                                                REFSZ1   5
+      IREFXB = IREFX                                                            REFSZ1   6
+      DO 650 I=1,NOPCDT                                                         KEYWDT 366
+C              FIND LEN OF VALUE ARRAY                                          KEYWDT 367
+      IDFVX = IOPCDT(15,I)                                                      4XAA     9
+      IDFP = 4*(IDFVX-1) + IDFT                                                 4XAA    10
+      IOPCDT(15,I) = IDFP                                                       4XAA    11
+      LKEY   = IOPCDT(9,I) + IOPCDT(10,I) -1                                    KEYWDT 369
+      LVAL   = KONTXT(12,LKEY) + KONTXT(9,LKEY) - 1                             KEYWDT 370
+      IOPCDT(16,I) = LVAL                                                       KEYWDT 371
+      IF (ISUBF(I).EQ.0) THEN                                                   4XAA    12
+          IOPCDT(23,I) = LVAL                                                   4XAA    13
+      ELSE                                                                      4XAA    14
+          IOPCDT(23,I) = IOPCDT(23,I-1)                                         4XAA    15
+      END IF                                                                    4XAA    16
+C              DO NOT SAVE TABLE SPACE FOR UN-NAMED COMMAND                     KEYWDT 372
+      IF(IOPCDT(11,I) .EQ. 0)  GOTO 620                                         4XAA    17
+C              IF USES ANOTHER REF TABLE SKIP                                   KEYWDT 374
+      IF(IOPCDT(12,I) .LT. 0)  GOTO 650                                         KEYWDT 375
+      IOPCDT(14,I) = IREFX                                                      REFSZ1   7
+      MA = MA + IOPCDT(12,I)*IREFW                                              REFSZ1   8
+      IREFX = IREFX + IOPCDT(12,I)                                              REFSZ1   9
+  620 IF (ISUBF(I).EQ.0) THEN                                                   4XAA    18
+C              Place defaults (regular and TYPE) into the                       COMB01  67
+C              pair of 2X default arrays (NUMTYP sets for                       COMB01  68
+C              commands with TYPE flag set                                      COMB01  69
+        NUMTYP = IOPCDT(24,I)                                                   COMB01  70
+        IF(NUMTYP .eq. 0) THEN                                                  COMB01  71
+          NUMTYPs = 1                                                           COMB01  72
+        ELSE                                                                    COMB01  73
+          NUMTYPs = IABS(NUMTYP)                                                SUBTY3  12
+        ENDIF                                                                   COMB01  75
+        DO JJ=1,NUMTYPs                                                         COMB01  76
+          DO J=1,LVAL                                                           COMB01  77
+            kkk=(JJ-1)*LVAL                                                     COMB01  78
+            IA(IDFP+kkk*4       +J-1) = 1                                       COMB01  79
+            AA(IDFP+kkk*4+LVAL  +J-1) = DFTS(IDFVX+kkk+J-1)                     COMB01  80
+            IA(IDFP+kkk*4+LVAL*2+J-1) = 1                                       COMB01  81
+            AA(IDFP+kkk*4+LVAL*3+J-1) = DFTS(IDFVX+kkk+J-1)                     COMB01  82
+          END DO                                                                COMB01  83
+        ENDDO                                                                   COMB01  84
+      END IF                                                                    4XAA    25
+  650 CONTINUE                                                                  KEYWDT 378
+C              NOW PRINT THE LISTS                                              KEYWDT 379
+      CALL HELP(IOVRL(IPNUM),IPNUM)                                             KEYWDT 380
+C              WRITE DATA TO BDLKEY                                             KEYWDT 381
+      KUNITS = 0                                                                KEYWDT 382
+C              WRITES AS A FIRST WORD FOR THIS OVRLY A UNITS FLAG               KEYWDT 383
+      WRITE (KEYFIL) KUNITS,NSYMTB,MSYMTB,NCONTX,ICONTX,NOPCDT,                 -130     7
+     1               IDFT,NDFT,0,0,MA                                           -130     8
+      IF (IPNUM .NE. 1)  GO TO 690                                              COMB01  85
+C              FOR LDL, WRITE THE KEYWORD FILE WITH THE INF DEFAULT             KEYWDT 396
+C              POINTERS AND TABLE ON THE END                                    KEYWDT 397
+      WRITE (KEYFIL) ((ISYMTB(I,J),I=1,16),J=1,NSYMTB),                         SYMSIZ  18
+     1               ((KONTXT(I,J),I=1,16),J=ICONTX,NCONTX),                    KEYSIZ  13
+     2                ((IOPCDT(I,J),I=1,24),J=1,NOPCDT)                         -130     9
+      WRITE (KEYFIL)  (AA(I),I=IDFT,NDFT)                                       -130    10
+      WRITE (KEYFIL)  1,0                                                       -130    11
+C              IF SDL PRINT REQ TABLE                                           KEYWDT 430
+      DO IOP=1,NOPCDT                                                           COMB01  96
+        NUMTYP = IOPCDT(24,IOP)                                                 SUBTY3  13
+        IF (NUMTYP.LT.0) NUMTYP=0                                               SUBTY3  14
+        IF (NUMTYP.EQ.1) NUMTYP=0                                               SUBTY3  15
+        IF(NUMTYP .ne. 0) THEN                                                  COMB01  98
+          IKW    = IOPCDT(9,IOP)                                                COMB01  99
+          NKW    = IKW + IOPCDT(10,IOP) - 1                                     COMB01 100
+          LVAL   = IOPCDT(16,IOP)                                               COMB01 101
+          ISTYP  = KONTXT(10,IKW)                                               COMB01 102
+          IDFTP  = IOPCDT(15,IOP)                                               COMB01 103
+C         go find all the TYPE names and place in order in NAMTYP(n,m)          COMB01 104
+          n = 8*ISRDFJ                                                          FIX1    10
+          DO i=1,n                                                              COMB01 105
+            NAMTYP(i,1) = IBLANK                                                COMB01 106
+          ENDDO                                                                 COMB01 107
+          DO i=1,NUMTYP                                                         COMB01 108
+            DO JJ=1,NSYMTB                                                      COMB01 109
+              IF(ISYMTB(9,JJ).eq.ISTYP .and. ISYMTB(12,JJ).eq.i) THEN           COMB01 110
+                CALL MOVEN(ISYMTB(1,JJ),NAMTYP(1,i),8)                          COMB01 111
+              ENDIF                                                             COMB01 112
+            ENDDO                                                               COMB01 113
+          ENDDO                                                                 COMB01 114
+          NP     = 1                                                            COMB01 115
+          IF( NUMTYP .gt. 8) NP = 2                                             COMB01 116
+          IF( NUMTYP .gt.16) NP = 3                                             COMB01 117
+          IF( NUMTYP .gt.24) NP = 4                                             COMB01 118
+          DO 680 NPASS=1,NP                                                     COMB01 119
+          IB2    = 1  + (NPASS-1)*8                                             COMB01 120
+          IE2    = 8  + (NPASS-1)*8                                             COMB01 121
+          IF(IE2 .gt. NUMTYP) IE2 = NUMTYP                                      COMB01 122
+          WRITE(IOUTPT,9010,ERR=99008)(IOPCDT(i,IOP),I=1,4),                    COMB01 123
+     $                                ((NAMTYP(I,J),I=1,3),J=IB2,IE2)           COMB01 124
+99008     CONTINUE                                                              COMB01 125
+          JOLDJ  = 0                                                            COMB01 126
+          JKEY   = 0                                                            COMB01 127
+          DO 670 ISK=IKW,NKW                                                    COMB01 128
+          J      = KONTXT(12,ISK)                                               COMB01 129
+          IF(J.LE.JOLDJ) GO TO 670                                              COMB01 130
+          JOLDJ  = J                                                            COMB01 131
+          JKEY   = JKEY+1                                                       COMB01 132
+          ITYPE  = KONTXT(8,ISK)                                                COMB01 133
+          IVALP  = KONTXT(12,ISK)                                               COMB01 134
+          DO 655 I=IB2,IE2                                                      COMB01 135
+          IDFTPx = IDFTP+LVAL*4*(I-1)+LVAL+IVALP-1                              COMB01 136
+          IF((ITYPE.NE. 2).AND.(ITYPE.NE. 3).AND.(ITYPE.NE. 8).and.             COMB01 137
+     $       (ITYPE.NE.10).AND.(ITYPE.NE.12).AND.(ITYPE.NE.13).AND.             FIX2    23
+     $       (ITYPE.NE.18)) THEN                                                FIX2    24
+            DO L=1,4                                                            COMB01 139
+              IF(AA(IDFTPx) .EQ. UNDEF(L))  GOTO 652                            COMB01 140
+            ENDDO                                                               COMB01 141
+            WRITE(VALUEC,'(F12.0,4x)') AA(IDFTPx)                               COMB01 142
+            IF( ABS(AA(IDFTPx)) .lt. 1.0)                                       COMB01 143
+     $        WRITE(VALUEC,'(F12.8,4x)') AA(IDFTPx)                             COMB01 144
+            IF( ABS(AA(IDFTPx)) .lt. 100.0)                                     COMB01 145
+     $        WRITE(VALUEC,'(F12.4,4x)') AA(IDFTPx)                             COMB01 146
+            DO L=1,4                                                            COMB01 147
+              SRIN(L,I) = VALUER(L)                                             COMB01 148
+            ENDDO                                                               COMB01 149
+            GOTO 655                                                            COMB01 150
+          ELSE                                                                  COMB01 151
+            IF(AA(IDFTPx) .LT. 0.0)  GOTO 652                                   COMB01 152
+          ENDIF                                                                 COMB01 153
+          DO J=1,4                                                              COMB01 154
+            ISRIN(J,I) = ISYMTB(J,IA(IDFTPx))                                   COMB01 155
+          ENDDO                                                                 COMB01 156
+          GOTO 655                                                              COMB01 157
+  652     IW     = INT((ABS(AA(IDFTPx))/10000.)+0.1)                            COMB01 158
+          IW     = 10 - IW                                                      COMB01 159
+          IF(IW .EQ. 0)  IW = 1                                                 COMB01 160
+          DO J=1,4                                                              COMB01 161
+             ISRIN(J,I) = NDEFA(J,IW)                                           COMB01 162
+          ENDDO                                                                 COMB01 163
+  655     CONTINUE                                                              COMB01 164
+  654     WRITE(IOUTPT,9025,ERR=99009)(KONTXT(J,ISK),J=1,4),                    COMB01 165
+     1               ((ISRIN(J,IW),J=1,3),IW=IB2,IE2)                           COMB01 166
+C         nnnnn = flushunit( IOUTPT )                                           COMB01 167
+99009     CONTINUE                                                              COMB01 168
+  670     CONTINUE                                                              COMB01 169
+  680     CONTINUE                                                              COMB01 170
+        ENDIF                                                                   COMB01 171
+      ENDDO                                                                     COMB01 172
+  690 CONTINUE                                                                  COMB01 173
+C              IF SDL PRINT CURVE TABLE                                         KEYWDT 483
+      IF(IPNUM .EQ. 2)  THEN                                                    KEYWDT 484
+        IKW    = IOPCDT(9,5)                                                    KEYWDT 485
+        NKW    = IKW + IOPCDT(10,5) -1                                          KEYWDT 486
+        DO NPASS=1,3                                                            KEYWDT 487
+          IB     = 49 + (NPASS-1)*12                                            KEYWDT 488
+          IE     = 60 + (NPASS-1)*12                                            KEYWDT 489
+          IF (NPASS .EQ. 3) THEN                                                KEYWDT 490
+             IB=241                                                             KEYWDT 491
+             IE=248                                                             KEYWDT 492
+          ENDIF                                                                 KEYWDT 493
+          IB2    = 1  + (NPASS-1)*12                                            KEYWDT 494
+          IE2    = 12 + (NPASS-1)*12                                            KEYWDT 495
+          IF (NPASS .EQ. 3) IE2 = IE2 - 4                                       KEYWDT 496
+          WRITE(IOUTPT,9110,ERR=9908)((ISYMTB(I,J),I=1,2),J=IB,IE)              KEYWDT 497
+ 9908     CONTINUE                                                              KEYWDT 498
+          JOLDJ  = 0                                                            KEYWDT 499
+          JKEY   = 0                                                            KEYWDT 500
+          DO ISK=IKW,NKW                                                        KEYWDT 501
+            J      = KONTXT(12,ISK)                                             KEYWDT 502
+            IF(J.LE.JOLDJ) GO TO 671                                            KEYWDT 503
+            JOLDJ  = J                                                          KEYWDT 504
+            JKEY   = JKEY+1                                                     KEYWDT 505
+            ITYPE  = KONTXT(8,ISK)                                              KEYWDT 506
+            IF(((ITYPE.eq.2).or.(ITYPE.eq.3).or.(ITYPE.eq.8).or.                FIX2    25
+     $         (ITYPE.eq.10)).and.(KONTXT(10,ISK) .eq. 60))  THEN               FIX2    26
+              DO I=IB2,IE2                                                      KEYWDT 509
+                IF(SRDFT(JKEY,I) .LT. 0.0)  THEN                                KEYWDT 510
+                  IW     = INT((ABS(SRDFT(JKEY,I))/10000.)+0.1)                 KEYWDT 511
+                  IW     = 10 - IW                                              KEYWDT 512
+                  IF(IW .EQ. 0)  IW = 1                                         KEYWDT 513
+                  DO  J=1,4                                                     KEYWDT 514
+                    ISRIN(J,I) = NDEFA(J,IW)                                    KEYWDT 515
+                  ENDDO                                                         KEYWDT 516
+                ELSE                                                            KEYWDT 517
+                  DO  J=1,4                                                     KEYWDT 518
+                    ISRIN(J,I) = ISYMTB(J,ISRDFT(JKEY,I))                       KEYWDT 519
+                  ENDDO                                                         KEYWDT 520
+                ENDIF                                                           KEYWDT 521
+              ENDDO                                                             KEYWDT 522
+              WRITE(IOUTPT,9125,ERR=9909)(KONTXT(J,ISK),J=1,4),                 KEYWDT 523
+     1                   ((ISRIN(J,IW),J=1,2),IW=IB2,IE2)                       KEYWDT 524
+ 9909         CONTINUE                                                          KEYWDT 525
+            ENDIF                                                               KEYWDT 526
+  671       CONTINUE                                                            PC       6
+          ENDDO                                                                 PC       7
+        ENDDO                                                                   KEYWDT 528
+      ENDIF                                                                     KEYWDT 529
+ 9110 FORMAT(1H1,20X,'TABLE OF CURVE DEFAULTS BY SYSTEM-TYPE'//                 KEYWDT 530
+     1       17X,12(X,2A4))                                                     KEYWDT 531
+ 9125 FORMAT(1X,4A4,12(X,2A4))                                                  KEYWDT 532
+      ITOT2  = 16*NSYMTB + 16*(NCONTX-ICONTX+1) + 24*NOPCDT                     -130    12
+      ITOT3  = (NDFT-IDFT+1)                                                    -130    13
+      WRITE (IOUTPT,9090)  16*NSYMTB, 16*(NCONTX-ICONTX+1),                     -130    14
+     $         24*NOPCDT,(NDFT-IDFT+1),ITOT2,ITOT2*4,ITOT3,ITOT3*4,             -037    16
+     $         KUNITS,NSYMTB,MSYMTB,NCONTX,ICONTX,NOPCDT,IDFT,NDFT,             -42c     5
+     $         NDFT                                                             -42c     6
+ 9090 FORMAT(                                                                   COMB01 179
+     $' Total BDLKEY sizes '/                                                   COMB01 180
+     $'       Symbol Table  :  ',I7/                                            COMB01 181
+     $'       Keyword Table :  ',I7/                                            COMB01 182
+     $'       Command Table :  ',I7/                                            COMB01 183
+     $'       Default Table :  ',I7/                                            COMB01 184
+     $'       Record 2 Total :  ',I7,' Words'/                                  -130    16
+     $'                      :  ',I7,' Bytes'/                                  -130    17
+     $'       Record 3 Total :  ',I7,' Words'/                                  -130    18
+     $'                      :  ',I7,' Bytes'/                                  -130    19
+     $' No Expression Record 4 at this time',                                   -037    18
+     $' BDLKEY Record 2 values:'/                                               -037    19
+     $'       Units Table KUNITS         :  ',I10/                              -037    20
+     $'       Symbol Table NSYMTB,MSYMTB :  ',2I10/                             -037    21
+     $'       Keyword Table NCONTX,ICONTX:  ',2I10/                             -037    22
+     $'       Command Table NOPCDT       :  ',I10/                              -037    23
+     $'       Default Table IDFT,NDFT    :  ',2I10/                             -048a    6
+     $' KEY.exe memory useage:'/                                                -048a    7
+     $'       Maximum AA used            :  ',I10)                              -048a    8
+C      CALL  FGLBTR( 1 )                                                        COMB01 188
+C      CALL  FGLBTR( 2 )                                                        COMB01 189
+C     IF(IPNUM .EQ. 1)  GOTO 720                                                COMB01 190
+C     GOTO 100                                                                  COMB01 191
+C 700 IEND   = (4-IPNUM)*2                                                      COMB01 192
+C     DO 710 I=1,IEND                                                           COMB01 193
+  700 CONTINUE                                                                  COMB01 194
+  710 WRITE (KEYFIL)                                                            COMB01 195
+  720 REWIND KEYFIL                                                             KEYWDT 539
+ 8000 FORMAT(A1,A4,22X,I6)                                                      -048a    9
+ 8010 FORMAT(1H ,A4,29H IS NOT A LEGAL LANGUAGE NAME )                          KEYWDT 541
+ 8020 FORMAT(A1,8A4,3I5)                                                        COMB01 197
+ 8030 FORMAT(19H ILLEGAL INDEX FOR  ,4A4, 8H INDEX = ,I3, 7H TYPE = ,I3,        KEYWDT 543
+     1        8H VALUE = ,I4)                                                   KEYWDT 544
+ 8040 FORMAT( 7H INDEX  ,I3,10H CONTAINS  ,4A4,18H OVERWRITTEN WITH             KEYWDT 545
+     1       ,4A4)                                                              KEYWDT 546
+ 8050 FORMAT(A1,4A4,2X,2A4,2X,3(I3,2X),5X,3F10.4)                               KEYWDT 547
+ 8060 FORMAT(1H ,A1,4A4,2X,2A4,2X,3(I3,2X),5X,3F10.4,4X,                        KEYWDT 548
+     1        13H IS NOT LEGAL )                                                KEYWDT 549
+ 8070 FORMAT(25H NO COMMAND FOUND BEFORE  ,4A4,2X,2A4)                          KEYWDT 550
+ 8080 FORMAT(17H TYPE NOT KNOWN   ,4A4, 7H TYPE = ,I3)                          KEYWDT 551
+ 8090 FORMAT(10X,7F10.4)                                                        KEYWDT 552
+ 9000 FORMAT(8F10.1)                                                            KEYWDT 553
+ 9010 FORMAT(1H1,20X,'Table of defaults by TYPE keyword value for',             COMB01 198
+     $               ' the command ',4A4//17X,8(2X,3A4))                        COMB01 199
+ 9020 FORMAT(1X,4A4,8(F14.3))                                                   KEYWDT 556
+ 9025 FORMAT(1X,4A4,8(2X,3A4))                                                  KEYWDT 557
+ 9030 FORMAT(1H1 // 20X,11HUNITS TABLE //300(9X,I3,3X,F12.6,3X,4A4 /))          UNITS1   7
+ 9040 FORMAT(1H1///39X,43HDEFAULTS FOR INFILTRATION KEYWORDS IN SPACE,          KEYWDT 559
+     1       8H COMMAND///1H ,11HINF-METHOD-,19X,4HNONE,8X,                     KEYWDT 560
+     2       10HAIR-CHANGE,13X,5HCRACK,7X,11HRESIDENTIAL,15X,3HS-G//            KEYWDT 561
+     3       1H ,8HKEYWORDS,53X,18H---- DEFAULTS ----/1H ,                      KEYWDT 562
+     4       8H--------/)                                                       KEYWDT 563
+ 9050 FORMAT(1H ,4A4,6F18.4)                                                    KEYWDT 564
+ 9070 FORMAT(A1)                                                                SUBTYP  12
+ 9080 FORMAT(27X,6I5)                                                           SUBTY4   7
+      END                                                                       KEYWDT 565
+      SUBROUTINE  ABT                                                           ABT      2
+C--- ABORT WITH DIVIDE BY ZERO                                                  ABT      3
+      COMMON  /FILESK/ INFILE, IOUTPT, KEYFIL, ITMPFL, IOUTP2                   /FILESK/ 2
+      DATA  X/0./, Y/123./                                                      ABT      5
+      WRITE(IOUTPT,1)                                                           ABT      6
+      CLOSE(IOUTPT)                                                             ABT      7
+      PRINT 2                                                                   ABT      8
+    2 FORMAT(26H?? KEYWORD PROGRAM ABORTED)                                     ABT      9
+      i0 = 0                                                                    ABT     10
+      j = (i0+i0) / i0                                                          ABT     11
+1     FORMAT( 20H0***** ABORTED ***** )                                         ABT     12
+      X = Y / X                                                                 ABT     13
+      RETURN                                                                    ABT     14
+      END                                                                       ABT     15
+      SUBROUTINE  FGLBTR ( ISIMNO )                                             FGLBTR   2
+C---                                                                            FGLBTR   3
+C--- READ GLOBAL TABLES INPUT AND WRITE KEYWORD FILE RECORD CONTAINING          FGLBTR   4
+C---      GLOBAL VARIABLES TABLE FOR FUNCTIONS                                  FGLBTR   5
+C---                                                                            FGLBTR   6
+      COMMON  /FILESK/ INFILE, IOUTPT, KEYFIL, ITMPFL, IOUTP2                   /FILESK/ 2
+      COMMON  /GLBTIN/ ICOL01, NAMVAR(4), IBRAK, ITY, IACC, IACC2, IACC3        /GLBTIN/ 2
+      COMMON  //       IGLBT(8,37500)                                           COMB01 200
+C---                                                                            FGLBTR  10
+      character*96  tmpbuf96                                                    FGLBTR  11
+      common /tmpbuf/ tmpbuf96                                                  FGLBTR  12
+      DIMENSION  ISIMNM(5)                                                      FGLBTR  13
+          DATA  ISIMNM/4HLDS , 4HSYS , 4HPLT , 4HECO , 4HEND /                  FGLBTR  14
+      DATA  KCSP/4H    /                                                        FGLBTR  15
+      DATA  KCDOLR /1H$/                                                        FGLBTR  16
+      DATA  KCEND  /4HEND$/                                                     FGLBTR  17
+C---                                                                            FGLBTR  18
+      WRITE( IOUTP2, 1 ) ISIMNM(ISIMNO)                                         FGLBTR  19
+1     FORMAT( 36H1 --- GLOBAL VARIABLE TABLE FOR --- ,A4, 4H ---, /             FGLBTR  20
+     1    1H0, 17H NNNNNNNNNNNNNNNN, 1H<,                                       FGLBTR  21
+     2         3H  1, 3H  1, 3H  1, 5H    1, 1H ,                               FGLBTR  22
+     3         47HCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC )              FGLBTR  23
+       CALL  FGTRDL                                                             FGLBTR  24
+      IF( NAMVAR(1) .NE. ISIMNM(ISIMNO) )  GOTO  8000                           FGLBTR  25
+      read( tmpbuf96(:30), 2 )  LSYMT, LCONT, LLITT, LLABT                      FGLBTR  26
+2     FORMAT( 5X, 5I5 )                                                         FGLBTR  27
+      WRITE( IOUTP2, 3 ) LSYMT, LCONT, LLITT, LLABT                             FGLBTR  28
+3     FORMAT( 6X, 6HLSYMT=,I4, 8H  LCONT=,I4, 8H  LLITT=,I4,                    FGLBTR  29
+     1            8H  LLABT=,I4 )                                               FGLBTR  30
+      NGLBT = 0                                                                 FGLBTR  31
+200    CALL  FGTRDL                                                             FGLBTR  32
+      IF ( (ICOL01 .EQ. KCDOLR) .AND. (NAMVAR(1) .EQ. KCEND) )  GOTO 300        FGLBTR  33
+                                                                                FGLBTR  34
+      NGLBT = NGLBT + 1                                                         FGLBTR  35
+          DO  260  K = 1 , 4                                                    FGLBTR  36
+C>>> CDC <<<                                                                    FGLBTR  37
+          IGLBT(K,NGLBT) =                                                      FGLBTR  38
+     2                            NAMVAR(K)                                     FGLBTR  39
+260       CONTINUE                                                              FGLBTR  40
+      IGLBT(5,NGLBT) = ITY                                                      FGLBTR  41
+      IGLBT(6,NGLBT) = IACC                                                     FGLBTR  42
+      IGLBT(7,NGLBT) = IACC2                                                    FGLBTR  43
+      IGLBT(8,NGLBT) = IACC3                                                    FGLBTR  44
+      GOTO  200                                                                 FGLBTR  45
+C------- WRITE IGLBT AFTER BDLKEY RCD                                           FGLBTR  46
+300   IF( NGLBT .GT. 1 )    CALL  FSORT( IGLBT, 8, NGLBT, 4 )                   FGLBTR  47
+      IERRFL = 0                                                                FGLBTR  48
+          IF( NGLBT .LT. 2 )  GOTO  500                                         FGLBTR  49
+              DO  400  I = 2 , NGLBT                                            FGLBTR  50
+                  DO  340  J = 1 , 4                                            FGLBTR  51
+                  IF( IGLBT(J,I) .NE. IGLBT(J,I-1) )  GOTO  400                 FGLBTR  52
+340               CONTINUE                                                      FGLBTR  53
+C>>> CDC <<<                                                                    FGLBTR  54
+              WRITE( IOUTP2, 4 )  (                                             FGLBTR  55
+     2                                    IGLBT(J,I)                            FGLBTR  56
+     4                                                     , J=1,4)             FGLBTR  57
+4             FORMAT( 31H ---  ERROR --- DUPLICATE NAME= , 4A4 )                FGLBTR  58
+              IERRFL = 1                                                        FGLBTR  59
+400       CONTINUE                                                              FGLBTR  60
+500   LREC = NGLBT * 8  +  5                                                    FGLBTR  61
+      K3   = 3                                                                  FGLBTR  62
+      WRITE( KEYFIL )  K3, LREC, ISIMNO, K3                                     FGLBTR  63
+      WRITE( KEYFIL )  LSYMT, LCONT, LLITT, LLABT                               FGLBTR  64
+     1               , NGLBT, ((IGLBT(I,J), I=1,8), J=1,NGLBT)                  FGLBTR  65
+      WRITE( IOUTP2, 5 )                                                        FGLBTR  66
+5     FORMAT( 35H1---------- GLOBAL TABLE ---------- ,/ )                       FGLBTR  67
+C>>> CDC <<<                                                                    FGLBTR  68
+      WRITE( IOUTP2, 6 ) (J, (                                                  FGLBTR  69
+     2                        IGLBT(I,J)                                        FGLBTR  70
+     4             , I=1,4), (IGLBT(I,J), I=5,8), J=1,NGLBT)                    FGLBTR  71
+6     FORMAT( I6,2H= ,4A4,4I4, I6,2H= ,4A4,4I4, I6,2H= ,4A4,4I4 )               FGLBTR  72
+      GOTO  9000                                                                FGLBTR  73
+8000  WRITE( IOUTP2, 8 )                                                        FGLBTR  74
+8     FORMAT( 20H0--- DATA  ERROR --- )                                         FGLBTR  75
+       CALL  ABT                                                                FGLBTR  76
+9000  CONTINUE                                                                  FGLBTR  77
+      IF( IERRFL .NE. 0 )   CALL  ABT                                           FGLBTR  78
+      RETURN                                                                    FGLBTR  79
+      END                                                                       FGLBTR  80
+      SUBROUTINE  FGTRDL                                                        FGTRDL   2
+C---                                                                            FGTRDL   3
+C--- READ AND ECHO ONE LINE OF DATA                                             FGTRDL   4
+C---                                                                            FGTRDL   5
+      COMMON  /FILESK/ INFILE, IOUTPT, KEYFIL, ITMPFL, IOUTP2                   /FILESK/ 2
+      COMMON  /GLBTIN/ ICOL01, NAMVAR(4), IBRAK, ITY, IACC, IACC2, IACC3        /GLBTIN/ 2
+C---                                                                            FGTRDL   8
+      DIMENSION  IA0281(20), IA8290(3)                                          FGTRDL   9
+C---                                                                            FGTRDL  10
+      character*96  tmpbuf96                                                    FGTRDL  11
+      common /tmpbuf/ tmpbuf96                                                  FGTRDL  12
+      DATA  KCCOMA/1H,/, KCMINS/1H-/, KCPERD/1H./, KCSTAR/1H*/                  FGTRDL  13
+C---                                                                            FGTRDL  14
+100   READ(INFILE, 102)  ICOL01, IA0281, IA8290                                 FGTRDL  15
+102   FORMAT( A1, 23A4, A1 )                                                    FGTRDL  16
+      WRITE(IOUTP2, 103)  ICOL01, IA0281, IA8290                                FGTRDL  17
+103   FORMAT( 1X, A1, 23A4, A1 )                                                FGTRDL  18
+      IF( (ICOL01 .EQ. KCPERD) .OR. (ICOL01 .EQ. KCMINS) .OR.                   FGTRDL  19
+     1    (ICOL01 .EQ. KCSTAR) .OR. (ICOL01 .EQ. KCCOMA) )  GOTO  100           FGTRDL  20
+      write( tmpbuf96(:96), 102 )  icol01,ia0281                                FGTRDL  21
+      read( tmpbuf96(:32), 104 )  NAMVAR, IBRAK, ITY, IACC, IACC2,IACC3         FGTRDL  22
+104   FORMAT( 1X, 4A4, A1, I3, I3, I3, I5 )                                     FGTRDL  23
+      RETURN                                                                    FGTRDL  24
+      END                                                                       FGTRDL  25
+      SUBROUTINE  FSORT ( IXX, NI, NJ, LKEY )                                   FSORT    2
+C---                                                                            FSORT    3
+C--- SORT IXX(NI,NJ) USING IXX(1-LKEY,.) AS KEYWORDS                            FSORT    4
+C---                                                                            FSORT    5
+      DIMENSION  IXX(NI,NJ)                                                     FSORT    6
+C---                                                                            FSORT    7
+      COMMON  /FILESK/ INFILE, IOUTPT, KEYFIL, ITMPFL, IOUTP2                   /FILESK/ 2
+C---                                                                            FSORT    9
+      IF( NJ .LT. 2 )  GOTO  900                                                FSORT   10
+100       IFLAG = 0                                                             FSORT   11
+              DO  500  J = 2 , NJ                                               FSORT   12
+                  DO  200  I = 1 , LKEY                                         FSORT   13
+                  IF( IXX(I,J) .GT. IXX(I,J-1) )  GOTO  500                     FSORT   14
+                  IF( IXX(I,J) .LT. IXX(I,J-1) )  GOTO  300                     FSORT   15
+200               CONTINUE                                                      FSORT   16
+              GOTO  500                                                         FSORT   17
+300           IFLAG = 1                                                         FSORT   18
+                  DO  400  I = 1 , NI                                           FSORT   19
+                  ITEMP  = IXX(I,J)                                             FSORT   20
+                  IXX(I,J) = IXX(I,J-1)                                         FSORT   21
+                  IXX(I,J-1) = ITEMP                                            FSORT   22
+400               CONTINUE                                                      FSORT   23
+500           CONTINUE                                                          FSORT   24
+          IF( IFLAG .NE. 0 )  GOTO  100                                         FSORT   25
+900   RETURN                                                                    FSORT   26
+      END                                                                       FSORT   27
+      SUBROUTINE  HELP(ILANG,IPNUM)                                             HELP     2
+C                                                                               HELP     3
+C              THIS ROUTINE PRODUCES A LISTING OF WHAT CURRENTLY                HELP     4
+C              RESIDES IN THE COMMAND,CONTEXT, AND SYMBOL TABLES                HELP     5
+C                                                                               HELP     6
+      COMMON  /DFTS/         DFTS (5 000 000),NDFTS(4, 500000),                 -048a    1
+     $                       IDFTS(500000),                                     -048a    2
+     1                       UNDEF(4),NDEFA(4,5),IHOLL(10),IOVRL(4),            /DFTS/   3
+     2                       IKTYPE(4,20),LASTU(2)                              FIX2     1
+      INTEGER                KDFTS(5 000 000),IUNDEF(4)                         -048a    3
+      EQUIVALENCE            (DFTS(1),KDFTS(1)),(UNDEF(1),IUNDEF(1))            -037     2
+      COMMON  /FILESK/ INFILE, IOUTPT, KEYFIL, ITMPFL, IOUTP2                   /FILESK/ 2
+      COMMON /IUNITS/ VKONV(300),IUNITS(4,300)                                  UNITS1   1
+      COMMON  /OPCDT/        OPCDT (24,120), NOPCDT                             REFG23   1
+      INTEGER                IOPCDT(24,120)                                     REFG23   2
+      EQUIVALENCE            (OPCDT(1,1),IOPCDT(1,1))                           /OPCDT/  4
+      COMMON  /SIZE/         MA,NALEFT,NSYMTB,MSYMTB,NCONTX,ICONTX,             /SIZE/   2
+     1                       IDFT,NDFT                                          /SIZE/   3
+      COMMON  //             IA(50 000 000)                                     -048a    4
+      REAL                   AA(50 000 000),CONTXT(16,2),SYMTB(16,2)            -048a    5
+      INTEGER                KONTXT(16,18750),ISYMTB(16,18750)                  SUBTY3   1
+      EQUIVALENCE            (IA(1),AA(1)),                                     //       5
+     1                       (CONTXT(1,1),KONTXT(1,1)),                         //       6
+     2                       (CONTXT(1,1),AA(1)),                               //       7
+     3                       (SYMTB(1,1),ISYMTB(1,1)),                          //       8
+     4                       (SYMTB(1,1),AA(1))                                 //       9
+      DIMENSION NAME(4),BLANK(3),ICOD(4),IBLANK(3)                              HELP    13
+      EQUIVALENCE (BLANK(1),IBLANK(1))                                          HELP    14
+      DATA ICOD/4HCODE, 4H-WOR, 4HD   , 4H    /                                 HELP    15
+      DATA IBLANK/3*4H    /                                                     HELP    16
+ 8000 FORMAT(1H1 /// 20X,32HCOMMAND KEYWORD SYMBOL LIST FOR  ,A3,//)            HELP    17
+      WRITE(IOUTPT,8000,ERR=99011)ILANG                                         HELP    18
+99011 CONTINUE                                                                  HELP    19
+ 8110 FORMAT(' Command Table' // '    ',                                        HELP    20
+     $' COMMAND NAME      ABREV    IOP LEV  START NUMB  TYPE    ',              -048a   10
+     $'MAX NUM  REF TB  DEF TBL  VAL Nsav  Sim Chld Prnt  Pos Curr',            -048a   11
+     $' Deft  Num'/                                                             -048a   12
+     $'                                         KEYS  KEYS  SYMB    ',          -048a   13
+     $'DEF DEF   START    START  LEN  len  len Clas Clas   21 Prnt',            -048a   14
+     $'  len TYPE'/                                                             -048a   15
+     $ 100(1X,I3,1X,4A4,2X,2A4,X,I3,X,I3,I7,I5,I6,I7,I4,I8,I9,9I5 /))           -048a   16
+ 8111 FORMAT(/)                                                                 HELP    27
+      WRITE(IOUTPT,8110,ERR=99112)(J,(OPCDT(I,J),I=1,24),J=1,NOPCDT)            COMB01 206
+99112 CONTINUE                                                                  HELP    29
+      WRITE(IOUTPT,8111)                                                        HELP    30
+      DO 155 JOP=1,NOPCDT                                                       HELP    31
+      ISTYPO = -99                                                              HELP    32
+ 8010 FORMAT(1x,10(1H*),13HCOMMAND NUM = ,I3,103(1H*) / 1H ,                    HELP    33
+     $'    COMMAND NAME      ABREV    IOP LEV  START NUMB  TYPE    ',           -048a   17
+     $'MAX NUM  REF TB  DEF TBL  VAL Nsav  Sim Chld Prnt  Pos Curr',            -048a   18
+     $' Deft  Num'/                                                             -048a   19
+     $'                                          KEYS KEYS  SYMB    ',          -048a   20
+     $'DEF DEF   START    START  LEN  len  len Clas Clas   21 Prnt',            -048a   21
+     $'  len TYPE'/                                                             -048a   22
+     $/ 5X,4A4,2X,2A4,X,I3,X,I3,I7,I5,I6,I7,I4,I8,I9,9I5 )                      -048a   23
+      ISK    = IOPCDT(9,JOP)                                                    HELP    39
+      IEK    = IOPCDT(10,JOP) + ISK - 1                                         HELP    40
+      IF((ISK .GT. IEK).and.(IOPCDT(12,JOP) .GE. 0))  GOTO 155                  HELP    41
+      WRITE(IOUTPT,8010,ERR=99012)JOP,(OPCDT(I,JOP),I=1,24)                     COMB01 212
+99012 CONTINUE                                                                  HELP    43
+      IF(IOPCDT(12,JOP) .GE. 0)  GOTO 3                                         HELP    44
+      I      = -IOPCDT(12,JOP)                                                  HELP    45
+ 8090 FORMAT(40H0  USES KEYWORDS AND REFERENCE TABLE OF  ,4A4)                  HELP    46
+      WRITE(IOUTPT,8090,ERR=99013)(IOPCDT(J,I),J=1,4)                           HELP    47
+99013 CONTINUE                                                                  HELP    48
+      GOTO 155                                                                  HELP    49
+    3 CONTINUE                                                                  HELP    50
+      NKTYP = 1                                                                 SUBTY3  16
+      IF (IOPCDT(24,JOP).LT.0) NKTYP = -IOPCDT(24,JOP)                          SUBTY3  17
+      DO 152 ITYPE=1,NKTYP                                                      SUBTY3  18
+      ISK = IOPCDT(9,JOP) + (ITYPE-1)*IOPCDT(10,JOP)                            SUBTY3  19
+      IEK = ISK + IOPCDT(10,JOP) - 1                                            SUBTY3  20
+      IF (NKTYP.GT.1) WRITE(IOUTPT,8012) ITYPE                                  SUBTY3  21
+ 8012 FORMAT(1X'****TYPE ='I2'****')                                            SUBTY3  22
+      ISDFT = IOPCDT(15,JOP) + IOPCDT(23,JOP) +                                 SUBTY3  23
+     1        4*(ITYPE-1)*IOPCDT(23,JOP)                                        SUBTY3  24
+      IF(ISK .GT. IEK)  GOTO 155                                                HELP    52
+      IF(((JOP.ge.49) .and. (JOP.le.54)) .OR.                                   COMB01 213
+     $   ((JOP.ge.56) .and. (JOP.le.58)))  THEN                                 COMB01 214
+           WRITE(IOUTPT,8216,ERR=99216)                                         COMB01 215
+     $          ((KONTXT(i,j),i=1,4),j=ISK,IEK)                                 COMB01 216
+99216      GOTO 155                                                             COMB01 217
+ 8216      FORMAT(' SUB-COMMAND KEYWORDS:'/60(1x,6(4a4,4x)/))                   COMB01 218
+      ENDIF                                                                     COMB01 219
+ 8015 FORMAT(1x,'  --',                                                         HELP    62
+     159H KEYWORD NAME     ABREV    UNITS       TYPE             LEN,           HELP    63
+     2'     MIN-NUMERIC     MAX-NUMERIC VAL-POS   DEFAULT'  /)                  HELP    64
+      WRITE(IOUTPT,8015,ERR=99014)                                              HELP    65
+99014 CONTINUE                                                                  HELP    66
+      DO 150 JKEY=ISK,IEK                                                       HELP    67
+      ikeynum = jkey - isk + 1                                                  HELP    68
+      IPDFT  = ISDFT + KONTXT(12,JKEY) - 1                                      HELP    69
+      LEN    = KONTXT(9,JKEY)                                                   HELP    70
+      DO 30 JJ=1,LEN                                                            HELP    71
+      DO 10 KDFT=1,4                                                            HELP    72
+      IF(AA(IPDFT+JJ-1) .EQ. UNDEF(KDFT))  GOTO 20                              HELP    73
+   10 CONTINUE                                                                  HELP    74
+      KDFT   = 5                                                                HELP    75
+   20 IDFTS(JJ) = KDFT                                                          HELP    76
+      DFTS(JJ) = AA(IPDFT+JJ-1)                                                 HELP    77
+      DO 25 I=1,4                                                               HELP    78
+   25 NDFTS(I,JJ) = NDEFA(I,KDFT)                                               HELP    79
+   30 CONTINUE                                                                  HELP    80
+      IUN    = KONTXT(7,JKEY)                                                   HELP    81
+      IF (IUN .LT. 1)  IUN = 1                                                  HELP    82
+      ITYP   = KONTXT(8,JKEY)                                                   HELP    83
+      IF ((ITYP.EQ.10).or.(ITYP.EQ.20)) ITYP=3                                  FIX2    31
+      IF (ITYP.GT.10) ITYP=ITYP-10                                              OPLST1  13
+      GOTO (100,110,110,120,100,100,130,110),ITYP                               HELP    84
+  100 WRITE(IOUTPT,8020,ERR=99016) ikeynum, (CONTXT(I,JKEY),I=1,6),             HELP    85
+     .                       (IUNITS(I,IUN),I=1,3),                             HELP    86
+     1         (IKTYPE(I,KONTXT(8,JKEY)),I=1,4),(CONTXT(I,JKEY),I=9,12),        FIX2    32
+     2               DFTS(1), (NDFTS(J,1),J=1,4)                                HELP    88
+ 8020 FORMAT( 1xi3'> ',4A4,1X,2A4,1X,2A4,a3,1X,4A4,I4,2F16.2,I4,                HELP    89
+     1        F11.2,1X,4A4 )                                                    HELP    90
+99016 CONTINUE                                                                  HELP    91
+      if( LEN .gt. 1 )                                                          HELP    92
+     . write(IOUTPT,8120,ERR=99116) (DFTS(I),(NDFTS(J,I),J=1,4),I=2,LEN)        HELP    93
+8120  format( (1X, 4(F14.2,1X,4A4,1X)) )                                        HELP    94
+99116 continue                                                                  HELP    95
+      GOTO 150                                                                  HELP    96
+  110 ISTYP  = KONTXT(10,JKEY)                                                  HELP    97
+      NAME(1) = ICOD(1)                                                         HELP    98
+      NAME(2) = ICOD(2)                                                         HELP    99
+      NAME(3) = ICOD(3)                                                         HELP   100
+      NAME(4) = ICOD(4)                                                         HELP   101
+      IF((ISTYP.EQ.0).OR.(ISTYP.GE.100).OR.(ITYP.EQ.8))                         HELP   102
+     1       GOTO 114                                                           HELP   103
+      DO 111 IOPN=1,NOPCDT                                                      HELP   104
+      IF(IOPCDT(11,IOPN) .EQ. ISTYP)  GOTO 112                                  HELP   105
+  111 CONTINUE                                                                  HELP   106
+      GOTO 114                                                                  HELP   107
+  112 DO 113 I=1,4                                                              HELP   108
+  113 NAME(I) = IOPCDT(I,IOPN)                                                  HELP   109
+  114 DO 117 JJ=1,LEN                                                           HELP   110
+      IF ((IDFTS(JJ) .NE. 5) .OR. (ITYP .EQ. 8))                                HELP   111
+     1          GOTO 116                                                        HELP   112
+      J      = KDFTS(JJ)                                                        HELP   113
+      DO 115 I=1,4                                                              HELP   114
+  115 NDFTS(I,JJ) = ISYMTB(I,J)                                                 HELP   115
+  116 CONTINUE                                                                  HELP   116
+      IF (IDFTS(JJ) .NE. 5)  KDFTS(JJ) = -10 + IDFTS(JJ)                        HELP   117
+  117 CONTINUE                                                                  HELP   118
+      WRITE(IOUTPT,8030,ERR=99017) ikeynum, (KONTXT(I,JKEY),I=1,6),             HELP   119
+     .                       (IKTYPE(I,KONTXT(8,JKEY)),I=1,4),                  FIX2    33
+     1               (KONTXT(I,JKEY),I=9,10),(NAME(I),I=1,4),                   HELP   121
+     2               (KONTXT(I,JKEY),I=11,12),                                  HELP   122
+     3               KDFTS(1),(NDFTS(J,1),J=1,4)                                HELP   123
+ 8030 FORMAT(1xi3'> ',4A4,1X,2A4,11x,4A4,1X,I4,1X,I4,1X, 1H(,4A4,1H),2X,        COMB01 220
+     1 7HTABLE = ,I1,1X,I4,7X,I4,1X, 1H( ,4A4, 1H) )                            COMB01 221
+99017 CONTINUE                                                                  HELP   126
+      if ( LEN .gt. 1 )                                                         HELP   127
+     . write(IOUTPT,8130,ERR=99117)(KDFTS(I),(NDFTS(J,I),J=1,4),I=2,LEN)        HELP   128
+8130  format( (12X,5(I4,1X,1H(,4A4,1H),1X)) )                                   SUBTY2   1
+99117 continue                                                                  HELP   130
+      K15_1 = 0                                                                 SUBTY4   8
+      K15_2 = 0                                                                 SUBTY4   9
+      K15_3 = 0                                                                 SUBTY4  10
+      IF(KONTXT(15,JKEY) .ne. 0)  THEN                                          SUBTY2   2
+        CALL UNPAK3(KONTXT(15,JKEY),1024,K15_1,K15_2,K15_3)                     SUBTY4  11
+        WRITE(IOUTPT,8031) (KONTXT(i,JKEY),i=1,4),(NAME(i),i=1,4),              SUBTY2   3
+     $          (ISYMTB(i,K15_1),i=1,8),K15_1                                   SUBTY4  12
+        IF (K15_2.GT.0) WRITE(IOUTPT,8032) (ISYMTB(i,K15_2),i=1,8),K15_2        SUBTY4  13
+        IF (K15_3.GT.0) WRITE(IOUTPT,8032) (ISYMTB(i,K15_3),i=1,8),K15_3        SUBTY4  14
+ 8031   FORMAT(12x,'NOTE: input to ',4A4,' MUST be a ',                         SUBTY2   5
+     $         4A4,' of TYPE =',8A4'[ISYMTB(n,',i4,')]')                        SUBTY2   6
+ 8032   FORMAT(70X ' or TYPE =',8A4'[ISYMTB(n,',i4,')]')                        SUBTY4  15
+      ENDIF                                                                     SUBTY2   7
+      IF((ISTYP.LT.100).OR.(ITYP.EQ.8))  GOTO 150                               HELP   131
+      IF(ISTYP .eq. ISTYPO) GOTO 150                                            HELP   132
+      ISTYPO = ISTYP                                                            HELP   133
+      DO 118 J=1,NSYMTB                                                         HELP   134
+ 8040 FORMAT(31X,'SYMBOL TABLE ENTRY',3X,8A4,' TYPE =',I5,                      COMB01 222
+     1 9H DEF/REF  ,I3, 1H/ ,I3,5X, 8H VALUE = ,I5)                             HELP   136
+      IF(ISTYP .EQ. ISYMTB(9,J))                                                SYMSIZ  20
+     .      WRITE(IOUTPT,8040,ERR=99018)(ISYMTB(I,J),I=1,8),                    COMB01 223
+     .            (ISYMTB(I,J),I=9,12)                                          SYMSIZ  22
+99018 CONTINUE                                                                  HELP   139
+  118 CONTINUE                                                                  HELP   140
+      GOTO 150                                                                  HELP   141
+120   WRITE(IOUTPT,8050,ERR=99019) ikeynum, (KONTXT(I,JKEY),I=1,7),             HELP   142
+     .                       (IKTYPE(I,KONTXT(8,JKEY)),I=1,4),                  FIX2    34
+     1               (KONTXT(I,JKEY),I=9,10),KONTXT(12,JKEY)                    HELP   144
+ 8050 FORMAT(i4'> ',4A4,1X,2A4,i4,9X,4A4,1X,I3,1x,16H WORDS/ELEMENT = ,         HELP   145
+     1       I2,16X,I3 /)                                                       HELP   146
+99019 CONTINUE                                                                  HELP   147
+      GOTO 150                                                                  HELP   148
+  130 GOTO 150                                                                  HELP   149
+  150 CONTINUE                                                                  HELP   150
+  152 CONTINUE                                                                  SUBTY3  25
+  155 CONTINUE                                                                  HELP   151
+ 8060 FORMAT(1H1 /// 30X,20HSYMBOL TABLE ENTRIES  //  9H INDEX    ,             HELP   152
+     $'SYMBOL NAME                    TYPE',19X,                                COMB01 224
+     $'     DEF     REF    VALUE ',                                             COMB01 225
+     $10X, 8HMSYMTB = ,I5, 9H NSYMTB = ,I5 /)                                   COMB01 226
+      WRITE(IOUTPT,8060,ERR=99020)MSYMTB,NSYMTB                                 HELP   155
+99020 CONTINUE                                                                  HELP   156
+      DO 200 JSYM=1,NSYMTB                                                      HELP   157
+      ITYP   = ISYMTB(9,JSYM)                                                   SYMSIZ  23
+      NAME(1) = ICOD(1)                                                         HELP   159
+      NAME(2) = ICOD(2)                                                         HELP   160
+      NAME(3) = ICOD(3)                                                         HELP   161
+      NAME(4) = ICOD(4)                                                         HELP   162
+      IF((ITYP .GE. 100).OR.(ITYP .EQ. 0))  GOTO 190                            HELP   163
+      DO 160 J=1,NOPCDT                                                         HELP   164
+      IF(ITYP .EQ. IOPCDT(11,J))  GOTO 170                                      HELP   165
+  160 CONTINUE                                                                  HELP   166
+      GOTO 190                                                                  HELP   167
+  170 DO 180 JJ=1,4                                                             HELP   168
+  180 NAME(JJ) = IOPCDT(JJ,J)                                                   HELP   169
+  190 WRITE(IOUTPT,8070,ERR=99021)JSYM,(ISYMTB(I,JSYM),I=1,8),                  COMB01 227
+     .             SYMTB(9,JSYM),                                               SYMSIZ  25
+     .             (NAME(I),I=1,4),                                             HELP   171
+     1             (ISYMTB(I,JSYM),I=10,12)                                     SYMSIZ  26
+ 8070 FORMAT(1H ,I4,4X,8A4,4X,I4,1X, 1H( ,4A4, 1H) ,3(4X,I4))                   COMB01 228
+99021 CONTINUE                                                                  HELP   174
+  200 CONTINUE                                                                  HELP   175
+      WRITE(IOUTPT,8080)                                                        HELP   176
+ 8080 FORMAT(//)                                                                HELP   177
+      RETURN                                                                    HELP   178
+      END                                                                       HELP   179
+      FUNCTION IPACK3(I1,I2,I3,MULT)                                            IPACK3   2
+      IPACK3 = 0                                                                IPACK3   3
+      IF (MULT.LE.0 .OR. I1.LT.0 .OR. I2.LT.0 .OR. I3.LT.0) RETURN              IPACK3   4
+      IPACK3 = I1*MULT*MULT + I2*MULT + I3                                      IPACK3   5
+      RETURN                                                                    IPACK3   6
+      END                                                                       IPACK3   7
+      SUBROUTINE UNPAK3(II,MULT,I1,I2,I3)                                       UNPAK3   2
+      I1 = 0                                                                    UNPAK3   3
+      I2 = 0                                                                    UNPAK3   4
+      I3 = 0                                                                    UNPAK3   5
+      IF (MULT.LE.0) RETURN                                                     UNPAK3   6
+      IF (II.LE.0) RETURN                                                       UNPAK3   7
+      MULT2 = MULT*MULT                                                         UNPAK3   8
+      I1 = II/MULT2                                                             UNPAK3   9
+      I21 = II - I1*MULT2                                                       UNPAK3  10
+      I2 = I21/MULT                                                             UNPAK3  11
+      I3 = I21 - I2*MULT                                                        UNPAK3  12
+      RETURN                                                                    UNPAK3  13
+      END                                                                       UNPAK3  14
+      SUBROUTINE  MOVEN ( A, B, N )                                             MOVEN    2
+C---                                                                            MOVEN    3
+      DIMENSION  A(1), B(1)                                                     MOVEN    4
+C---                                                                            MOVEN    5
+      IF( N .LT. 1 )  RETURN                                                    MOVEN    6
+          DO  100  I = 1 , N                                                    MOVEN    7
+          B(I) = A(I)                                                           MOVEN    8
+100       CONTINUE                                                              MOVEN    9
+      RETURN                                                                    MOVEN   10
+      END                                                                       MOVEN   11
+      BLOCK DATA                                                                DATA     2
+      COMMON  /DFTS/         DFTS (5 000 000),NDFTS(4, 500000),                 -048a    1
+     $                       IDFTS(500000),                                     -048a    2
+     1                       UNDEF(4),NDEFA(4,5),IHOLL(10),IOVRL(4),            /DFTS/   3
+     2                       IKTYPE(4,20),LASTU(2)                              FIX2     1
+      INTEGER                KDFTS(5 000 000),IUNDEF(4)                         -048a    3
+      EQUIVALENCE            (DFTS(1),KDFTS(1)),(UNDEF(1),IUNDEF(1))            -037     2
+      COMMON /IUNITS/ VKONV(300),IUNITS(4,300)                                  UNITS1   1
+      DATA IHOLL/1H$, 1H , 1H1, 1H2, 1H=, 3HEND, 1H+, 3*1H /                    SUBTY3  26
+      DATA IOVRL/3HBDL, 3HSDL, 3HPDL, 3HEDL/                                    COMB01 229
+      DATA IKTYPE /                                                             DATA     7
+     1  4HNumn, 4Hric , 4HErr,, 4HCau ,                                         FIX2    35
+     2  4HSymb, 4Holic, 4H Def, 4Hined,                                         FIX2    36
+     3  4HSymb, 4Holic, 4H Und, 4Hef  ,                                         FIX2    37
+     4  4HLite, 4Hral , 4H    , 4H    ,                                         FIX2    38
+     5  4HNume, 4Hric , 4HErr,, 4HErr ,                                         FIX2    39
+     6  4HNume, 4Hric , 4HRoun, 4Hded ,                                         FIX2    40
+     7  4HFunc, 4Htion, 4H    , 4H    ,                                         FIX2    41
+     8  4HSymb, 4Holic, 4H in , 4HTabl,                                         FIX2    42
+     9  4H    , 4H    , 4H    , 4H    ,                                         FIX2    43
+     $  4HChil, 4Hd Un, 4Hdefi, 4Hned ,                                         FIX2    44
+     1  4HNum , 4HOlst, 4H Err, 4H,Cau,                                         FIX2    45
+     2  4HSym , 4HOlst, 4H Def, 4Hined,                                         FIX2    46
+     3  4HSym , 4HOlst, 4H Und, 4Hef  ,                                         FIX2    47
+     4  4HLit , 4HOlst, 4H    , 4H    ,                                         FIX2    48
+     5  4HNum , 4HOlst, 4H Err, 4H,Err,                                         FIX2    49
+     6  4HNum , 4HOlst, 4H Rou, 4Hnded,                                         FIX2    50
+     7  4HFun , 4HOlst, 4H    , 4H    ,                                         FIX2    51
+     8  4H    , 4H    , 4H    , 4H    ,                                         FIX2    52
+     9  4H    , 4H    , 4H    , 4H    ,                                         FIX2    53
+     $  4HChil, 4Hd Ol, 4Hst U, 4Hndef/                                         FIX2    54
+      DATA LASTU/4HUNUS,4HED  /                                                 FIX2    55
+      DATA UNDEF /-99999.0,-88888.0,-77777.0,-66666.0/                          DATA    16
+      DATA NDEFA /                                                              DATA    17
+     14H* Re, 4Hquir, 4Hed *, 4H    ,                                           DATA    18
+     24H*  U, 4Hnuse, 4Hd  *, 4H    ,                                           DATA    19
+     34H*No , 4HDefa, 4Hult*, 4H    ,                                           DATA    20
+     44H* Un, 4Hfill, 4Hed *, 4H    ,                                           DATA    21
+     54H    , 4H    , 4H    , 4H    /                                           DATA    22
+      END                                                                       DATA    23

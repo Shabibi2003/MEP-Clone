@@ -1,0 +1,243 @@
+      PROGRAM EDTCRT                                                            EDTCRT   2
+C                                                                               EDTCRT   3
+C              EDTCRT READS DATA CARDS AND WRITES THE EDIT TABLE ONTO FILE      EDTCRT   4
+C              EDTT.  THIS TABLE RELATES A POSITION IN THE AA ARRAY             EDTCRT   5
+C              (BLANK COMMON) TO A VARIABLE WITH A MNEMONIC NAME.               EDTCRT   6
+C                                                                               EDTCRT   7
+C              VARIABLE DEFINITIONS                                             EDTCRT   8
+C                                                                               EDTCRT   9
+C              KNAM --- THE MNEMONIC NAME VARIABLE                              EDTCRT  10
+C              KLEN --- THE LENGTH OF THE VARIABLE AS STORED IN AA              EDTCRT  11
+C              KOFFS --- OFFSET FROM NORMAL POSITION IN AA                      EDTCRT  12
+C              KXA --- THE AA POINTER                                           EDTCRT  13
+C              KXB --- AUXILIARY AA POINTER                                     EDTCRT  14
+C              IX --- AA NUMERICAL SUBSCRIPT                                    EDTCRT  15
+C              CMNTS --- DESCRIPTION OF KNAM                                    EDTCRT  16
+C              ITXT --- TEXT (AA POSITION) THAT WILL REPLACE KNAM ON THE        EDTCRT  17
+C                       COMPILE FILE.  ITXT HAS EMBEDDED BLANKS.                EDTCRT  18
+C              JTXT --- ITXT WITH EMBEDDED BLANKS REMOVED                       EDTCRT  19
+C              KTXT --- ITXT IN 5A4 FORMAT                                      EDTCRT  20
+C              INAM --- THE ARRAY CONTAINING ALL KNAM'S                         EDTCRT  21
+C              IRTXT --- THE ARRAY CONTAINING ALL KTXT'S                        EDTCRT  22
+C              ITYPE --- CONTAINS R OR I TO FORCE AA() OR IA()                  EDTCRT  23
+C                                                                               EDTCRT  24
+C              INPUT CARD FORMAT                                                EDTCRT  25
+C                                                                               EDTCRT  26
+C              LINES  1 - 16     KNAM IN A FORMAT                               EDTCRT  27
+C              LINE   17         R OR I TO FORCE AA() OR IA() USE               EDTCRT  28
+C              LINES 18 - 20     KLEN - INTEGER FORMAT                          EDTCRT  29
+C              LINES 23 - 24     KOFFS - INTEGER FORMAT                         EDTCRT  30
+C              LINES 26 - 28     KXB - A FORMAT                                 EDTCRT  31
+C              LINES 29 - 80     COMMENTS AND DESCRIPTION - A FORMAT            EDTCRT  32
+C                                                                               EDTCRT  33
+C                                                                               EDTCRT  34
+      COMMON ITAB(8,7000)                                                       REFG23   1
+      DIMENSION KNAM(16), ITXT(16), JTXT(16), KTXT(4), CMNTS(16),               EDTCRT  36
+     1          KXB(2), KXA(3), IHOL(17)                                        EDTCRT  37
+C                                                                               EDTCRT  38
+      DATA IHOL /1H , 1H+, 1H-, 1H(, 1H), 1H_, 1H@, 1HA, 1HD, 1HE,              EDTCRT  39
+     1           1HI, 1HJ, 1HK, 1HL, 1HM, 1HN , 1HR /                           EDTCRT  40
+C                                                                               EDTCRT  41
+C                                                                               EDTCRT  42
+      ITB    = 1                                                                EDTCRT  43
+      INPUT  = 5                                                                EDTCRT  44
+      IOUTPT = 6                                                                EDTCRT  45
+C              ---                                                              EDTCRT  46
+      NENTS  = 0                                                                EDTCRT  47
+      IX     = 0                                                                EDTCRT  48
+C>>>>>>>      UNIT 85 = INPUT.TMP , UNIT 86 = OUTPUT.                           EDTCRT  49
+      OPEN ( UNIT=INPUT,FILE='DEDT.cmp', STATUS='old')                          -051     1
+      OPEN ( UNIT=IOUTPT,FILE='EDTT.out', STATUS='UNKNOWN',                     -051     2
+     .          ACCESS='APPEND')                                                EDTCRT  52
+      OPEN( UNIT=ITB, FILE='EDTT.bin',FORM='UNFORMATTED',                       -051     3
+     .      STATUS='new')                                                       EDTCRT  54
+      WRITE(IOUTPT,9901)                                                        EDTCRT  55
+ 9901 FORMAT( 1H1 )                                                             EDTCRT  56
+C              INITIALIZE                                                       EDTCRT  57
+   10 DO 20 I=1,16                                                              EDTCRT  58
+      ITXT(I) = IHOL(1)                                                         EDTCRT  59
+      JTXT(I) = IHOL(1)                                                         EDTCRT  60
+   20 CONTINUE                                                                  EDTCRT  61
+      KXB(1) = IHOL(1)                                                          EDTCRT  62
+      KXB(2) = IHOL(1)                                                          EDTCRT  63
+C              READ A CARD                                                      EDTCRT  64
+   35 READ(INPUT,1001)  (KNAM(I),I=1,16), ITYPE, KLEN, KOFFS, KXB(1), KX        EDTCRT  65
+     1B(2),                                                                     EDTCRT  66
+     2           CMNTS                                                          EDTCRT  67
+C              CHECK FOR END                                                    EDTCRT  68
+      IF (KNAM(1) .EQ. IHOL(10) .AND. KNAM(2) .EQ. IHOL(16) .AND.               EDTCRT  69
+     1    KNAM(3) .EQ. IHOL(9) .AND. KNAM(4) .EQ. IHOL(1))  GO TO 500           EDTCRT  70
+C              BLANK NAME MEANS CONTINUATION OF COMMENTS                        EDTCRT  71
+      IF (KNAM(1) .NE. IHOL(1))  GO TO 40                                       EDTCRT  72
+      WRITE(IOUTPT,1002)  CMNTS                                                 EDTCRT  73
+      GO TO 35                                                                  EDTCRT  74
+   40 CONTINUE                                                                  EDTCRT  75
+C              CHECK FOR NEW IA POINTER                                         EDTCRT  76
+      IF (KNAM(1) .NE. IHOL(6))  GO TO 50                                       EDTCRT  77
+      DO 45 I=1,3                                                               EDTCRT  78
+      KXA(I) = KNAM(I+1)                                                        EDTCRT  79
+   45 CONTINUE                                                                  EDTCRT  80
+      IX     = 0                                                                EDTCRT  81
+      WRITE(IOUTPT,1003)  KXA, CMNTS                                            EDTCRT  82
+      GO TO 35                                                                  EDTCRT  83
+   50 CONTINUE                                                                  EDTCRT  84
+C              INCREMENT TABLE SIZE                                             EDTCRT  85
+      NENTS  = NENTS + 1                                                        EDTCRT  86
+C              BUILD UP TEXT ARRAY                                              EDTCRT  87
+      ITXT(1) = IHOL(8)                                                         EDTCRT  88
+      ITXT(2) = IHOL(8)                                                         EDTCRT  89
+      IF (KNAM(1) .EQ. IHOL(11) .OR. KNAM(1) .EQ. IHOL(12) .OR.                 EDTCRT  90
+     1    KNAM(1) .EQ. IHOL(13) .OR. KNAM(1) .EQ. IHOL(14) .OR.                 EDTCRT  91
+     2    KNAM(1) .EQ. IHOL(15) .OR. KNAM(1) .EQ. IHOL(16))                     EDTCRT  92
+     3    ITXT(1) = IHOL(11)                                                    EDTCRT  93
+      IF(ITYPE .EQ. IHOL(17))  ITXT(1) = IHOL(8)                                EDTCRT  94
+      IF(ITYPE .EQ. IHOL(11))  ITXT(1) = IHOL(11)                               EDTCRT  95
+C              FILL ITXT(3-6)                                                   EDTCRT  96
+      ITXT(3) = IHOL(4)                                                         EDTCRT  97
+      DO 75 I=1,3                                                               EDTCRT  98
+      ITXT(3+I) = KXA(I)                                                        EDTCRT  99
+   75 CONTINUE                                                                  EDTCRT 100
+C              ADD OFFSET TO SUBSCRIPT                                          EDTCRT 101
+      IX     = IX + KOFFS                                                       EDTCRT 102
+C              ENCODE IX INTO 4A1.  PLACE IN ITXT(11-14)                        -100     1
+      CALL ITOA(IABS(IX),ITXT(11),4)                                            -100     2
+C              FILL ITXT(10) WITH + OR -                                        EDTCRT 105
+      IF (IX .GT. 0)  ITXT(10) = IHOL(2)                                        EDTCRT 106
+      IF (IX .LT. 0)  ITXT(10) = IHOL(3)                                        EDTCRT 107
+C              CHECK FOR AUXILIARY POINTER                                      EDTCRT 108
+      IF (KXB(1) .EQ. IHOL(1))  GO TO 80                                        EDTCRT 109
+      ITXT(7) = IHOL(2)                                                         EDTCRT 110
+      ITXT(8) = KXB(1)                                                          EDTCRT 111
+      ITXT(9) = KXB(2)                                                          EDTCRT 112
+   80 CONTINUE                                                                  EDTCRT 113
+      ITXT(15) = IHOL(5)                                                        -100     3
+C              STRIP OUT BLANKS.  PUT RESULT IN JTXT.                           EDTCRT 115
+      NOTB   = 0                                                                EDTCRT 116
+      DO 100 I=1,16                                                             EDTCRT 117
+      IF (ITXT(I) .EQ. IHOL(1))  GO TO 100                                      EDTCRT 118
+      NOTB   = NOTB + 1                                                         EDTCRT 119
+      JTXT(NOTB) = ITXT(I)                                                      EDTCRT 120
+  100 CONTINUE                                                                  EDTCRT 121
+C              ENCODE JTXT(16) ONTO KTXT(4) IN 4A4 FORMAT                       EDTCRT 122
+      CALL A1A4(JTXT,KTXT,4)                                                    EDTCRT 123
+C              PRINT OUT TABLE AND DESCRIPTIONS                                 EDTCRT 124
+      WRITE(IOUTPT,1006)  KNAM, ITYPE, KLEN, KOFFS, KXB, KTXT, CMNTS            EDTCRT 125
+C              INCREMENT IX                                                     EDTCRT 126
+      IX     = IX + KLEN                                                        EDTCRT 127
+C              STORE ENTRIES IN TABLE                                           EDTCRT 128
+      CALL A1A4(KNAM,ITAB(1,NENTS),4)                                           EDTCRT 129
+      DO 110 I=1,4                                                              EDTCRT 130
+      ITAB(I+4,NENTS) = KTXT(I)                                                 EDTCRT 131
+  110 CONTINUE                                                                  EDTCRT 132
+C              GO GET NEXT CARD                                                 EDTCRT 133
+      GO TO 10                                                                  EDTCRT 134
+  500 CONTINUE                                                                  EDTCRT 135
+C              ALL DONE.  SORT IRTXT USING INAM AS VALUES                       EDTCRT 136
+      CALL SORT(ITAB,NENTS,4,8)                                                 EDTCRT 137
+C              WRITE OUT FILE                                                   EDTCRT 138
+      WRITE(IOUTPT,9901)                                                        EDTCRT 139
+      WRITE(IOUTPT,9902)  ( I, (ITAB(J,I), J=1,8), I=1, NENTS )                 EDTCRT 140
+ 9902 FORMAT( 3( I5,1H=,4A4,1X,4A4,1X ) )                                       EDTCRT 141
+      WRITE (ITB) NENTS, ((ITAB(I,J),I=1,4),J=1,NENTS),                         EDTCRT 142
+     1 ((ITAB(I,J),I=5,8),J=1,NENTS)                                            EDTCRT 143
+ 1001 FORMAT( 16A1,A1,I3,I4,2X,2A1,16A4 )                                       EDTCRT 144
+ 1002 FORMAT(47X,16A4)                                                          EDTCRT 145
+ 1003 FORMAT( /'------------------------ BASE Pointer = ',3A1,3X,16A4/)         COMB01   2
+ 1006 FORMAT( 16A1,A1,I3,I4,2X,2A1,1X,4A4,1X,16A4 )                             COMB01   3
+      END                                                                       EDTCRT 148
+      SUBROUTINE  A1A4 ( I1, I4, N )                                            A1A4     2
+C---                                                                            A1A4     3
+C--- PACK 4*N WORDS OF A1 FORMAT IN I1 INTO N WORDS OF A4 FORMAT IN I4          A1A4     4
+C---                                                                            A1A4     5
+      DIMENSION  I1(80), I4(20)                                                 A1A4     6
+      LOGICAL*1  L1(4), L4(4)                                                   A1A4     7
+      EQUIVALENCE  ( ITEMP, L1(1) ),  ( JTEMP, L4(1) )                          A1A4     8
+      J = 0                                                                     A1A4     9
+      DO  200  I = 1 , N                                                        A1A4    10
+          DO  100  K = 1 , 4                                                    A1A4    11
+          J = J + 1                                                             A1A4    12
+          ITEMP = I1(J)                                                         A1A4    13
+          L4(K) = L1(1)                                                         A1A4    14
+ 100      CONTINUE                                                              A1A4    15
+      I4(I) = JTEMP                                                             A1A4    16
+ 200  CONTINUE                                                                  A1A4    17
+      RETURN                                                                    A1A4    18
+      END                                                                       A1A4    19
+      SUBROUTINE  A4A1 ( I4, I1, N )                                            A4A1     2
+      DIMENSION  I4(20), I1(80)                                                 A4A1     3
+      LOGICAL*1  L4(4), L1(4)                                                   A4A1     4
+          EQUIVALENCE ( IT, L4(1) ),  ( J1, L1(1) )                             A4A1     5
+          DATA IBLANK/4H    /                                                   -035     1
+      J = 0                                                                     A4A1     6
+      DO  2  I = 1 , N                                                          A4A1     7
+      IT = I4(I)                                                                A4A1     8
+          DO  1  K = 1 , 4                                                      A4A1     9
+          J1 = IBLANK                                                           -035     2
+          L1(1) = L4(K)                                                         A4A1    11
+          J = J + 1                                                             A4A1    12
+          I1(J) = J1                                                            A4A1    13
+1         CONTINUE                                                              A4A1    14
+2     CONTINUE                                                                  A4A1    15
+      RETURN                                                                    A4A1    16
+      END                                                                       A4A1    17
+      SUBROUTINE ITOA(II,IALPH,LEN)                                             ITOA     2
+C                                                                               ITOA     3
+C              ENCODE AN INTEGER (II) OF SIZE LEN ONTO IALPH USING              ITOA     4
+C              A1 FORMAT                                                        ITOA     5
+C                                                                               ITOA     6
+      DIMENSION IALPH(1), NH(10)                                                ITOA     7
+C                                                                               ITOA     8
+      DATA NH /1H0, 1H1, 1H2, 1H3, 1H4, 1H5, 1H6, 1H7, 1H8, 1H9 /               ITOA     9
+      DATA IBLANK /1H /                                                         ITOA    10
+C                                                                               ITOA    11
+      I1     = 0                                                                ITOA    12
+      I2     = 0                                                                ITOA    13
+      DO 5 I = 1,LEN                                                            ITOA    14
+      IALPH(I) = IBLANK                                                         ITOA    15
+    5 CONTINUE                                                                  ITOA    16
+      DO 10 I=1,LEN                                                             ITOA    17
+      IEX    = LEN - I                                                          ITOA    18
+      IDIV   = 10**IEX                                                          ITOA    19
+      ITEMP  = (II+.01)/IDIV                                                    ITOA    20
+      IF (ITEMP .EQ. 0)  GO TO 10                                               ITOA    21
+      I1     = ITEMP - I2*10                                                    ITOA    22
+      IALPH(I) = NH(I1+1)                                                       ITOA    23
+      I2     = ITEMP                                                            ITOA    24
+   10 CONTINUE                                                                  ITOA    25
+      RETURN                                                                    ITOA    26
+      END                                                                       ITOA    27
+      SUBROUTINE SORT(ITABL,NITEMS,LENSRT,LENGTH)                               SORT     2
+C                                                                               SORT     3
+C              SORT ITABL(LENGTH,NITEMS) USING FIRST                            SORT     4
+C              LENSRT WORDS                                                     SORT     5
+C                                                                               SORT     6
+      DIMENSION ITABL(LENGTH,NITEMS)                                            SORT     7
+C              ---                                                              SORT     8
+      DATA  IOUTPT/6/                                                           SORT     9
+C              ---                                                              SORT    10
+C                                                                               SORT    11
+      IF (NITEMS .LT. 2)  RETURN                                                SORT    12
+      DO 200 I=2,NITEMS                                                         SORT    13
+      IM1    = I - 1                                                            SORT    14
+      DO 100 J=1,IM1                                                            SORT    15
+      JT     = I - J + 1                                                        SORT    16
+      DO 50 IV=1,LENSRT                                                         SORT    17
+      IF (ITABL(IV,JT) .GT. ITABL(IV,JT-1)) GO TO 200                           SORT    18
+      IF (ITABL(IV,JT) .LT. ITABL(IV,JT-1)) GO TO 60                            SORT    19
+   50 CONTINUE                                                                  SORT    20
+      WRITE(IOUTPT,1001)  (ITABL(II,JT-1),II=1,LENSRT)                          SORT    21
+      PRINT 1002                                                                SORT    22
+ 1002 FORMAT(24H DUPLICATE NAME IN TABLE)                                       SORT    23
+      STOP  ' *** ABORT ***'                                                    SORT    24
+   60 CONTINUE                                                                  SORT    25
+C              SWITCH NEIGHBORING ITEMS                                         SORT    26
+      DO 70 IV=1,LENGTH                                                         SORT    27
+      ITEMP  = ITABL(IV,JT)                                                     SORT    28
+      ITABL(IV,JT) = ITABL(IV,JT-1)                                             SORT    29
+      ITABL(IV,JT-1) = ITEMP                                                    SORT    30
+   70 CONTINUE                                                                  SORT    31
+  100 CONTINUE                                                                  SORT    32
+  200 CONTINUE                                                                  SORT    33
+ 1001 FORMAT(29H    ERROR --- DUPLICATE NAME  //(1H ,33A4))                     SORT    34
+      RETURN                                                                    SORT    35
+      END                                                                       SORT    36

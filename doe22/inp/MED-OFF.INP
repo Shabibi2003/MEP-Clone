@@ -1,0 +1,1348 @@
+INPUT ..
+
+
+$ ---------------------------------------------------------
+$              Abort, Diagnostics
+$ ---------------------------------------------------------
+
+
+
+
+$ ---------------------------------------------------------
+$              Global Parameters
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Title, Run Periods, Design Days, Holidays
+$ ---------------------------------------------------------
+
+TITLE           
+   LINE-1           = *PowerDOE Default Minimum Project*
+   ..
+
+"Entire Year" = RUN-PERIOD-PD
+   BEGIN-MONTH      = 1
+   BEGIN-DAY        = 1
+   BEGIN-YEAR       = 1997
+   END-MONTH        = 12
+   END-DAY          = 31
+   END-YEAR         = 1997
+   ..
+
+"Default CDD" = DESIGN-DAY      
+   TYPE             = COOLING
+   DRYBULB-HIGH     = 95
+   DRYBULB-RANGE    = 20
+   WETBULB-AT-HIGH  = 70
+   ..
+"Default HDD" = DESIGN-DAY      
+   TYPE             = HEATING
+   DRYBULB-HIGH     = 40
+   ..
+
+
+
+$ ---------------------------------------------------------
+$              Site and Building Data
+$ ---------------------------------------------------------
+
+SITE-PARAMETERS 
+   ..
+
+BUILD-PARAMETERS
+   ..
+
+
+
+$ ---------------------------------------------------------
+$              Materials / Layers / Constructions
+$ ---------------------------------------------------------
+
+"Soil" = MATERIAL        
+   TYPE             = PROPERTIES
+   THICKNESS        = 2
+   CONDUCTIVITY     = 0.5
+   DENSITY          = 100
+   SPECIFIC-HEAT    = 0.25
+   ..
+"Spandrel Glass Mat" = MATERIAL        
+   TYPE             = PROPERTIES
+   THICKNESS        = 0.0208
+   CONDUCTIVITY     = 0.59
+   DENSITY          = 172
+   SPECIFIC-HEAT    = 0.2
+   ..
+"R-11 (5.5)" = MATERIAL        
+   TYPE             = RESISTANCE
+   RESISTANCE       = 5.5
+   ..
+"BR01" = MATERIAL        
+   LIBRARY-ENTRY "Blt-Up Roof 3/8in (BR01)"
+   ..
+"IN36" = MATERIAL        
+   LIBRARY-ENTRY "Polystyrene 3in (IN36)"
+   ..
+"AS01" = MATERIAL        
+   LIBRARY-ENTRY "Steel Siding (AS01)"
+   ..
+"GP01" = MATERIAL        
+   LIBRARY-ENTRY "GypBd 1/2in (GP01)"
+   ..
+
+"Slab Layer" = LAYERS          
+   MATERIAL         = ( "Soil", "Conc HW 140lb 6in (CC04)", 
+         "Carpet & Rubber Pad (CP02)" )
+   ..
+"Built Up Roof Layer" = LAYERS          
+   MATERIAL         = ( "BR01", "IN36", "AS01" )
+   ..
+"Spandrel Layer" = LAYERS          
+   MATERIAL         = ( "Spandrel Glass Mat", "R-11 (5.5)", "GP01" )
+   ..
+"Int Floor Layer" = LAYERS          
+   MATERIAL         = ( "Conc HW 140lb 6in (CC04)", 
+         "Carpet & Rubber Pad (CP02)" )
+   ..
+
+"Air Wall Cons" = CONSTRUCTION    
+   TYPE             = U-VALUE
+   U-VALUE          = 1.75
+   ..
+"Clg Tile Cons" = CONSTRUCTION    
+   TYPE             = U-VALUE
+   U-VALUE          = 0.3
+   ..
+"Floor Slab Cons" = CONSTRUCTION    
+   TYPE             = LAYERS
+   LAYERS           = "Slab Layer"
+   ..
+"Roof Deck Cons" = CONSTRUCTION    
+   TYPE             = LAYERS
+   ROUGHNESS        = 1
+   LAYERS           = "Built Up Roof Layer"
+   ..
+"Spandrel Glass Wall Cons" = CONSTRUCTION    
+   TYPE             = LAYERS
+   ROUGHNESS        = 6
+   LAYERS           = "Spandrel Layer"
+   ..
+"Int Floor Cons" = CONSTRUCTION    
+   TYPE             = LAYERS
+   LAYERS           = "Int Floor Layer"
+   ..
+
+
+$ ---------------------------------------------------------
+$              Glass Types
+$ ---------------------------------------------------------
+
+"Double Bronze" = GLASS-TYPE      
+   TYPE             = SHADING-COEF
+   GLASS-TYPE-CODE  = "1000"
+   SHADING-COEF     = 0.5
+   ..
+
+
+$ ---------------------------------------------------------
+$              Window Layers
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Lamps / Luminaries / Lighting Systems
+$ ---------------------------------------------------------
+
+
+
+
+
+$ ---------------------------------------------------------
+$              Day Schedules
+$ ---------------------------------------------------------
+
+"Office Lites WD DSch" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.05, 0.05, 0.05, 0.05, 0.05, 0.1, 0.1, 0.3, 0.9, 0.9, 
+         0.9, 0.9, 0.8, 0.9, 0.9, 0.9, 0.9, 0.5, 0.3, 0.3, 0.2, 0.2, 0.1, 
+         0.05 )
+   ..
+"Office Lites Sat DSch" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.1, 0.1, 0.3, 
+         0.3, 0.3, 0.3, 0.15, 0.15, 0.15, 0.15, 0.15, 0.05, 0.05, 0.05, 0.05, 
+         0.05, 0.05, 0.05 )
+   ..
+"Office Lites Sun DSch" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 
+         0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 
+         0.05, 0.05, 0.05, 0.05 )
+   ..
+"Office Occ WD DSch" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0, 0, 0, 0, 0, 0, 0.1, 0.2, 0.95, 0.95, 0.95, 0.95, 
+         0.5, 0.95, 0.95, 0.95, 0.95, 0.3, 0.1, 0.1, 0.1, 0.1, 0.05, 0.05 )
+   ..
+"Office Occ Sat DSch" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0, 0, 0, 0, 0, 0, 0.1, 0.1, 0.3, 0.3, 0.3, 0.3, 0.1, 
+         0.1, 0.1, 0.1, 0.1, 0.05, 0.05, 0, 0, 0, 0, 0 )
+   ..
+"Office Occ Sun DSch" = DAY-SCHEDULE-PD
+   TYPE             = FRACTION
+   VALUES           = ( 0, 0, 0, 0, 0, 0, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 
+         0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0, 0, 0, 0, 0, 0 )
+   ..
+"Fans WD DSch" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF
+   VALUES           = ( 0, &D, &D, &D, &D, &D, 1, &D, &D, &D, &D, &D, &D, &D, 
+         &D, &D, &D, &D, 0 )
+   ..
+"Fans Off DSch" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF
+   VALUES           = ( 0 )
+   ..
+"Cooling Setpt DSch" = DAY-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   VALUES           = ( 85, &D, &D, &D, &D, &D, 76, &D, &D, &D, &D, &D, &D, 
+         &D, &D, &D, &D, &D, 85 )
+   ..
+"Heating Setpt DSch" = DAY-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   VALUES           = ( 60, &D, &D, &D, &D, &D, 70, &D, &D, &D, &D, &D, &D, 
+         &D, &D, &D, &D, &D, 60 )
+   ..
+"Always On Day" = DAY-SCHEDULE-PD
+   TYPE             = ON/OFF
+   VALUES           = ( 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+         1, 1, 1, 1, 1, 1 )
+   ..
+
+$ ---------------------------------------------------------
+$              Week Schedules
+$ ---------------------------------------------------------
+
+"Office Lighting WSch" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "Office Lites WD DSch", "Office Lites WD DSch", 
+         "Office Lites WD DSch", "Office Lites WD DSch", 
+         "Office Lites WD DSch", "Office Lites Sat DSch", 
+         "Office Lites Sun DSch", "Office Lites Sun DSch", 
+         "Office Lites WD DSch", "Office Lites WD DSch" )
+   ..
+"Office Occupancy WSch" = WEEK-SCHEDULE-PD
+   TYPE             = FRACTION
+   DAY-SCHEDULES    = ( "Office Occ WD DSch", "Office Occ WD DSch", 
+         "Office Occ WD DSch", "Office Occ WD DSch", "Office Occ WD DSch", 
+         "Office Occ Sat DSch", "Office Occ Sun DSch", "Office Occ Sun DSch", 
+         "Office Occ WD DSch", "Office Occ WD DSch" )
+   ..
+"Fans WSch" = WEEK-SCHEDULE-PD
+   TYPE             = ON/OFF
+   DAY-SCHEDULES    = ( "Fans WD DSch", &D, &D, &D, &D, &D, "Fans Off DSch", 
+         "Fans Off DSch" )
+   ..
+"Cooling SetPt WSch" = WEEK-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   DAY-SCHEDULES    = ( "Cooling Setpt DSch", &D, &D, &D, &D, 
+         "Cooling Setpt DSch" )
+   ..
+"Heating SetPt WSch" = WEEK-SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   DAY-SCHEDULES    = ( "Heating Setpt DSch", &D, &D, &D, &D, 
+         "Heating Setpt DSch" )
+   ..
+"Always On Week" = WEEK-SCHEDULE-PD
+   TYPE             = ON/OFF
+   DAY-SCHEDULES    = ( "Always On Day", "Always On Day" )
+   ..
+
+$ ---------------------------------------------------------
+$              Annual Schedules
+$ ---------------------------------------------------------
+
+"Office Lighting Sch" = SCHEDULE-PD
+   TYPE             = FRACTION
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Office Lighting WSch" )
+   ..
+"Office Occupancy Sch" = SCHEDULE-PD
+   TYPE             = FRACTION
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Office Occupancy WSch" )
+   ..
+"Fans Sch" = SCHEDULE-PD
+   TYPE             = ON/OFF
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Fans WSch" )
+   ..
+"Cooling SetPt Sch" = SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Cooling SetPt WSch" )
+   ..
+"Heating SetPt Sch" = SCHEDULE-PD
+   TYPE             = TEMPERATURE
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Heating SetPt WSch" )
+   ..
+"Always On Sched" = SCHEDULE-PD
+   TYPE             = ON/OFF
+   MONTH            = ( 12 )
+   DAY              = ( 31 )
+   WEEK-SCHEDULES   = ( "Always On Week" )
+   ..
+
+
+$ ---------------------------------------------------------
+$              Polygons
+$ ---------------------------------------------------------
+
+"130x15 ft trapezoid" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 130, 0 )
+   V3               = ( 115, 15 )
+   V4               = ( 15, 15 )
+   ..
+"130x80 ft rectangle" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 130, 0 )
+   V3               = ( 130, 80 )
+   V4               = ( 0, 80 )
+   ..
+"80x15 ft trapezoid" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 80, 0 )
+   V3               = ( 65, 15 )
+   V4               = ( 15, 15 )
+   ..
+"100x50 ft rectangle" = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( 100, 0 )
+   V3               = ( 100, 50 )
+   V4               = ( 0, 50 )
+   ..
+
+
+$ ---------------------------------------------------------
+$              Wall Parameters
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Fixed and Building Shades
+$ ---------------------------------------------------------
+
+
+
+
+$ ---------------------------------------------------------
+$              Misc Cost Related Objects
+$ ---------------------------------------------------------
+
+
+
+BASELINE        
+   ..
+
+
+$ *********************************************************
+$ **                                                     **
+$ **      Floors / Spaces / Walls / Windows / Doors      **
+$ **                                                     **
+$ *********************************************************
+
+SET-DEFAULT FOR SPACE           
+   PEOPLE-SCHEDULE  = "Office Occupancy Sch"
+   LIGHTING-SCHEDUL = ( "Office Lighting Sch" )
+   EQUIP-SCHEDULE   = ( "Office Lighting Sch" )
+   PEOPLE-HG-LAT    = 150
+   PEOPLE-HG-SENS   = 250
+   LIGHTING-W/AREA  = ( 1.5 )
+   EQUIPMENT-W/AREA = ( 0.75 )
+   AREA/PERSON      = 250
+   ..
+
+SET-DEFAULT FOR WINDOW          
+   Y                = 3
+   ..
+
+SET-DEFAULT FOR UNDERGROUND-WALL
+   CONSTRUCTION     = "Floor Slab Cons"
+   ..
+
+"Ground Floor" = FLOOR           
+   POLYGON          = "130x80 ft rectangle"
+   SHAPE            = POLYGON
+   FLOOR-HEIGHT     = 12
+   SPACE-HEIGHT     = 9
+   ..
+"South Space #1" = SPACE           
+   SHAPE            = POLYGON
+   POLYGON          = "130x15 ft trapezoid"
+   LOCATION         = FRONT
+   ..
+"South#1 Ext Wall" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Spandrel Glass Wall Cons"
+   LOCATION         = SPACE-V1
+   ..
+"South #1 Window" = WINDOW          
+   GLASS-TYPE       = "Double Bronze"
+   HEIGHT           = 5.5
+   WIDTH            = 130
+   OVERHANG-B       = 0.5
+   OVERHANG-D       = 3
+   ..
+"South#1 Int Wall Right" = INTERIOR-WALL   
+   NEXT-TO          = "East Space #1"
+   CONSTRUCTION     = "Air Wall Cons"
+   LOCATION         = RIGHT
+   ..
+"South#1 Int Wall Back" = INTERIOR-WALL   
+   NEXT-TO          = "Core Space #1"
+   CONSTRUCTION     = "Air Wall Cons"
+   LOCATION         = BACK
+   ..
+"South#1 Int Wall Left" = INTERIOR-WALL   
+   NEXT-TO          = "West Space #1"
+   CONSTRUCTION     = "Air Wall Cons"
+   LOCATION         = LEFT
+   ..
+"South#1 Clg" = INTERIOR-WALL   
+   NEXT-TO          = "Plenum Space #1"
+   CONSTRUCTION     = "Clg Tile Cons"
+   LOCATION         = TOP
+   ..
+"South#1 Slab" = UNDERGROUND-WALL
+   LOCATION         = BOTTOM
+   ..
+"East Space #1" = SPACE           
+   SHAPE            = POLYGON
+   POLYGON          = "80x15 ft trapezoid"
+   LTG-SPEC-METHOD  = POWER-DEFINITION
+   LOCATION         = RIGHT
+   ..
+"East#1 Ext Wall" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Spandrel Glass Wall Cons"
+   LOCATION         = FRONT
+   ..
+"East#1 Window" = WINDOW          
+   GLASS-TYPE       = "Double Bronze"
+   HEIGHT           = 5.5
+   WIDTH            = 80
+   OVERHANG-B       = 0.5
+   OVERHANG-D       = 3
+   ..
+"East#1 Int Wall Back" = INTERIOR-WALL   
+   NEXT-TO          = "Core Space #1"
+   CONSTRUCTION     = "Air Wall Cons"
+   LOCATION         = BACK
+   ..
+"East#1 Clg" = INTERIOR-WALL   
+   NEXT-TO          = "Plenum Space #1"
+   CONSTRUCTION     = "Clg Tile Cons"
+   LOCATION         = TOP
+   ..
+"East#1 Slab" = UNDERGROUND-WALL
+   LOCATION         = BOTTOM
+   ..
+"North Space #1" = SPACE           
+   SHAPE            = POLYGON
+   POLYGON          = "130x15 ft trapezoid"
+   LOCATION         = BACK
+   ..
+"North#1 Ext Wall" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Spandrel Glass Wall Cons"
+   LOCATION         = FRONT
+   ..
+"North#1 Window" = WINDOW          
+   GLASS-TYPE       = "Double Bronze"
+   HEIGHT           = 5.5
+   WIDTH            = 130
+   OVERHANG-B       = 0.5
+   OVERHANG-D       = 3
+   ..
+"North#1 Int Wall Back" = INTERIOR-WALL   
+   NEXT-TO          = "Core Space #1"
+   CONSTRUCTION     = "Air Wall Cons"
+   LOCATION         = BACK
+   ..
+"North#1 Int Wall Left" = INTERIOR-WALL   
+   NEXT-TO          = "East Space #1"
+   CONSTRUCTION     = "Air Wall Cons"
+   LOCATION         = LEFT
+   ..
+"North#1 Int Wall Right" = INTERIOR-WALL   
+   NEXT-TO          = "West Space #1"
+   CONSTRUCTION     = "Air Wall Cons"
+   LOCATION         = RIGHT
+   ..
+"North#1 Clg" = INTERIOR-WALL   
+   NEXT-TO          = "Plenum Space #1"
+   CONSTRUCTION     = "Clg Tile Cons"
+   LOCATION         = TOP
+   ..
+"North#1 Slab" = UNDERGROUND-WALL
+   LOCATION         = BOTTOM
+   ..
+"West Space #1" = SPACE           
+   SHAPE            = POLYGON
+   POLYGON          = "80x15 ft trapezoid"
+   LOCATION         = LEFT
+   ..
+"West#1 Ext Wall" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Spandrel Glass Wall Cons"
+   LOCATION         = FRONT
+   ..
+"West#1 Window" = WINDOW          
+   GLASS-TYPE       = "Double Bronze"
+   HEIGHT           = 5.5
+   WIDTH            = 80
+   OVERHANG-B       = 0.5
+   OVERHANG-D       = 3
+   ..
+"West#1 Int Wall Back" = INTERIOR-WALL   
+   NEXT-TO          = "Core Space #1"
+   CONSTRUCTION     = "Air Wall Cons"
+   LOCATION         = BACK
+   ..
+"West#1 Clg" = INTERIOR-WALL   
+   NEXT-TO          = "Plenum Space #1"
+   CONSTRUCTION     = "Clg Tile Cons"
+   LOCATION         = TOP
+   ..
+"West#1 Slab" = UNDERGROUND-WALL
+   LOCATION         = BOTTOM
+   ..
+"Core Space #1" = SPACE           
+   X                = 15
+   Y                = 15
+   SHAPE            = POLYGON
+   POLYGON          = "100x50 ft rectangle"
+   ..
+"Core#1 Clg" = INTERIOR-WALL   
+   NEXT-TO          = "Plenum Space #1"
+   CONSTRUCTION     = "Clg Tile Cons"
+   LOCATION         = TOP
+   ..
+"Core#1 Slab" = UNDERGROUND-WALL
+   LOCATION         = BOTTOM
+   ..
+"Plenum Space #1" = SPACE           
+   SHAPE            = POLYGON
+   ZONE-TYPE        = PLENUM
+   PEOPLE-HG-LAT    = 0
+   PEOPLE-HG-SENS   = 0
+   LIGHTING-W/AREA  = ( 0 )
+   EQUIPMENT-W/AREA = ( 0 )
+   POLYGON          = "130x80 ft rectangle"
+   ..
+"South#1 Plenum Wall" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Spandrel Glass Wall Cons"
+   LOCATION         = FRONT
+   ..
+"East#1 Plenum Wall" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Spandrel Glass Wall Cons"
+   LOCATION         = RIGHT
+   ..
+"North#1 Plenum Wall" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Spandrel Glass Wall Cons"
+   LOCATION         = BACK
+   ..
+"West#1 Plenum Wall" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Spandrel Glass Wall Cons"
+   LOCATION         = LEFT
+   ..
+"Second Floor" = FLOOR           
+   Z                = 12
+   POLYGON          = "130x80 ft rectangle"
+   SHAPE            = POLYGON
+   FLOOR-HEIGHT     = 12
+   SPACE-HEIGHT     = 9
+   ..
+"South Space #2" = SPACE           
+   SHAPE            = POLYGON
+   POLYGON          = "130x15 ft trapezoid"
+   LOCATION         = FRONT
+   ..
+"South#2 Ext Wall" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Spandrel Glass Wall Cons"
+   LOCATION         = SPACE-V1
+   ..
+"South #2 Window" = WINDOW          
+   GLASS-TYPE       = "Double Bronze"
+   HEIGHT           = 5.5
+   WIDTH            = 130
+   OVERHANG-B       = 0.5
+   OVERHANG-D       = 3
+   ..
+"South#2 Int Wall Right" = INTERIOR-WALL   
+   NEXT-TO          = "East Space #2"
+   CONSTRUCTION     = "Air Wall Cons"
+   LOCATION         = RIGHT
+   ..
+"South#2 Int Wall Back" = INTERIOR-WALL   
+   NEXT-TO          = "Core Space #2"
+   CONSTRUCTION     = "Air Wall Cons"
+   LOCATION         = BACK
+   ..
+"South#2 Int Wall Left" = INTERIOR-WALL   
+   NEXT-TO          = "West Space #2"
+   CONSTRUCTION     = "Air Wall Cons"
+   LOCATION         = LEFT
+   ..
+"South#2 Clg" = INTERIOR-WALL   
+   NEXT-TO          = "Plenum Space #2"
+   CONSTRUCTION     = "Clg Tile Cons"
+   LOCATION         = TOP
+   ..
+"South#2 Floor" = INTERIOR-WALL   
+   NEXT-TO          = "Plenum Space #1"
+   CONSTRUCTION     = "Int Floor Cons"
+   LOCATION         = BOTTOM
+   ..
+"East Space #2" = SPACE           
+   SHAPE            = POLYGON
+   POLYGON          = "80x15 ft trapezoid"
+   LTG-SPEC-METHOD  = POWER-DEFINITION
+   LOCATION         = RIGHT
+   ..
+"East#2 Ext Wall" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Spandrel Glass Wall Cons"
+   LOCATION         = FRONT
+   ..
+"East#2 Window" = WINDOW          
+   GLASS-TYPE       = "Double Bronze"
+   HEIGHT           = 5.5
+   WIDTH            = 80
+   OVERHANG-B       = 0.5
+   OVERHANG-D       = 3
+   ..
+"East#2 Int Wall Back" = INTERIOR-WALL   
+   NEXT-TO          = "Core Space #2"
+   CONSTRUCTION     = "Air Wall Cons"
+   LOCATION         = BACK
+   ..
+"East#2 Clg" = INTERIOR-WALL   
+   NEXT-TO          = "Plenum Space #2"
+   CONSTRUCTION     = "Clg Tile Cons"
+   LOCATION         = TOP
+   ..
+"East#2 Floor" = INTERIOR-WALL   
+   NEXT-TO          = "Plenum Space #1"
+   CONSTRUCTION     = "Int Floor Cons"
+   LOCATION         = BOTTOM
+   ..
+"North Space #2" = SPACE           
+   SHAPE            = POLYGON
+   POLYGON          = "130x15 ft trapezoid"
+   LOCATION         = BACK
+   ..
+"North#2 Ext Wall" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Spandrel Glass Wall Cons"
+   LOCATION         = FRONT
+   ..
+"North#2 Window" = WINDOW          
+   GLASS-TYPE       = "Double Bronze"
+   HEIGHT           = 5.5
+   WIDTH            = 130
+   OVERHANG-B       = 0.5
+   OVERHANG-D       = 3
+   ..
+"North#2 Int Wall Back" = INTERIOR-WALL   
+   NEXT-TO          = "Core Space #2"
+   CONSTRUCTION     = "Air Wall Cons"
+   LOCATION         = BACK
+   ..
+"North#2 Int Wall Left" = INTERIOR-WALL   
+   NEXT-TO          = "East Space #2"
+   CONSTRUCTION     = "Air Wall Cons"
+   LOCATION         = LEFT
+   ..
+"North#2 Int Wall Right" = INTERIOR-WALL   
+   NEXT-TO          = "West Space #2"
+   CONSTRUCTION     = "Air Wall Cons"
+   LOCATION         = RIGHT
+   ..
+"North#2 Clg" = INTERIOR-WALL   
+   NEXT-TO          = "Plenum Space #2"
+   CONSTRUCTION     = "Clg Tile Cons"
+   LOCATION         = TOP
+   ..
+"North#2 Floor" = INTERIOR-WALL   
+   NEXT-TO          = "Plenum Space #1"
+   CONSTRUCTION     = "Int Floor Cons"
+   LOCATION         = BOTTOM
+   ..
+"West Space #2" = SPACE           
+   SHAPE            = POLYGON
+   POLYGON          = "80x15 ft trapezoid"
+   LOCATION         = LEFT
+   ..
+"West#2 Ext Wall" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Spandrel Glass Wall Cons"
+   LOCATION         = FRONT
+   ..
+"West#2 Window" = WINDOW          
+   GLASS-TYPE       = "Double Bronze"
+   HEIGHT           = 5.5
+   WIDTH            = 80
+   OVERHANG-B       = 0.5
+   OVERHANG-D       = 3
+   ..
+"West#2 Int Wall Back" = INTERIOR-WALL   
+   NEXT-TO          = "Core Space #2"
+   CONSTRUCTION     = "Air Wall Cons"
+   LOCATION         = BACK
+   ..
+"West#2 Clg" = INTERIOR-WALL   
+   NEXT-TO          = "Plenum Space #2"
+   CONSTRUCTION     = "Clg Tile Cons"
+   LOCATION         = TOP
+   ..
+"West#2 Floor" = INTERIOR-WALL   
+   NEXT-TO          = "Plenum Space #1"
+   CONSTRUCTION     = "Int Floor Cons"
+   LOCATION         = BOTTOM
+   ..
+"Core Space #2" = SPACE           
+   X                = 15
+   Y                = 15
+   SHAPE            = POLYGON
+   POLYGON          = "100x50 ft rectangle"
+   ..
+"Core#2 Clg" = INTERIOR-WALL   
+   NEXT-TO          = "Plenum Space #2"
+   CONSTRUCTION     = "Clg Tile Cons"
+   LOCATION         = TOP
+   ..
+"Core#2 Floor" = INTERIOR-WALL   
+   NEXT-TO          = "Plenum Space #1"
+   CONSTRUCTION     = "Int Floor Cons"
+   LOCATION         = BOTTOM
+   ..
+"Plenum Space #2" = SPACE           
+   SHAPE            = POLYGON
+   ZONE-TYPE        = PLENUM
+   PEOPLE-HG-LAT    = 0
+   PEOPLE-HG-SENS   = 0
+   LIGHTING-W/AREA  = ( 0 )
+   EQUIPMENT-W/AREA = ( 0 )
+   POLYGON          = "130x80 ft rectangle"
+   ..
+"South#2 Plenum Wall" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Spandrel Glass Wall Cons"
+   LOCATION         = FRONT
+   ..
+"East#2 Plenum Wall" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Spandrel Glass Wall Cons"
+   LOCATION         = RIGHT
+   ..
+"North#2 Plenum Wall" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Spandrel Glass Wall Cons"
+   LOCATION         = BACK
+   ..
+"West#2 Plenum Wall" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Spandrel Glass Wall Cons"
+   LOCATION         = LEFT
+   ..
+"Third (Top) Floor" = FLOOR           
+   Z                = 24
+   POLYGON          = "130x80 ft rectangle"
+   SHAPE            = POLYGON
+   FLOOR-HEIGHT     = 12
+   SPACE-HEIGHT     = 9
+   ..
+"South Space #3" = SPACE           
+   SHAPE            = POLYGON
+   POLYGON          = "130x15 ft trapezoid"
+   LOCATION         = FRONT
+   ..
+"South#3 Ext Wall" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Spandrel Glass Wall Cons"
+   LOCATION         = SPACE-V1
+   ..
+"South #3 Window" = WINDOW          
+   GLASS-TYPE       = "Double Bronze"
+   HEIGHT           = 5.5
+   WIDTH            = 130
+   OVERHANG-B       = 0.5
+   OVERHANG-D       = 3
+   ..
+"South#3 Int Wall Right" = INTERIOR-WALL   
+   NEXT-TO          = "East Space #3"
+   CONSTRUCTION     = "Air Wall Cons"
+   LOCATION         = RIGHT
+   ..
+"South#3 Int Wall Back" = INTERIOR-WALL   
+   NEXT-TO          = "Core Space #3"
+   CONSTRUCTION     = "Air Wall Cons"
+   LOCATION         = BACK
+   ..
+"South#3 Int Wall Left" = INTERIOR-WALL   
+   NEXT-TO          = "West Space #3"
+   CONSTRUCTION     = "Air Wall Cons"
+   LOCATION         = LEFT
+   ..
+"South#3 Clg" = INTERIOR-WALL   
+   NEXT-TO          = "Plenum Space #3"
+   CONSTRUCTION     = "Clg Tile Cons"
+   LOCATION         = TOP
+   ..
+"South#3 Floor" = INTERIOR-WALL   
+   NEXT-TO          = "Plenum Space #2"
+   CONSTRUCTION     = "Int Floor Cons"
+   LOCATION         = BOTTOM
+   ..
+"East Space #3" = SPACE           
+   SHAPE            = POLYGON
+   POLYGON          = "80x15 ft trapezoid"
+   LTG-SPEC-METHOD  = POWER-DEFINITION
+   LOCATION         = RIGHT
+   ..
+"East#3 Ext Wall" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Spandrel Glass Wall Cons"
+   LOCATION         = FRONT
+   ..
+"East#3 Window" = WINDOW          
+   GLASS-TYPE       = "Double Bronze"
+   HEIGHT           = 5.5
+   WIDTH            = 80
+   OVERHANG-B       = 0.5
+   OVERHANG-D       = 3
+   ..
+"East#3 Int Wall Back" = INTERIOR-WALL   
+   NEXT-TO          = "Core Space #3"
+   CONSTRUCTION     = "Air Wall Cons"
+   LOCATION         = BACK
+   ..
+"East#3 Clg" = INTERIOR-WALL   
+   NEXT-TO          = "Plenum Space #3"
+   CONSTRUCTION     = "Clg Tile Cons"
+   LOCATION         = TOP
+   ..
+"East#3 Floor" = INTERIOR-WALL   
+   NEXT-TO          = "Plenum Space #2"
+   CONSTRUCTION     = "Int Floor Cons"
+   LOCATION         = BOTTOM
+   ..
+"North Space #3" = SPACE           
+   SHAPE            = POLYGON
+   POLYGON          = "130x15 ft trapezoid"
+   LOCATION         = BACK
+   ..
+"North#3 Ext Wall" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Spandrel Glass Wall Cons"
+   LOCATION         = FRONT
+   ..
+"North#3 Window" = WINDOW          
+   GLASS-TYPE       = "Double Bronze"
+   HEIGHT           = 5.5
+   WIDTH            = 130
+   OVERHANG-B       = 0.5
+   OVERHANG-D       = 3
+   ..
+"North#3 Int Wall Back" = INTERIOR-WALL   
+   NEXT-TO          = "Core Space #3"
+   CONSTRUCTION     = "Air Wall Cons"
+   LOCATION         = BACK
+   ..
+"North#3 Int Wall Left" = INTERIOR-WALL   
+   NEXT-TO          = "East Space #3"
+   CONSTRUCTION     = "Air Wall Cons"
+   LOCATION         = LEFT
+   ..
+"North#3 Int Wall Right" = INTERIOR-WALL   
+   NEXT-TO          = "West Space #3"
+   CONSTRUCTION     = "Air Wall Cons"
+   LOCATION         = RIGHT
+   ..
+"North#3 Clg" = INTERIOR-WALL   
+   NEXT-TO          = "Plenum Space #3"
+   CONSTRUCTION     = "Clg Tile Cons"
+   LOCATION         = TOP
+   ..
+"North#3 Floor" = INTERIOR-WALL   
+   NEXT-TO          = "Plenum Space #2"
+   CONSTRUCTION     = "Int Floor Cons"
+   LOCATION         = BOTTOM
+   ..
+"West Space #3" = SPACE           
+   SHAPE            = POLYGON
+   POLYGON          = "80x15 ft trapezoid"
+   LOCATION         = LEFT
+   ..
+"West#3 Ext Wall" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Spandrel Glass Wall Cons"
+   LOCATION         = FRONT
+   ..
+"West#3 Window" = WINDOW          
+   GLASS-TYPE       = "Double Bronze"
+   HEIGHT           = 5.5
+   WIDTH            = 80
+   OVERHANG-B       = 0.5
+   OVERHANG-D       = 3
+   ..
+"West#3 Int Wall Back" = INTERIOR-WALL   
+   NEXT-TO          = "Core Space #3"
+   CONSTRUCTION     = "Air Wall Cons"
+   LOCATION         = BACK
+   ..
+"West#3 Clg" = INTERIOR-WALL   
+   NEXT-TO          = "Plenum Space #3"
+   CONSTRUCTION     = "Clg Tile Cons"
+   LOCATION         = TOP
+   ..
+"West#3 Floor" = INTERIOR-WALL   
+   NEXT-TO          = "Plenum Space #2"
+   CONSTRUCTION     = "Int Floor Cons"
+   LOCATION         = BOTTOM
+   ..
+"Core Space #3" = SPACE           
+   X                = 15
+   Y                = 15
+   SHAPE            = POLYGON
+   POLYGON          = "100x50 ft rectangle"
+   ..
+"Core#3 Clg" = INTERIOR-WALL   
+   NEXT-TO          = "Plenum Space #3"
+   CONSTRUCTION     = "Clg Tile Cons"
+   LOCATION         = TOP
+   ..
+"Core#3 Floor" = INTERIOR-WALL   
+   NEXT-TO          = "Plenum Space #2"
+   CONSTRUCTION     = "Int Floor Cons"
+   LOCATION         = BOTTOM
+   ..
+"Plenum Space #3" = SPACE           
+   SHAPE            = POLYGON
+   ZONE-TYPE        = PLENUM
+   PEOPLE-HG-LAT    = 0
+   PEOPLE-HG-SENS   = 0
+   LIGHTING-W/AREA  = ( 0 )
+   EQUIPMENT-W/AREA = ( 0 )
+   POLYGON          = "130x80 ft rectangle"
+   ..
+"South#3 Plenum Wall" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Spandrel Glass Wall Cons"
+   LOCATION         = FRONT
+   ..
+"East#3 Plenum Wall" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Spandrel Glass Wall Cons"
+   LOCATION         = RIGHT
+   ..
+"North#3 Plenum Wall" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Spandrel Glass Wall Cons"
+   LOCATION         = BACK
+   ..
+"West#3 Plenum Wall" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Spandrel Glass Wall Cons"
+   LOCATION         = LEFT
+   ..
+"Plenum#3 Roof" = EXTERIOR-WALL   
+   CONSTRUCTION     = "Roof Deck Cons"
+   LOCATION         = TOP
+   ..
+
+
+$ *********************************************************
+$ **                                                     **
+$ **              Electric & Fuel Meters                 **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$              Electric Meters
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Fuel Meters
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Master Meters
+$ ---------------------------------------------------------
+
+MASTER-METERS   
+   MSTR-ELEC-METER  = "EM1"
+   MSTR-FUEL-METER  = "FM1"
+   ..
+
+
+$ *********************************************************
+$ **                                                     **
+$ **      HVAC Circulation Loops / Plant Equipment       **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$              Curve Fits
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Pumps
+$ ---------------------------------------------------------
+
+"CHW Pump" = PUMP            
+   ..
+"CW Pump" = PUMP            
+   ..
+"HW Pump" = PUMP            
+   ..
+
+
+$ ---------------------------------------------------------
+$              Circulation Loops
+$ ---------------------------------------------------------
+
+"CHW Loop" = CIRCULATION-LOOP
+   TYPE             = CHW
+   LOOP-PUMP        = "CHW Pump"
+   ..
+"CW Loop" = CIRCULATION-LOOP
+   TYPE             = CW
+   LOOP-PUMP        = "CW Pump"
+   ..
+"HW Loop" = CIRCULATION-LOOP
+   TYPE             = HW
+   LOOP-PUMP        = "HW Pump"
+   ..
+
+
+$ ---------------------------------------------------------
+$              Chillers
+$ ---------------------------------------------------------
+
+"Chiller 1" = CHILLER         
+   TYPE             = ELEC-HERM-REC
+   CHW-LOOP         = "CHW Loop"
+   CONDENSER-TYPE   = WATER-COOLED
+   CW-LOOP          = "CW Loop"
+   ..
+
+
+$ ---------------------------------------------------------
+$              Boilers
+$ ---------------------------------------------------------
+
+"Boiler 1" = BOILER          
+   TYPE             = HW-BOILER
+   HW-LOOP          = "HW Loop"
+   ..
+
+
+$ ---------------------------------------------------------
+$              Domestic Water Heaters
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Heat Rejection
+$ ---------------------------------------------------------
+
+"Cooling Tower 1" = HEAT-REJECTION  
+   TYPE             = OPEN-TWR
+   CW-LOOP          = "CW Loop"
+   ..
+
+
+$ ---------------------------------------------------------
+$              Tower Free Cooling
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Electric Generators
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Thermal Storage
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Heat Exchangers
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Ground Loop Heat Exchangers
+$ ---------------------------------------------------------
+
+
+
+$ *********************************************************
+$ **                                                     **
+$ **            Steam & Chilled Water Meters             **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$              Steam Meters
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Chilled Water Meters
+$ ---------------------------------------------------------
+
+
+
+$ *********************************************************
+$ **                                                     **
+$ **               HVAC Systems / Zones                  **
+$ **                                                     **
+$ *********************************************************
+
+SET-DEFAULT FOR SYSTEM          
+   TYPE = VAVS
+   ZONE-HEAT-SOURCE = HOT-WATER
+   ZONE-HW-LOOP     = "HW Loop"
+   ..
+
+SET-DEFAULT FOR ZONE            
+   TYPE = CONDITIONED
+   OA-FLOW/PER      = 15
+   HEAT-TEMP-SCH    = "Heating SetPt Sch"
+   COOL-TEMP-SCH    = "Cooling SetPt Sch"
+   HW-LOOP          = "HW Loop"
+   ..
+
+"VAV AH#1" = SYSTEM          
+   TYPE             = VAVS
+   HEAT-SOURCE      = NONE
+   FAN-SCHEDULE     = "Fans Sch"
+   SUPPLY-STATIC    = 3.5
+   REHEAT-DELTA-T   = 40
+   CHW-LOOP         = "CHW Loop"
+   ..
+"South Zone #1" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "South Space #1"
+   ..
+"East Zone #1" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "East Space #1"
+   ..
+"North Zone #1" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "North Space #1"
+   ..
+"West Zone #1" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "West Space #1"
+   ..
+"Core Zone #1" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "Core Space #1"
+   ..
+"Plenum Zone #1" = ZONE            
+   TYPE             = PLENUM
+   SPACE            = "Plenum Space #1"
+   ..
+"VAV AH#2" = SYSTEM          
+   TYPE             = VAVS
+   HEAT-SOURCE      = NONE
+   FAN-SCHEDULE     = "Fans Sch"
+   SUPPLY-STATIC    = 3.5
+   REHEAT-DELTA-T   = 40
+   CHW-LOOP         = "CHW Loop"
+   ..
+"South Zone #2" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "South Space #2"
+   ..
+"East Zone #2" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "East Space #2"
+   ..
+"North Zone #2" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "North Space #2"
+   ..
+"West Zone #2" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "West Space #2"
+   ..
+"Core Zone #2" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "Core Space #2"
+   ..
+"Plenum Zone #2" = ZONE            
+   TYPE             = PLENUM
+   SPACE            = "Plenum Space #2"
+   ..
+"VAV AH#3" = SYSTEM          
+   TYPE             = VAVS
+   HEAT-SOURCE      = NONE
+   FAN-SCHEDULE     = "Fans Sch"
+   SUPPLY-STATIC    = 3.5
+   REHEAT-DELTA-T   = 40
+   CHW-LOOP         = "CHW Loop"
+   ..
+"South Zone #3" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "South Space #3"
+   ..
+"East Zone #3" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "East Space #3"
+   ..
+"North Zone #3" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "North Space #3"
+   ..
+"West Zone #3" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "West Space #3"
+   ..
+"Core Zone #3" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "Core Space #3"
+   ..
+"Plenum Zone #3" = ZONE            
+   TYPE             = PLENUM
+   SPACE            = "Plenum Space #3"
+   ..
+
+
+$ *********************************************************
+$ **                                                     **
+$ **                Metering & Misc HVAC                 **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$              Equipment Controls
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Load Management
+$ ---------------------------------------------------------
+
+
+
+$ *********************************************************
+$ **                                                     **
+$ **                    Utility Rates                    **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$              Ratchets
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Block Charges
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Utility Rates
+$ ---------------------------------------------------------
+
+
+
+$ *********************************************************
+$ **                                                     **
+$ **                 Output Reporting                    **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$              Loads Non-Hourly Reporting
+$ ---------------------------------------------------------
+
+LOADS-REPORT    
+   VERIFICATION     = ( ALL-VERIFICATION )
+   SUMMARY          = ( ALL-SUMMARY )
+   ..
+
+
+$ ---------------------------------------------------------
+$              Systems Non-Hourly Reporting
+$ ---------------------------------------------------------
+
+SYSTEMS-REPORT  
+   VERIFICATION     = ( ALL-VERIFICATION )
+   SUMMARY          = ( ALL-SUMMARY )
+   ..
+
+
+$ ---------------------------------------------------------
+$              Plant Non-Hourly Reporting
+$ ---------------------------------------------------------
+
+PLANT-REPORT    
+   VERIFICATION     = ( ALL-VERIFICATION )
+   SUMMARY          = ( ALL-SUMMARY )
+   ..
+
+
+$ ---------------------------------------------------------
+$              Economics Non-Hourly Reporting
+$ ---------------------------------------------------------
+
+ECONOMICS-REPORT
+   VERIFICATION     = ( ALL-VERIFICATION )
+   SUMMARY          = ( ALL-SUMMARY )
+   ..
+
+
+$ ---------------------------------------------------------
+$              Hourly Reporting
+$ ---------------------------------------------------------
+
+"Enduse Report Block" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "EM1"
+   VARIABLE-LIST    = ( 1, 3, 4, 5, 7, 8, 20 )
+   ..
+"Fuel Enduse Block" = REPORT-BLOCK    
+   VARIABLE-TYPE    = "FM1"
+   VARIABLE-LIST    = ( 1, 2, 3, 4, 5, 6, 7, 8, 11, 20 )
+   ..
+
+"Elec Enduse Report" = HOURLY-REPORT   
+   REPORT-SCHEDULE  = "Always On Sched"
+   REPORT-BLOCK     = ( "Enduse Report Block" )
+   ..
+"Fuel Enduse Report" = HOURLY-REPORT   
+   REPORT-SCHEDULE  = "Always On Sched"
+   REPORT-BLOCK     = ( "Fuel Enduse Block" )
+   ..
+
+
+$ ---------------------------------------------------------
+$              THE END
+$ ---------------------------------------------------------
+
+END ..
+COMPUTE ..
+STOP ..

@@ -1,0 +1,1748 @@
+$ Grocery Store Retail prototype DOE2 simulation file
+$  created by PRC for VaCom Technologies.
+$
+$ This DOE-2 input file requires the use of a custom DOE-2.2 version created
+$   by Jeff Hirsch (DOE2.2 beta)
+$
+$ This retail store:
+$
+$ Main Floor: 3 zones, office, grocery sales, and storage (unconditioned)
+$
+$##reserve STACK 30000
+##write
+
+INPUT ..
+ABORT ERRORS ..
+DIAGNOSTIC WARNINGS,CAUTIONS  ..
+
+##show
+##traceback
+##showdetail
+
+$****************************************************************************
+$ Other Resources to Read:
+$****************************************************************************
+$ Example default values for Grocery Retail Model
+
+##set1 totarea    60000  $building total area
+##set1 salesfrac  0.65   $fraction of total area that is Sales
+##set1 officefrac 0.10   $fraction of total area that is Office
+                         $remainder is Storage
+
+
+##set1 sfonmf    10           $Operating Hours: Hour On,  Monday - Friday
+##set1 sfoffmf   20           $Operating Hours: Hour Off, Monday - Friday
+##set1 sfonsat   10           $Operating Hours: Hour On,  Saturday
+##set1 sfoffsat  20           $Operating Hours: Hour Off, Saturday
+##set1 sfonsun   10           $Operating Hours: Hour On,  Sunday
+##set1 sfoffsun  20           $Operating Hours: Hour Off, Sunday
+##set1 sfonhol   10           $Operating Hours: Hour On,  Holidays
+##set1 sfoffhol  20           $Operating Hours: Hour Off, Holidays
+
+##set1 sfcfmper  20           $Supply Fan: CFM/per
+##set1 sfkWdef    0.0005      $Supply Fan: kw/CFM default
+##set1 sfcontrol  1           $Supply Fan: control 1=constant, 2=cycling
+##set1 sfminflow  0.00        $Supply Fan: minimum flow rate
+##set1 oacfmper  12.00        $Supply Fan: outside air CFM per person
+##set1 niteop     1           $Supply Fan: night operation 1=stay-off
+
+##set1 bldght   14
+##set1 bldgasp  0.6
+##set1 wallins  0.0
+##set1 roofins  13  
+
+##set1 winarea    1000
+##set1 winht      7.50
+##set1 winsetback 10.0
+##set1 winsc      0.60
+##set1 winuval    4.70
+
+##set1 occsales      4.10
+##set1 occoff       10.00
+##set1 occuncond  1000.00
+##set1 ltgsales     2.4
+##set1 ltgoff       1.9  
+##set1 ltguncond    1.6 
+##set1 plugsales    3.6
+##set1 plugoff      1.8
+##set1 pluguncond   2.0
+
+##set1 grocpkgcap    65
+##set1 grocpkgshr     0.79
+##set1 grocpkgeer     9.88
+##set1 grocexhcfm  4400
+
+##set1 offpkgcap   10.00
+##set1 offpkgshr    0.80
+##set1 offpkgeer    7.20
+##set1 offexhcfm  660
+
+
+$Definition to create one day of a nested annual schedule
+$ given: day type, start hour (first hour schedule turns from off to on),
+$                   stop hour (last hour schedule is on),
+$                   stop hour 2 (if schedule turns off before turning on),
+$                   value when off, value when on
+##def OnOffSch[day,onhr,offhr,offhr2,offval,onval]
+ ##if #[offhr2 GT 0]
+  ##if #[offhr2 GT 1]
+  (day)  (1,offhr2)    (onval)
+  ##else
+  (day)  (1)       (onval)
+  ##endif
+  ##if #[onhr GT #[offhr2 + 1]]  
+         (#[offhr2 + 1],#[onhr - 1])    (offval)
+  ##else
+         (#[offhr2 + 1])       (offval)
+  ##endif
+         (onhr,offhr)  (onval)
+  ##if #[offhr LT 24]
+   ##if #[offhr LT 23]
+         (#[offhr + 1],24)  (offval)
+   ##else
+         (24)      (offval)
+   ##endif
+  ##endif
+ ##else                          $this for compatibility with former defn.
+  ##if #[#[#[onhr - 1] EQ offhr] OR #[onhr EQ offhr]]
+   (day) (1,24)  (offval)
+  ##else
+  ##if #[onhr GT 1]
+   ##if #[onhr GT 2]
+  (day)  (1,#[onhr - 1])    (offval)
+   ##else
+  (day)  (1)       (offval)
+   ##endif
+  ##endif
+  ##if #[onhr EQ 1]
+  (day)  (1,offhr)  (onval)
+  ##else
+     ##if #[onhr EQ offhr]
+         (onhr      )  (onval)
+     ##else
+         (onhr,offhr)  (onval)
+     ##endif
+  ##endif
+
+  ##if #[offhr LT 24]
+   ##if #[offhr LT 23]
+         (#[offhr + 1],24)  (offval)
+   ##else
+         (24)      (offval)
+   ##endif
+  ##endif
+  ##endif
+ ##endif
+##enddef
+
+
+$--------------------------------------------------------------
+$ Default Schedules
+$--------------------------------------------------------------
+$Schedules for the Grocery Retail
+
+  "Occupancy Sales" = Schedule  Type = FRACTION  Thru Dec 31
+   (WD)    ( 1)  (0.02)     ( 2)  (0.02)     ( 3)  (0.02)
+           ( 4)  (0.02)     ( 5)  (0.02)     ( 6)  (0.02)
+           ( 7)  (0.02)     ( 8)  (0.04)     ( 9)  (0.12)
+           (10)  (0.28)     (11)  (0.44)     (12)  (0.45)
+           (13)  (0.49)     (14)  (0.52)     (15)  (0.55)
+           (16)  (0.6)      (17)  (0.7)      (18)  (0.68)
+           (19)  (0.54)     (20)  (0.32)     (21)  (0.2)
+           (22)  (0.02)     (23)  (0.02)     (24)  (0.02)
+
+  (SAT)    ( 1)  (0)        ( 2)  (0)        ( 3)  (0)
+           ( 4)  (0.02)     ( 5)  (0.02)     ( 6)  (0.02)
+           ( 7)  (0.02)     ( 8)  (0.04)     ( 9)  (0.12)
+           (10)  (0.28)     (11)  (0.48)     (12)  (0.49)
+           (13)  (0.55)     (14)  (0.58)     (15)  (0.59)
+           (16)  (0.64)     (17)  (0.74)     (18)  (0.72)
+           (19)  (0.58)     (20)  (0.34)     (21)  (0.2)
+           (22)  (0.02)     (23)  (0)        (24)  (0)
+
+  (SUN)    ( 1)  (0)        ( 2)  (0)        ( 3)  (0)
+           ( 4)  (0.02)     ( 5)  (0.02)     ( 6)  (0.02)
+           ( 7)  (0.02)     ( 8)  (0.04)     ( 9)  (0.12)
+           (10)  (0.28)     (11)  (0.48)     (12)  (0.49)
+           (13)  (0.55)     (14)  (0.58)     (15)  (0.59)
+           (16)  (0.64)     (17)  (0.74)     (18)  (0.72)
+           (19)  (0.58)     (20)  (0.34)     (21)  (0.2)
+           (22)  (0.02)     (23)  (0)        (24)  (0)
+
+  (HOL)    ( 1)  (0)        ( 2)  (0)        ( 3)  (0)
+           ( 4)  (0)        ( 5)  (0)        ( 6)  (0)
+           ( 7)  (0.02)     ( 8)  (0.04)     ( 9)  (0.12)
+           (10)  (0.28)     (11)  (0.48)     (12)  (0.49)
+           (13)  (0.55)     (14)  (0.58)     (15)  (0.59)
+           (16)  (0.64)     (17)  (0.74)     (18)  (0.72)
+           (19)  (0.58)     (20)  (0.34)     (21)  (0.2)
+           (22)  (0.02)     (23)  (0)        (24)  (0)
+  ..
+
+  "Lighting Sales" = Schedule  Type = FRACTION  Thru Dec 31
+   (WD)    ( 1)  (0.14)     ( 2)  (0.14)     ( 3)  (0.14)
+           ( 4)  (0.14)     ( 5)  (0.14)     ( 6)  (0.14)
+           ( 7)  (0.14)     ( 8)  (0.14)     ( 9)  (0.24)
+           (10)  (0.58)     (11)  (0.78)     (12)  (0.78)
+           (13)  (0.78)     (14)  (0.78)     (15)  (0.8)
+           (16)  (0.82)     (17)  (0.86)     (18)  (0.86)
+           (19)  (0.78)     (20)  (0.7)      (21)  (0.34)
+           (22)  (0.04)     (23)  (0.14)     (24)  (0.14)
+
+  (SAT)    ( 1)  (0.14)     ( 2)  (0.14)     ( 3)  (0.14)
+           ( 4)  (0.14)     ( 5)  (0.14)     ( 6)  (0.14)
+           ( 7)  (0.14)     ( 8)  (0.14)     ( 9)  (0.24)
+           (10)  (0.58)     (11)  (0.78)     (12)  (0.78)
+           (13)  (0.78)     (14)  (0.78)     (15)  (0.8)
+           (16)  (0.82)     (17)  (0.86)     (18)  (0.86)
+           (19)  (0.78)     (20)  (0.7)      (21)  (0.34)
+           (22)  (0.04)     (23)  (0.14)     (24)  (0.14)
+
+  (SUN)    ( 1)  (0.14)     ( 2)  (0.14)     ( 3)  (0.14)
+           ( 4)  (0.14)     ( 5)  (0.14)     ( 6)  (0.14)
+           ( 7)  (0.14)     ( 8)  (0.14)     ( 9)  (0.24)
+           (10)  (0.58)     (11)  (0.78)     (12)  (0.78)
+           (13)  (0.78)     (14)  (0.78)     (15)  (0.8)
+           (16)  (0.82)     (17)  (0.86)     (18)  (0.86)
+           (19)  (0.78)     (20)  (0.7)      (21)  (0.34)
+           (22)  (0.04)     (23)  (0.14)     (24)  (0.14)
+
+  (HOL)    ( 1)  (0)        ( 2)  (0)        ( 3)  (0)
+           ( 4)  (0)        ( 5)  (0)        ( 6)  (0)
+           ( 7)  (0.02)     ( 8)  (0.14)     ( 9)  (0.24)
+           (10)  (0.58)     (11)  (0.82)     (12)  (0.82)
+           (13)  (0.82)     (14)  (0.82)     (15)  (0.86)
+           (16)  (0.86)     (17)  (0.86)     (18)  (0.86)
+           (19)  (0.76)     (20)  (0.68)     (21)  (0.34)
+           (22)  (0.04)     (23)  (0)        (24)  (0)
+  ..
+
+
+
+  "Load Sales" = Schedule  Type = FRACTION  Thru Dec 31
+   (WD)    ( 1)  (0.16)     ( 2)  (0.16)     ( 3)  (0.16)
+           ( 4)  (0.16)     ( 5)  (0.16)     ( 6)  (0.16)
+           ( 7)  (0.18)     ( 8)  (0.2)      ( 9)  (0.22)
+           (10)  (0.7)      (11)  (0.72)     (12)  (0.72)
+           (13)  (0.7)      (14)  (0.7)      (15)  (0.72)
+           (16)  (0.72)     (17)  (0.7)      (18)  (0.7)
+           (19)  (0.64)     (20)  (0.62)     (21)  (0.18)
+           (22)  (0.16)     (23)  (0.16)     (24)  (0.16)
+
+  (SAT)    ( 1)  (0.16)     ( 2)  (0.16)     ( 3)  (0.16)
+           ( 4)  (0.16)     ( 5)  (0.16)     ( 6)  (0.16)
+           ( 7)  (0.18)     ( 8)  (0.2)      ( 9)  (0.22)
+           (10)  (0.7)      (11)  (0.72)     (12)  (0.72)
+           (13)  (0.7)      (14)  (0.7)      (15)  (0.72)
+           (16)  (0.72)     (17)  (0.7)      (18)  (0.7)
+           (19)  (0.64)     (20)  (0.62)     (21)  (0.18)
+           (22)  (0.16)     (23)  (0.16)     (24)  (0.16)
+
+  (SUN)    ( 1)  (0.16)     ( 2)  (0.16)     ( 3)  (0.16)
+           ( 4)  (0.16)     ( 5)  (0.16)     ( 6)  (0.16)
+           ( 7)  (0.18)     ( 8)  (0.2)      ( 9)  (0.22)
+           (10)  (0.7)      (11)  (0.72)     (12)  (0.72)
+           (13)  (0.7)      (14)  (0.7)      (15)  (0.72)
+           (16)  (0.72)     (17)  (0.7)      (18)  (0.7)
+           (19)  (0.64)     (20)  (0.62)     (21)  (0.18)
+           (22)  (0.16)     (23)  (0.16)     (24)  (0.16)
+
+  (HOL)    ( 1)  (0.16)     ( 2)  (0.16)     ( 3)  (0.16)
+           ( 4)  (0.16)     ( 5)  (0.16)     ( 6)  (0.16)
+           ( 7)  (0.18)     ( 8)  (0.2)      ( 9)  (0.22)
+           (10)  (0.7)      (11)  (0.72)     (12)  (0.72)
+           (13)  (0.7)      (14)  (0.7)      (15)  (0.72)
+           (16)  (0.72)     (17)  (0.7)      (18)  (0.7)
+           (19)  (0.64)     (20)  (0.62)     (21)  (0.18)
+           (22)  (0.16)     (23)  (0.16)     (24)  (0.16)
+  ..
+
+
+$--------------------------------------------------------------
+$ Defaulting Loads Variables:
+$--------------------------------------------------------------
+$ Infiltration during non-operating hours:
+##set1 typach 0.25
+
+$ ------------------------------------------------------------
+$   Standard MATERIALS
+$ ------------------------------------------------------------
+GP01   = MAT TYPE=PROPERTIES TH=0.0417 COND=0.0926 DENS=50  S-H=0.20 ..
+CC03   = MAT TYPE=PROPERTIES TH=0.3333 COND=0.7576 DENS=140 S-H=0.20 ..
+CC07   = MAT TYPE=PROPERTIES TH=1.0    COND=0.7576 DENS=140 S-H=0.20 ..
+CC04   = MAT TYPE=PROPERTIES TH=0.5    COND=0.7576 DENS=140 S-H=0.20 ..
+CT11   = MAT TYPE=PROPERTIES TH=0.0313 COND=1.0416 DENS=120 S-H=0.20 ..
+LT01   = MAT TYPE=RESISTANCE RES=0.05  ..
+AL21   = MAT TYPE=RESISTANCE RES=0.89  ..
+
+$ ------------------------------------------------------------
+$   Standard CONSTRUCTIONS    
+$ ------------------------------------------------------------
+
+FLOOR-LA  = LAYERS   MAT = (CC03,CT11)  I-F-R = 0.61 ..
+ SLAB-LA  = LAYERS   MAT = (CC04,LT01)  I-F-R = 0.61 ..
+
+INT-WALL-LA  = LAYERS  MAT = (GP01,AL21,GP01)  ..
+INT-FLR-LA   = LAYERS  MAT = (CC04)  .. 
+INT-ROOF-LA  = LAYERS  MAT = (CC04)  ..
+
+
+DOOR-1      = CONSTRUCTION  TYPE=U-VALUE U-VALUE =0.5 ..
+SLAB-FLOOR  = CONSTRUCTION  TYPE=LAYERS  LA = SLAB-LA     ABS = .7  ..
+INT-WALL    = CONSTRUCTION  TYPE=LAYERS  LA = INT-WALL-LA ABS = .7  ..
+INT-FLOOR   = CONSTRUCTION  TYPE=LAYERS  LA = INT-FLR-LA  ABS = .7  ..
+INT-ROOF    = CONSTRUCTION  TYPE=LAYERS  LA = INT-ROOF-LA ABS = .7  ..
+
+
+$ Solid Concrete
+     "Layers-1" = LAYERS   MAT = (CC03)   ..
+     "Wall1"  = CONSTRUCTION TYPE=LAYERS  LA="Layers-1" ABS = 0.7 ..
+
+$ Solid Concrete - Gypsum Board 
+     "Layers-4" = LAYERS   MAT = (CC07,GP01)   ..
+     "Wall4"  = CONSTRUCTION TYPE=LAYERS  LA="Layers-4" ABS = 0.7 ..
+
+  "Glass-1e"  = GLASS-TYPE TYPE = SHADING-COEF
+       GLASS-CONDUCT   = 0.827
+       SHADING-COEF    = 0.60
+       ..
+
+$ ---------------------------------------------------------
+$              Title, Run Periods, Design Days, Holidays
+$ ---------------------------------------------------------
+
+TITLE           
+   LINE-1           = *DOE2.2 Supermarket Sample "Market 1"*
+   LINE-2           = *Created by PRC 6/98, Revised 12/98*
+   LINE-3           = *Using JJH DOE2.2 Beta Release 30NT*
+   ..
+
+"Run Period 1" = RUN-PERIOD-PD
+   BEGIN-MONTH      = 1
+   BEGIN-DAY        = 1
+   BEGIN-YEAR       = 1997
+   END-MONTH        = 12
+   END-DAY          = 31
+   END-YEAR         = 1997
+   ..
+
+$ ---------------------------------------------------------
+$              Site and Building Data
+$ ---------------------------------------------------------
+
+SITE-PARAMETERS 
+   DAYLIGHT-SAVINGS = NO
+   ..
+
+BUILD-PARAMETERS
+   AZIMUTH          = 180
+   GROSS-AREA       = totarea[]
+   ..
+
+
+$======================== BUILDING  CHARACTERISTICS =========================$
+$                              AND CALCULATIONS                              $
+
+##set1 sizrat 1.0                         $ sizing ratio
+##set1 csp  74                            $ Cooling setpoint
+##set1 csp0 85                            $ COOLING SET UP
+
+$FIRST FLOOR (Basement) variables:
+
+$ Defaulting: First floor area
+##set1 area1 totarea[]
+
+##set1 len1 #[sqrt of #[area1[] * bldgasp[]]]  $ LEN(gth) is along the front
+##set1 wid1 #[area1[] / len1[]]                $ WID(th) is along the sides 
+
+##set1 areagroc #[area1[] * salesfrac[]]  
+##set1 areaoff #[area1[] *  officefrac[]]  
+##set1 areastor #[area1[] - #[areagroc[] + areaoff[]]] 
+
+##set1 len_groc #[len1[] * salesfrac[]]  
+##set1 len_off #[len1[] * officefrac[]]  
+##set1 len_stor #[len1[] - #[len_groc[] + len_off[]]] 
+
+$ Exhaust CFM
+##ifndef offexhcfm[]
+ ##set1 offexhcfm offexhcfmdef[]
+##endif
+##ifndef grocexhcfm[]
+ ##set1 grocexhcfm #[grocexhcfmdef[] * areagroc[]]
+##endif
+
+
+BASELINE ..
+
+$Infiltration Schedule =============================================
+##if #[sfoffmf[] LT sfonmf[]]
+ ##set1 opoffmf 24
+ ##set1 opoffmf2 sfoffmf[]
+##else
+ ##set1 opoffmf  sfoffmf[]
+ ##set1 opoffmf2 0
+##endif
+
+##if #[sfoffsat[] LT sfonsat[]]
+ ##set1 opoffsat 24
+ ##set1 opoffsat2 sfoffsat[]
+##else
+ ##set1 opoffsat  sfoffsat[]
+ ##set1 opoffsat2 0
+##endif
+
+##if #[sfoffsun[] LT sfonsun[]]
+ ##set1 opoffsun 24
+ ##set1 opoffsun2 sfoffsun[]
+##else
+ ##set1 opoffsun  sfoffsun[]
+ ##set1 opoffsun2 0
+##endif
+
+##if #[sfoffhol[] LT sfonhol[]]
+ ##set1 opoffhol 24
+ ##set1 opoffhol2 sfoffhol[]
+##else
+ ##set1 opoffhol  sfoffhol[]
+ ##set1 opoffhol2 0
+##endif
+
+INFIL-SCH = SCHEDULE TYPE = FRACTION THRU DEC 31
+  OnOffSch[WD ,sfonmf[] ,opoffmf[] ,opoffmf2[] ,1,0]
+  OnOffSch[SAT,sfonsat[],opoffsat[],opoffsat2[],1,0]
+  OnOffSch[SUN,sfonsun[],opoffsun[],opoffsun2[],1,0]
+  OnOffSch[HOL,sfonhol[],opoffhol[],opoffhol2[],1,0]
+  ..
+
+"Cool Schedule" = SCHEDULE TYPE = TEMPERATURE THRU DEC 31
+  OnOffSch[WD ,sfonmf[] ,opoffmf[] ,opoffmf2[] ,95,75]
+  OnOffSch[SAT,sfonsat[],opoffsat[],opoffsat2[],95,75]
+  OnOffSch[SUN,sfonsun[],opoffsun[],opoffsun2[],95,75]
+  OnOffSch[HOL,sfonhol[],opoffhol[],opoffhol2[],95,75]
+  ..
+"Fan Operation" = SCHEDULE TYPE = ON/OFF THRU DEC 31
+  OnOffSch[WD ,sfonmf[] ,opoffmf[] ,opoffmf2[] ,0,1]
+  OnOffSch[SAT,sfonsat[],opoffsat[],opoffsat2[],0,1]
+  OnOffSch[SUN,sfonsun[],opoffsun[],opoffsun2[],0,1]
+  OnOffSch[HOL,sfonhol[],opoffhol[],opoffhol2[],0,1]
+  ..
+
+"Always On" = SCHEDULE TYPE = ON/OFF THRU DEC 31
+  OnOffSch[ALL,1,24,0,1,1]
+  ..
+"Always Off" = SCHEDULE TYPE = ON/OFF THRU DEC 31
+  OnOffSch[ALL,1,24,0,0,0]
+  ..
+"Always 1" = SCHEDULE TYPE = FRACTION THRU DEC 31
+  OnOffSch[ALL,1,24,0,1,1]
+  ..
+
+
+$ --------------------------------------------------------------
+$               Meters
+$ --------------------------------------------------------------
+
+ "EM1" = METER                              $master meter
+    TYPE             = ELECTRIC
+     ..
+
+ "FM1" = METER                               $master meter
+    TYPE             = FUEL       
+    ..
+
+ MASTER-METERS   
+    MSTR-ELEC-METER  = "EM1"
+    MSTR-FUEL-METER  = "FM1"
+    ..
+
+$ ---------------------------------------------------------
+$   Polygons
+$ ---------------------------------------------------------
+
+Poly_Groc             = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( len_groc[], 0 )
+   V3               = ( len_groc[], wid1[] )
+   V4               = ( 0, wid1[] )
+   ..
+
+Poly_Off             = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( len_off[], 0 )
+   V3               = ( len_off[], wid1[] )
+   V4               = ( 0, wid1[] )
+   ..
+
+Poly_Stor             = POLYGON
+   V1               = ( 0, 0 )
+   V2               = ( len_stor[], 0 )
+   V3               = ( len_stor[], wid1[] )
+   V4               = ( 0, wid1[] )
+   ..
+
+
+1FloorPoly          = POLYGON         
+   V1               = ( 0, 0 )
+   V2               = ( len1[], 0 )
+   V3               = ( len1[], wid1[] )
+   V4               = ( 0, wid1[] )
+   ..
+
+
+$============================================================================$
+$ The following SPACE-CONDITIONS commands define the various loads that      $
+$  occur in a space, including: ambient lighting, task lighting, equipment,  $
+$  process, infiltration and occupant loads.                                 $
+$                                                                            $
+GROC1-SC = SPACE-CONDITIONS
+   ZONE-TYPE        = CONDITIONED
+   PEOPLE-SCHEDULE  = "Occupancy Sales"
+   PEOPLE-HG-SENS   = 250
+   PEOPLE-HG-LAT    = 200
+   AREA/PERSON      = #[occsales[] / 0.0929]
+   LIGHTING-SCHEDULE= ("Lighting Sales")
+   LIGHTING-TYPE    = (REC-FLUOR-NV)
+   LIGHTING-W/AREA  = (#[ltgsales[] * 0.0929])
+   EQUIP-SCHEDULE   = "Load Sales"
+   EQUIPMENT-W/AREA = #[plugsales[] * 0.0929]
+   EQUIP-SENSIBLE   = 1.0
+   EQUIP-LATENT     = 0.0
+   INF-SCHEDULE     = INFIL-SCH
+   INF-METHOD       = AIR-CHANGE
+   AIR-CHANGES/HR   = typach[]
+   FLOOR-WEIGHT     = 70
+   ..
+
+OFFICE1-SC = SPACE-CONDITIONS
+   ZONE-TYPE        = CONDITIONED
+   PEOPLE-SCHEDULE  = "Occupancy Sales"
+   PEOPLE-HG-SENS   = 250
+   PEOPLE-HG-LAT    = 200
+   AREA/PERSON      = #[occoff[] / 0.0929]
+   LIGHTING-SCHEDULE= ("Lighting Sales")
+   LIGHTING-TYPE    = (REC-FLUOR-NV)
+   LIGHTING-W/AREA  = (#[ltgoff[] * 0.0929])
+   EQUIP-SCHEDULE   = "Load Sales"
+   EQUIPMENT-W/AREA = #[plugoff[] * 0.0929]
+   EQUIP-SENSIBLE   = 1.0
+   EQUIP-LATENT     = 0.0
+   INF-SCHEDULE     = INFIL-SCH
+   INF-METHOD       = AIR-CHANGE
+   AIR-CHANGES/HR   = typach[]
+   FLOOR-WEIGHT     = 70
+   ..
+
+UNCOND1-SC = SPACE-CONDITIONS
+   ZONE-TYPE        = UNCONDITIONED
+   PEOPLE-SCHEDULE  = "Occupancy Sales"
+   PEOPLE-HG-SENS   = 250
+   PEOPLE-HG-LAT    = 200
+   AREA/PERSON      = #[occuncond[] / 0.0929]
+   LIGHTING-SCHEDULE= ("Lighting Sales")
+   LIGHTING-TYPE    = (REC-FLUOR-NV)
+   LIGHTING-W/AREA  = (#[ltguncond[] * 0.0929])
+   EQUIP-SCHEDULE   = "Load Sales"
+   EQUIPMENT-W/AREA = #[pluguncond[] * 0.0929]
+   EQUIP-SENSIBLE   = 1.0
+   EQUIP-LATENT     = 0.0
+   INF-SCHEDULE     = INFIL-SCH
+   INF-METHOD       = AIR-CHANGE
+   AIR-CHANGES/HR   = typach[]
+   FLOOR-WEIGHT     = 70
+   ..
+
+SET-DEFAULT FOR WINDOW          
+   X                = {PARENT("WIDTH")/2 - LOCAL("WIDTH")/2}
+   Y                = {if ((PARENT("HEIGHT") - 1 - LOCAL("HEIGHT")) > 0) 
+                       then (PARENT("HEIGHT") - 1 - LOCAL("HEIGHT"))
+                       else (PARENT("HEIGHT") - LOCAL("HEIGHT"))
+                       endif}
+   ..
+
+SET-DEFAULT FOR EXTERIOR-WALL
+   CONSTRUCTION     = "Wall1"
+   ..
+SET-DEFAULT FOR INTERIOR-WALL
+   CONSTRUCTION     = INT-WALL
+   ..
+
+$============================================================================$
+$ The following SPACE commands define the spaces (or zones) that make up the $
+$  building.  Each space command is followed by all of the wall, roof and    $
+$  floor definitions associated with the space.  EXTERIOR-WALL commands are  $
+$  followed by any WINDOW and DOOR definitions that are associated with that $
+$  exterior wall.                                                            $
+
+FirstFloor    = FLOOR
+   X                = 0
+   Y                = 0
+   Z                = 0
+   AZIMUTH          = 0
+   SHAPE            = POLYGON
+   POLYGON          = 1FloorPoly
+   FLOOR-HEIGHT     = #[bldght[] / 0.3048]
+   SPACE-HEIGHT     = #[bldght[] / 0.3048]
+   ..
+
+Grocery    = SPACE
+   X                = 0
+   Y                = 0
+   Z                = 0
+   AZ               = 0
+   SHAPE            = POLYGON
+   POLYGON          = Poly_Groc
+   Space-Conditions = GROC1-SC
+   ..
+
+"Groc Ext Wall1"    = EXTERIOR-WALL
+   LOCATION         = SPACE-V1
+   ..
+   ##if #[winarea[] GT 0]
+   "Entrance Window"= WINDOW
+   GLASS-TYPE       = "Glass-1e"
+   HEIGHT           = winht[]
+   WIDTH            = #[winarea[] / winht[]]
+   SETBACK          = #[winsetback[] / 0.3048]
+   ..
+   ##endif
+"Groc Ext Wall2"    = EXTERIOR-WALL
+   LOCATION         = SPACE-V3
+   ..
+"Groc Ext Wall3"    = EXTERIOR-WALL
+   LOCATION         = SPACE-V4
+   ..
+
+"Groc Int Wall 1"   = INTERIOR-WALL
+   LOCATION         = SPACE-V2
+   NEXT-TO          = Office
+   ..
+
+"Groc Ceiling"      = EXTERIOR-WALL
+   LOCATION         = TOP
+   CONSTRUCTION     = "Wall4"
+   ..
+
+"Groc Floor"        = UNDERGROUND-FLOOR
+   LOCATION         = BOTTOM
+   CONSTRUCTION     = SLAB-FLOOR
+   $ in the future:  PERIM-EXPOSED = #[#[len_groc[] * 2] + wid1[]]
+   $                 PERIM-CONDUCT = 1.04
+
+   ..
+
+
+
+Office    = SPACE
+   X                = len_groc[]
+   Y                = 0
+   Z                = 0
+   AZ               = 0
+   SHAPE            = POLYGON
+   POLYGON          = Poly_Off
+   Space-Conditions = OFFICE1-SC
+   ..
+
+"Off Ext Wall 1"     = EXTERIOR-WALL
+   LOCATION         = SPACE-V1
+   ..
+"Off Ext Wall 2"     = EXTERIOR-WALL
+   LOCATION         = SPACE-V3
+   ..
+
+"Off Int Wall 1"   = INTERIOR-WALL
+   LOCATION         = SPACE-V2
+   NEXT-TO          = Storage
+   ..
+
+"Off  Ceiling"      = EXTERIOR-WALL
+   LOCATION         = TOP
+   CONSTRUCTION     = "Wall4"
+   ..
+
+"Off Floor"        = UNDERGROUND-FLOOR
+   LOCATION         = BOTTOM
+   CONSTRUCTION     = SLAB-FLOOR
+   ..
+
+Storage       = SPACE
+   X                = #[len_groc[] + len_off[]]
+   Y                = 0
+   Z                = 0
+   AZ               = 0
+   SHAPE            = POLYGON
+   POLYGON          = Poly_Stor
+   Space-Conditions = UNCOND1-SC
+   ..
+
+"Stor Ext Wall 1"     = EXTERIOR-WALL
+   LOCATION         = SPACE-V1
+   ..
+"Stor Ext Wall 2"     = EXTERIOR-WALL
+   LOCATION         = SPACE-V2
+   ..
+"Stor Ext Wall 3"     = EXTERIOR-WALL
+   LOCATION         = SPACE-V3
+   ..
+
+"Stor Ceiling"      = EXTERIOR-WALL
+   LOCATION         = TOP
+   CONSTRUCTION     = "Wall4"
+   ..
+
+"Stor Floor"        = UNDERGROUND-FLOOR
+   LOCATION         = BOTTOM
+   CONSTRUCTION     = SLAB-FLOOR
+   ..
+
+$ *********************************************************
+$ **                                                     **
+$ **      HVAC Circulation Loops / Plant Equipment       **
+$ **                                                     **
+$ **      Packaged System for Grocery and Office         **
+$ **                                                     **
+$ **                                                     **
+$ *********************************************************
+
+$REF-SCH-IC-DS   = D-SCH  TYPE=FRACTION  ( 1, 6) (0.8) ( 7,12) (0.9)
+$                         (13,18) (1.0) (19,24) (0.9)  ..
+$REF-SCH-IC      = SCH TYPE=FRACTION   THRU DEC 31 (ALL) REF-SCH-IC-DS  ..
+$
+$REF-SCH-LT-DS   = D-SCH  TYPE=FRACTION  ( 1, 6) (0.7) ( 7,12) (0.9)
+$                         (13,18) (1.0) (19,24) (0.8)  ..
+$REF-SCH-LT      = SCH    TYPE=FRACTION  THRU DEC 31 (ALL) REF-SCH-LT-DS  ..
+
+
+$ *********************************************************
+$ **                                                     **
+$ **               HVAC Systems / Zones                  **
+$ **                                                     **
+$ *********************************************************
+"HVAC System 1a" = SYSTEM
+   TYPE             = PSZ
+   HEAT-SOURCE      = ELECTRIC
+   HEATING-SCHEDULE = "Always Off"
+   COOLING-SCHEDULE = "Always On"
+   FAN-SCHEDULE     = "Fan Operation"
+   SUPPLY-KW        = 0
+   SUPPLY-DELTA-T   = 1.815
+   MAX-SUPPLY-T     = 110
+   HEAT-SET-T       = 110
+   MIN-SUPPLY-T     = 55
+   REHEAT-DELTA-T   = 15
+   MAX-HUMIDITY     = 55
+   ##if #[grocpkgcap[] GT 0]
+   COOLING-CAPACITY = #[grocpkgcap[] * 12000]
+   COOL-SH-CAP      = #[#[grocpkgcap[] * 12000] * grocpkgshr[]]
+   ##endif
+   COOLING-EIR      = #[3.413 / grocpkgeer[]]
+   CONTROL-ZONE     = "GroceryZ"
+   NIGHT-CYCLE-CTRL = CYCLE-ON-ANY
+   ..
+
+"GroceryZ" = ZONE
+   TYPE             = CONDITIONED
+   SPACE            = "Grocery"
+   COOL-TEMP-SCH    = "Cool Schedule"
+   EXHAUST-CFM      = grocexhcfm[]
+   ..
+
+"HVAC System 1b" = SYSTEM
+   TYPE             = PSZ
+   HEAT-SOURCE      = ELECTRIC
+   HEATING-SCHEDULE = "Always Off"
+   COOLING-SCHEDULE = "Always On"
+   FAN-SCHEDULE     = "Fan Operation"
+   SUPPLY-KW        = 0
+   SUPPLY-DELTA-T   = 1.815
+   MAX-SUPPLY-T     = 110
+   HEAT-SET-T       = 110
+   MIN-SUPPLY-T     = 55 
+   REHEAT-DELTA-T   = 15
+   MAX-HUMIDITY     = 55
+
+   ##if #[offpkgcap[] GT 0]
+   COOLING-CAPACITY = #[offpkgcap[] * 12000]
+   COOL-SH-CAP      = #[#[offpkgcap[] * 12000] * offpkgshr[]] 
+   ##endif
+   COOLING-EIR      = #[3.413 / offpkgeer[]]
+   CONTROL-ZONE     = "OfficeZ"
+   NIGHT-CYCLE-CTRL = CYCLE-ON-ANY
+   ..
+
+"OfficeZ" = ZONE            
+   TYPE             = CONDITIONED
+   SPACE            = "Office"
+   COOL-TEMP-SCH    = "Cool Schedule"
+   EXHAUST-CFM      = offexhcfm[]
+   ..
+"StorageZ" = ZONE            
+   TYPE             = UNCONDITIONED
+   SPACE            = "Storage"
+   ..
+
+$ *********************************************************
+$ **                                                     **
+$ **                Refrigeration Systems                **
+$ **                                                     **
+$ *********************************************************
+
+
+DEF-2       = SCHEDULE TYPE = ON/OFF THRU DEC 31 (ALL)
+                              (    1) (0)  ( 2) (1)
+                              ( 3,24) (0) ..
+DEF-3       = SCHEDULE TYPE = ON/OFF THRU DEC 31 (ALL)
+                              ( 1, 2) (0)  ( 3) (1)
+                              ( 4,24) (0) ..
+DEF-4       = SCHEDULE TYPE = ON/OFF THRU DEC 31 (ALL)
+                              ( 1, 3) (0)  ( 4) (1)
+                              ( 5,24) (0) ..
+DEF-6-14-22 = SCHEDULE TYPE = ON/OFF THRU DEC 31 (ALL)
+                              ( 1, 5) (0)  ( 6) (1) 
+                              ( 7,13) (0)  (14) (1)
+                              (15,21) (0)  (22) (1)
+                              (23,24) (0)  ..
+DEF-5-13-21 = SCHEDULE TYPE = ON/OFF THRU DEC 31 (ALL)
+                              ( 1, 4) (0)  ( 5) (1) 
+                              ( 6,12) (0)  (13) (1)
+                              (14,20) (0)  (21) (1)
+                              (22,24) (0)  ..
+DEF-4-12-20 = SCHEDULE TYPE = ON/OFF THRU DEC 31 (ALL)
+                              ( 1, 3) (0)  ( 4) (1) 
+                              ( 5,11) (0)  (12) (1)
+                              (13,19) (0)  (20) (1)
+                              (21,24) (0)  ..
+DEF-X3      = SCHEDULE TYPE = ON/OFF THRU DEC 31 (ALL)
+                              ( 1, 5) (0)  ( 6) (1) 
+                              ( 7,13) (0)  (14) (1)
+                              (15,21) (0)  (22) (1)
+                              (23,24) (0)  ..
+DEF-X4      = SCHEDULE TYPE = ON/OFF THRU DEC 31 (ALL)
+                              ( 1, 4) (0)  ( 5) (1) 
+                              ( 6,10) (0)  (11) (1)
+                              (12,16) (0)  (17) (1)
+                              (18,22) (0)  (23) (1)
+                                 (24) (0)  ..
+DEF-X6 = SCHEDULE TYPE = ON/OFF THRU DEC 31 (ALL)
+                              ( 1, 3) (0)  ( 4) (1) 
+                              ( 5, 7) (0)  ( 8) (1)
+                              ( 9,11) (0)  (12) (1)
+                              (13,15) (0)  (16) (1)
+                              (17,19) (0)  (20) (1)
+                              (21,23) (0)  (24) (1)  ..
+
+DIAGNOSTIC COMMENTS  ..
+$ Best to input systems from warmest to coldest
+
+$ ***** REFG SYSTEM "5" *******************************************************
+
+"Refg System 5"     = REFG-SYSTEM
+   REFRIGERANT      = R-22                 $ R-404A ??
+   DESIGN-SCT       = 105
+   SCT-CTRL         = FIXED
+   SCT-SETPT        = 95.   
+   SCT-THROTTLE     = 5.                 
+   ..
+
+"Condenser 5"       = CONDENSER
+   TYPE             = EVAPORATIVE     
+   CAPACITY-RATIO   = 1.2
+$   LIBRARY-ENTRY    = "Recold JC 110"
+   REFG-SYSTEM      = "Refg System 5"
+   CAPACITY-CTRL    = VAR-SPEED-FAN
+   EQUIPMENT-REPORT = YES
+   ..
+
+"Liquid Trunk 5"  = REFG-CIRCUIT         $ No multi-circuit condensers yet
+   TYPE             = LIQUID               
+   ATTACH-TO        = REFG-SYSTEM
+   REFG-SYSTEM      = "Refg System 5"
+   EQUIPMENT-REPORT = YES
+   .. 
+
+"HS Trunk 5"      = REFG-CIRCUIT       
+   TYPE             = DISCHARGE          
+   ATTACH-TO        = REFG-SYSTEM
+   REFG-SYSTEM      = "Refg System 5"
+   EQUIPMENT-REPORT = YES                
+   ..                                    
+
+"Rack SST:F1"       = SUCTION-GROUP      
+   TYPE             = PARALLEL      
+   DESIGN-SST       = 8.               
+   DISCHARGE-CIRCUI = "HS Trunk 5" 
+   TEMP-CTRL        = FIXED              
+   TEMP-SETPT       = 3.  
+   TEMP-THROTTLE    = 10.
+   EQUIPMENT-REPORT = YES
+   ..
+
+"Comp SST:F1:1"     = COMPRESSOR         
+   LIBRARY-ENTRY    = "M3DS31500"
+   SUCTION-GROUP    = "Rack SST:F1"
+   EQUIPMENT-REPORT = YES                
+   ..
+
+"Comp SST:F1:2"     = COMPRESSOR         
+   LIBRARY-ENTRY    = "M4DA32000"
+   SUCTION-GROUP    = "Rack SST:F1"
+   EQUIPMENT-REPORT = YES                
+   ..
+
+"Comp SST:F1:3"     = COMPRESSOR         
+   LIBRARY-ENTRY    = "M4DA32000"
+   SUCTION-GROUP    = "Rack SST:F1"
+   EQUIPMENT-REPORT = YES                
+   ..
+
+"Suction Trunk 6"   = REFG-CIRCUIT       
+   TYPE             = SUCTION            
+   ATTACH-TO        = SUCTION-GROUP
+   SUCTION-GROUP    = "Rack SST:F1"
+   EQUIPMENT-REPORT = YES
+   .. 
+
+"5F49"              = REFG-FIXTURE  
+   LIBRARY-ENTRY    = "Hill-5D"     $THIS IS A SUBSTITUTE FOR HILL-OHPH
+   LINE-UP-LENGTH   = 44
+   DESIGN-SUPPLY-T  = 20.
+   TEMP-CTRL        = THERMOSTAT
+   TEMP-SETPT       = 20.
+   DEFROST-SCH      = DEF-X3
+   DEFROST-DURATION = 30
+   NUM-DEFROSTS/DAY = 3
+   ZONE             = "GroceryZ" 
+   LIQUID-CIRCUIT   = "Liquid Trunk 5"
+   SUCTION-CIRCUIT  = "Suction Trunk 6"
+   LIGHTING-SCH     = "Lighting Sales"
+   ..
+
+"5F50"              = REFG-FIXTURE  
+   LIBRARY-ENTRY    = "Hill-5D"     $THIS IS A SUBSTITUTE FOR HILL-OHPH
+   LINE-UP-LENGTH   = 44
+   DESIGN-SUPPLY-T  = 20.
+   TEMP-CTRL        = THERMOSTAT
+   TEMP-SETPT       = 20.
+   DEFROST-SCH      = DEF-X3
+   DEFROST-DURATION = 30
+   NUM-DEFROSTS/DAY = 3
+   ZONE             = "GroceryZ" 
+   LIQUID-CIRCUIT   = "Liquid Trunk 5"
+   SUCTION-CIRCUIT  = "Suction Trunk 6"
+   LIGHTING-SCH     = "Lighting Sales"
+   ..
+
+"5F51"              = REFG-FIXTURE  
+   LIBRARY-ENTRY    = "Hussmann-DSRP"    $THIS IS A SUBSTITUTE FOR HILL-PS4100R
+   LINE-UP-LENGTH   = 24
+   DESIGN-SUPPLY-T  = 20.
+   TEMP-CTRL        = THERMOSTAT
+   TEMP-SETPT       = 20.
+   DEFROST-SCH      = DEF-X3
+   DEFROST-DURATION = 59
+   NUM-DEFROSTS/DAY = 3
+   ZONE             = "GroceryZ" 
+   LIQUID-CIRCUIT   = "Liquid Trunk 5"
+   SUCTION-CIRCUIT  = "Suction Trunk 6"
+   LIGHTING-SCH     = "Lighting Sales"
+   ..
+
+"5F52"              = REFG-FIXTURE  
+   LIBRARY-ENTRY    = "Hussmann-DSRP"    $THIS IS A SUBSTITUTE FOR HILL-PS4100R
+   LINE-UP-LENGTH   = 16
+   DESIGN-SUPPLY-T  = 20.
+   TEMP-CTRL        = THERMOSTAT
+   TEMP-SETPT       = 20.
+   DEFROST-SCH      = DEF-X3
+   DEFROST-DURATION = 59
+   NUM-DEFROSTS/DAY = 3
+
+   ZONE             = "GroceryZ" 
+   LIQUID-CIRCUIT   = "Liquid Trunk 5"
+   SUCTION-CIRCUIT  = "Suction Trunk 6"
+   LIGHTING-SCH     = "Lighting Sales"
+   ..
+
+$ ***** REFG SYSTEM "4" *******************************************************
+
+"Refg System 4"     = REFG-SYSTEM
+   REFRIGERANT      = R-22                 $ R-404A ??
+   DESIGN-SCT       = 105
+   SCT-CTRL         = FIXED
+   SCT-SETPT        = 95.   
+   SCT-THROTTLE     = 5.                 
+   ..
+
+"Condenser 4"       = CONDENSER
+   TYPE             = EVAPORATIVE     
+   CAPACITY-RATIO   = 1.2
+$   LIBRARY-ENTRY    = "Recold JC 110"
+   REFG-SYSTEM      = "Refg System 4"
+   CAPACITY-CTRL    = VAR-SPEED-FAN
+   EQUIPMENT-REPORT = YES
+   ..
+
+"Liquid Trunk 4"  = REFG-CIRCUIT         $ No multi-circuit condensers yet
+   TYPE             = LIQUID               
+   ATTACH-TO        = REFG-SYSTEM
+   REFG-SYSTEM      = "Refg System 4"
+   EQUIPMENT-REPORT = YES
+   ..
+
+"HS Trunk 4"      = REFG-CIRCUIT       
+   TYPE             = DISCHARGE          
+   ATTACH-TO        = REFG-SYSTEM
+   REFG-SYSTEM      = "Refg System 4"
+   EQUIPMENT-REPORT = YES                
+   ..                                    
+
+"Rack SST:E1"       = SUCTION-GROUP      
+   TYPE             = PARALLEL      
+   DESIGN-SST       = 2.               
+   DISCHARGE-CIRCUI = "HS Trunk 4" 
+   TEMP-CTRL        = FIXED              
+   TEMP-SETPT       = -3.
+   TEMP-THROTTLE    = 10.
+   EQUIPMENT-REPORT = YES
+   ..
+"Comp SST:E1:1"     = COMPRESSOR         
+   LIBRARY-ENTRY    = "M2DD30500"
+   SUCTION-GROUP    = "Rack SST:E1"
+   EQUIPMENT-REPORT = YES
+   ..
+
+"Comp SST:E1:2"     = COMPRESSOR         
+   LIBRARY-ENTRY    = "M4DA32000"
+   SUCTION-GROUP    = "Rack SST:E1"
+   EQUIPMENT-REPORT = YES
+   ..
+
+"Comp SST:E1:3"     = COMPRESSOR         
+   LIBRARY-ENTRY    = "M4DA32000"
+   SUCTION-GROUP    = "Rack SST:E1"
+   EQUIPMENT-REPORT = YES                
+   ..                                    
+
+"Suction Trunk 5"   = REFG-CIRCUIT       
+   TYPE             = SUCTION            
+   ATTACH-TO        = SUCTION-GROUP
+   SUCTION-GROUP    = "Rack SST:E1"
+   EQUIPMENT-REPORT = YES
+   .. 
+
+"4E38 & 4E39"              = REFG-FIXTURE  
+   LIBRARY-ENTRY    = "Hill-HLHM"      $ THIS IS A SUBSTITUTE FOR HILL-OHM
+   LINE-UP-LENGTH   = 72
+   DESIGN-SUPPLY-T  = 18.
+   TEMP-CTRL        = THERMOSTAT
+   TEMP-SETPT       = 18.
+   DEFROST-SCH      = DEF-X3
+   DEFROST-DURATION = 36
+   NUM-DEFROSTS/DAY = 3
+   ZONE             = "GroceryZ" 
+   LIQUID-CIRCUIT   = "Liquid Trunk 4"
+   SUCTION-CIRCUIT  = "Suction Trunk 5"
+   LIGHTING-SCH     = "Lighting Sales"
+   ..
+
+"4E40"              = REFG-FIXTURE  
+   LIBRARY-ENTRY    = "Tyler-RCCD"      $ THIS IS A SUBSTITUTE FOR HILL-O3IC
+   LINE-UP-LENGTH   = 12
+   DESIGN-SUPPLY-T  = 19.
+   TEMP-CTRL        = THERMOSTAT
+   TEMP-SETPT       = 19.
+   DEFROST-SCH      = DEF-X4
+   NUM-DEFROSTS/DAY = 4
+   ZONE             = "GroceryZ" 
+   LIQUID-CIRCUIT   = "Liquid Trunk 4"
+   SUCTION-CIRCUIT  = "Suction Trunk 5"
+   LIGHTING-SCH     = "Lighting Sales"
+   ..
+
+"4E41"              = REFG-FIXTURE  
+   LIBRARY-ENTRY    = "Tyler-RCCD"      $ THIS IS A SUBSTITUTE FOR HILL-OIM
+   LINE-UP-LENGTH   = 12
+   DESIGN-SUPPLY-T  = 38.
+   TEMP-CTRL        = THERMOSTAT
+   TEMP-SETPT       = 38.
+   DEFROST-SCH      = DEF-2
+   ZONE             = "GroceryZ" 
+   LIQUID-CIRCUIT   = "Liquid Trunk 4"
+   SUCTION-CIRCUIT  = "Suction Trunk 5"
+   LIGHTING-SCH     = "Lighting Sales"
+   ..
+
+"4E42-4E47"              = REFG-FIXTURE  
+   LIBRARY-ENTRY    = "Hill-5D"
+   LINE-UP-LENGTH   = 44
+   DESIGN-SUPPLY-T  = 20.
+   TEMP-CTRL        = THERMOSTAT
+   TEMP-SETPT       = 20.
+   DEFROST-SCH      = DEF-X3
+   DEFROST-DURATION = 30
+   NUM-DEFROSTS/DAY = 3
+   ZONE             = "GroceryZ" 
+   LIQUID-CIRCUIT   = "Liquid Trunk 4"
+   SUCTION-CIRCUIT  = "Suction Trunk 5"
+   LIGHTING-SCH     = "Lighting Sales"
+   ..
+
+"4E45"              = REFG-FIXTURE  
+   LIBRARY-ENTRY    = "Hill-5D"     $THIS IS A SUBSTITUTE FOR HILL-OHPH
+   LINE-UP-LENGTH   = 16
+   DESIGN-SUPPLY-T  = 20.
+   TEMP-CTRL        = THERMOSTAT
+   TEMP-SETPT       = 20.
+   DEFROST-SCH      = DEF-X6
+   DEFROST-DURATION = 46
+   NUM-DEFROSTS/DAY = 6
+   ZONE             = "GroceryZ" 
+   LIQUID-CIRCUIT   = "Liquid Trunk 4"
+   SUCTION-CIRCUIT  = "Suction Trunk 5"
+   LIGHTING-SCH     = "Lighting Sales"
+   ..
+
+"4E46"              = REFG-FIXTURE  
+   LIBRARY-ENTRY    = "Hussmann-CSDM"     $THIS IS A SUBSTITUTE FOR HILL-OSA
+   LINE-UP-LENGTH   = 28
+   DESIGN-SUPPLY-T  = 14.
+   TEMP-CTRL        = THERMOSTAT
+   TEMP-SETPT       = 14.
+   DEFROST-SCH      = DEF-2
+   ZONE             = "GroceryZ" 
+   LIQUID-CIRCUIT   = "Liquid Trunk 4"
+   SUCTION-CIRCUIT  = "Suction Trunk 5"
+   LIGHTING-SCH     = "Lighting Sales"
+   ..
+
+"4E48"              = REFG-FIXTURE  
+   LIBRARY-ENTRY    = "Hussmann-CGDF"     $THIS IS A SUBSTITUTE FOR HILL-OSA
+   LINE-UP-LENGTH   = 16
+   DESIGN-SUPPLY-T  = 14.
+   TEMP-CTRL        = THERMOSTAT
+   TEMP-SETPT       = 14.
+   DEFROST-SCH      = DEF-2
+   ZONE             = "GroceryZ" 
+   LIQUID-CIRCUIT   = "Liquid Trunk 4"
+   SUCTION-CIRCUIT  = "Suction Trunk 5"
+   LIGHTING-SCH     = "Lighting Sales"
+   ..
+
+$ ***** REFG SYSTEM "3" *******************************************************
+
+"Refg System 3"     = REFG-SYSTEM
+   REFRIGERANT      = R-22                 $ R-404A ??
+   DESIGN-SCT       = 105
+   SCT-CTRL         = FIXED
+   SCT-SETPT        = 95.   
+   SCT-THROTTLE     = 5.                 
+   ..
+
+"Condenser 3"       = CONDENSER
+   TYPE             = EVAPORATIVE     
+   CAPACITY-RATIO   = 1.2
+$   LIBRARY-ENTRY    = "Recold JC 110"
+   REFG-SYSTEM      = "Refg System 3"
+   CAPACITY-CTRL    = VAR-SPEED-FAN
+   EQUIPMENT-REPORT = YES
+   ..
+
+"5F61"       = SUBCOOLER             
+   TYPE             = MECHANICAL            
+   ATTACH-TO        = REFG-SYSTEM
+   REFG-SYSTEM      = "Refg System 3"
+   DESIGN-SUBCOOL-T = 60.
+   SUCTION-CIRCUIT  = "Suction Trunk 6" 
+   LIQUID-CIRCUIT   = "Liquid Trunk 5"
+   TEMP-CTRL        = LOCAL-EPR
+   TEMP-SETPT       = 60.
+   EQUIPMENT-REPORT = YES
+   ..
+
+"Liquid Trunk 3"  = REFG-CIRCUIT         $ No multi-circuit condensers yet
+   TYPE             = LIQUID               
+   ATTACH-TO        = SUBCOOLER
+   SUBCOOLER        = "5F61"
+   EQUIPMENT-REPORT = YES
+   ..
+
+"HS Trunk 3"      = REFG-CIRCUIT       
+   TYPE             = DISCHARGE          
+   ATTACH-TO        = REFG-SYSTEM
+   REFG-SYSTEM      = "Refg System 3"
+   EQUIPMENT-REPORT = YES                
+   ..                                    
+
+"Rack SST:C1"       = SUCTION-GROUP      
+   TYPE             = PARALLEL      
+   DESIGN-SST       = -34.               
+   DISCHARGE-CIRCUI = "HS Trunk 3" 
+   TEMP-CTRL        = FIXED              
+   TEMP-SETPT       = -39.                  $ 35 - 1/2 throttle
+   TEMP-THROTTLE    = 10.
+   EQUIPMENT-REPORT = YES
+   ..
+
+"Comp SST:C1:1"     = COMPRESSOR         
+   LIBRARY-ENTRY    = "L4DT32200"
+   SUCTION-GROUP    = "Rack SST:C1"
+   EQUIPMENT-REPORT = YES                
+   ..
+
+"Comp SST:C1:2"     = COMPRESSOR         
+   LIBRARY-ENTRY    = "L4DT32200"
+   SUCTION-GROUP    = "Rack SST:C1"
+   EQUIPMENT-REPORT = YES                
+   ..
+
+"Comp SST:C1:3"     = COMPRESSOR         
+   LIBRARY-ENTRY    = "L4DT32200"
+   SUCTION-GROUP    = "Rack SST:C1"
+   EQUIPMENT-REPORT = YES                
+   ..
+
+"Comp SST:C1:5"     = COMPRESSOR
+   LIKE             = "Comp SST:C1:3"
+   ..
+
+"Suction Trunk 4"   = REFG-CIRCUIT       
+   TYPE             = SUCTION            
+   ATTACH-TO        = SUCTION-GROUP
+   SUCTION-GROUP    = "Rack SST:C1"
+   EQUIPMENT-REPORT = YES
+   .. 
+
+"3C25-3C27"         = REFG-FIXTURE  
+   LIBRARY-ENTRY    = "Hill-ORZC"      $ THIS IS A SUBSTITUTE FOR HILL-OZRF
+   NUMBER-OF-DOORS  = 54
+   DESIGN-SUPPLY-T  = -18.
+   TEMP-CTRL        = THERMOSTAT
+   TEMP-SETPT       = -18.
+   DEFROST-SCH      = DEF-2
+   ZONE             = "GroceryZ" 
+   LIQUID-CIRCUIT   = "Liquid Trunk 3"
+   SUCTION-CIRCUIT  = "Suction Trunk 4"
+   LIGHTING-SCH     = "Lighting Sales"
+   ..
+
+"3C28-3C29"              = REFG-FIXTURE  
+   LIBRARY-ENTRY    = "Hill-ORZC"
+   NUMBER-OF-DOORS  = 5
+   DESIGN-SUPPLY-T  = -22.
+   TEMP-CTRL        = THERMOSTAT
+   TEMP-SETPT       = -22.
+   DEFROST-SCH      = DEF-2
+   ZONE             = "GroceryZ" 
+   LIQUID-CIRCUIT   = "Liquid Trunk 3"
+   SUCTION-CIRCUIT  = "Suction Trunk 4"
+   LIGHTING-SCH     = "Lighting Sales"
+   ..
+
+"3C30 & 3C32"              = REFG-FIXTURE  
+   LIBRARY-ENTRY    = "Hill-WIZFK"     $THIS IS A SUBSTITUTE FOR HILL-OWIZ-D
+   LINE-UP-LENGTH   = 32
+   DESIGN-SUPPLY-T  = -22.
+   TEMP-CTRL        = THERMOSTAT
+   TEMP-SETPT       = -22.
+   DEFROST-SCH      = DEF-2
+   ZONE             = "GroceryZ" 
+   LIQUID-CIRCUIT   = "Liquid Trunk 3"
+   SUCTION-CIRCUIT  = "Suction Trunk 4"
+   LIGHTING-SCH     = "Lighting Sales"
+   ..
+
+"3C31 & 3C33"              = REFG-FIXTURE  
+   LIBRARY-ENTRY    = "Hill-WIZFK"     $THIS IS A SUBSTITUTE FOR HILL-OWIZ-F
+   LINE-UP-LENGTH   = 12
+   DESIGN-SUPPLY-T  = -22.
+   TEMP-CTRL        = THERMOSTAT
+   TEMP-SETPT       = -22.
+   DEFROST-SCH      = DEF-2
+   ZONE             = "GroceryZ" 
+   LIQUID-CIRCUIT   = "Liquid Trunk 3"
+   SUCTION-CIRCUIT  = "Suction Trunk 4"
+   LIGHTING-SCH     = "Lighting Sales"
+   ..
+
+"3C34"              = REFG-FIXTURE  
+   LIBRARY-ENTRY    = "Hill-5Z"
+   LINE-UP-LENGTH   = 8
+   DESIGN-SUPPLY-T  = -15.
+   TEMP-CTRL        = THERMOSTAT
+   TEMP-SETPT       = -15.
+   DEFROST-SCH      = DEF-X6
+   DEFROST-DURATION = 59
+   NUM-DEFROSTS/DAY = 6
+   ZONE             = "GroceryZ" 
+   LIQUID-CIRCUIT   = "Liquid Trunk 3"
+   SUCTION-CIRCUIT  = "Suction Trunk 4"
+   LIGHTING-SCH     = "Lighting Sales"
+   ..
+
+$ ***** WALK-IN SIMULATION WAS NOT POSSIBLE AT THE TIME THAT THIS INPUT FILE
+$ ***** WAS CREATED.  IT WILL BE ADDED ONCE THIS CAPABILITY BECOMES AVAILABLE.
+
+
+$ ***** REFG SYSTEM "2" *******************************************
+
+"Refg System 2"     = REFG-SYSTEM
+   REFRIGERANT      = R-22                 $ R-404A ??
+   DESIGN-SCT       = 105
+   SCT-CTRL         = FIXED
+   SCT-SETPT        = 95.   
+   SCT-THROTTLE     = 5.                 
+   ..
+
+"Condenser 2"       = CONDENSER
+   TYPE             = EVAPORATIVE     
+   CAPACITY-RATIO   = 1.2
+$   LIBRARY-ENTRY    = "Recold JC 110"
+   REFG-SYSTEM      = "Refg System 2"
+   CAPACITY-CTRL    = VAR-SPEED-FAN
+   EQUIPMENT-REPORT = YES
+   ..
+
+"Liquid Trunk 2"  = REFG-CIRCUIT         $ No multi-circuit condensers yet
+   TYPE             = LIQUID               
+   ATTACH-TO        = REFG-SYSTEM
+   REFG-SYSTEM      = "Refg System 2"
+   EQUIPMENT-REPORT = YES
+   ..
+
+"HS Trunk 2"      = REFG-CIRCUIT       
+   TYPE             = DISCHARGE          
+   ATTACH-TO        = REFG-SYSTEM
+   REFG-SYSTEM      = "Refg System 2"
+   EQUIPMENT-REPORT = YES                
+   ..                                    
+
+"Rack SST:D1"       = SUCTION-GROUP      
+   TYPE             = PARALLEL      
+   DESIGN-SST       = 9.               
+   DISCHARGE-CIRCUI = "HS Trunk 2" 
+   TEMP-CTRL        = FIXED              
+   TEMP-SETPT       = 4.                  $ 35 - 1/2 throttle
+   TEMP-THROTTLE    = 10.
+   EQUIPMENT-REPORT = YES
+   ..
+
+"Comp SST:D1:1"     = COMPRESSOR         
+   LIBRARY-ENTRY    = "M4DA32000"
+   SUCTION-GROUP    = "Rack SST:D1"
+   EQUIPMENT-REPORT = YES                
+   ..
+
+"Comp SST:D1:2"     = COMPRESSOR         
+   LIBRARY-ENTRY    = "M4DA32000"
+   SUCTION-GROUP    = "Rack SST:D1"
+   EQUIPMENT-REPORT = YES
+   ..
+
+"Comp SST:D1:3"     = COMPRESSOR         
+   LIBRARY-ENTRY    = "M4DA32000"
+   SUCTION-GROUP    = "Rack SST:D1"
+   EQUIPMENT-REPORT = YES
+   ..
+
+"Suction Trunk 3"   = REFG-CIRCUIT       
+   TYPE             = SUCTION            
+   ATTACH-TO        = SUCTION-GROUP
+   SUCTION-GROUP    = "Rack SST:D1"
+   EQUIPMENT-REPORT = YES
+   .. 
+
+"2D13-2D18"              = REFG-FIXTURE  
+   LIBRARY-ENTRY    = "Hill-5D"      $ THIS IS A SUBSTITUTE FOR HILL-05DM
+   LINE-UP-LENGTH   = 148
+   DESIGN-SUPPLY-T  = 21.
+   TEMP-CTRL        = THERMOSTAT
+   TEMP-SETPT       = 21.
+   DEFROST-SCH      = DEF-X3
+   NUM-DEFROSTS/DAY = 3
+   ZONE             = "GroceryZ" 
+   LIQUID-CIRCUIT   = "Liquid Trunk 2"
+   SUCTION-CIRCUIT  = "Suction Trunk 3"
+   LIGHTING-SCH     = "Lighting Sales"
+   ..
+
+$ ***** WALK-IN SIMULATION WAS NOT POSSIBLE AT THE TIME THAT THIS INPUT FILE
+$ ***** WAS CREATED.  IT WILL BE ADDED ONCE THIS CAPABILITY BECOMES AVAILABLE.
+
+$ ***** REFG SYSTEM "1" *******************************************************
+
+"Refg System 1"     = REFG-SYSTEM
+   REFRIGERANT      = R-22    
+   DESIGN-SCT       = 105
+   SCT-CTRL         = FIXED
+   SCT-SETPT        = 95.   
+   SCT-THROTTLE     = 5.                 
+   ..
+
+"Condenser 1"       = CONDENSER
+   TYPE             = EVAPORATIVE     
+   CAPACITY-RATIO   = 1.2 
+$   LIBRARY-ENTRY    = "Recold JC 110"
+   REFG-SYSTEM      = "Refg System 1"
+   CAPACITY-CTRL    = VAR-SPEED-FAN
+   EQUIPMENT-REPORT = YES
+   ..
+
+"2D23"              = SUBCOOLER             
+   TYPE             = MECHANICAL            
+   DESIGN-SUBCOOL-T = 50.
+   ATTACH-TO        = REFG-SYSTEM
+   REFG-SYSTEM      = "Refg System 1"
+   SUCTION-CIRCUIT  = "Suction Trunk 3" 
+   LIQUID-CIRCUIT   = "Liquid Trunk 2"
+   TEMP-CTRL        = LOCAL-EPR
+   TEMP-SETPT       = 50.
+   EQUIPMENT-REPORT = YES
+   ..
+
+"Liquid Trunk 1"  = REFG-CIRCUIT         $ No multi-circuit condensers yet
+   TYPE             = LIQUID               
+   ATTACH-TO        = SUBCOOLER
+   SUBCOOLER        = "2D23"
+   EQUIPMENT-REPORT = YES
+   ..
+
+"HS Trunk 1"      = REFG-CIRCUIT       
+   TYPE             = DISCHARGE          
+   ATTACH-TO        = REFG-SYSTEM
+   REFG-SYSTEM      = "Refg System 1"
+   EQUIPMENT-REPORT = YES                
+   ..                                    
+
+"Rack SST:A1"        = SUCTION-GROUP      
+   TYPE              = PARALLEL      
+   DESIGN-SST        = -34.               
+   DISCHARGE-CIRCUIT = "HS Trunk 1" 
+   TEMP-CTRL         = FIXED              
+   TEMP-SETPT        = -39.   
+   TEMP-THROTTLE     = 10.
+   EQUIPMENT-REPORT  = YES
+   ..
+
+"Comp SST:A1:1"     = COMPRESSOR         
+   LIBRARY-ENTRY    = "L4DA31000"
+   SUCTION-GROUP    = "Rack SST:A1"
+   EQUIPMENT-REPORT = YES                
+   ..                                    
+
+"Suction Trunk 1"   = REFG-CIRCUIT       
+   TYPE             = SUCTION            
+   ATTACH-TO        = SUCTION-GROUP
+   SUCTION-GROUP    = "Rack SST:A1"
+   EQUIPMENT-REPORT = YES
+   .. 
+
+"1A1"               = REFG-FIXTURE  
+   LIBRARY-ENTRY    = "Hill-WIZFK"
+   LINE-UP-LENGTH   = 30
+   DESIGN-SUPPLY-T  = -22.
+   TEMP-CTRL        = THERMOSTAT
+   TEMP-SETPT       = -22.
+   DEFROST-SCH      = DEF-2
+   ZONE             = "GroceryZ" 
+   LIQUID-CIRCUIT   = "Liquid Trunk 1"
+   SUCTION-CIRCUIT  = "Suction Trunk 1"
+   LIGHTING-SCH     = "Lighting Sales"
+   ..
+
+
+"Rack SST:B1"       = SUCTION-GROUP      
+   TYPE             = PARALLEL
+   DESIGN-SST       = -25.               
+   DISCHARGE-CIRCUI = "HS Trunk 1" 
+   TEMP-CTRL        = FIXED              
+   TEMP-SETPT       = -28.
+   TEMP-THROTTLE    = 10.
+   EQUIPMENT-REPORT = YES
+   ..
+
+"Comp SST:B1:2"      = COMPRESSOR         
+   LIBRARY-ENTRY    = "L4DT32200"
+   SUCTION-GROUP    = "Rack SST:B1"
+   EQUIPMENT-REPORT = YES                
+   ..                                    
+"Comp SST:B1:3"      = COMPRESSOR         
+   LIBRARY-ENTRY    = "L4DT32200"
+   SUCTION-GROUP    = "Rack SST:B1"
+   EQUIPMENT-REPORT = YES                
+   ..                                    
+"Comp SST:B1:4"     = COMPRESSOR         
+   LIBRARY-ENTRY    = "L4DT32200"
+   SUCTION-GROUP    = "Rack SST:B1"
+   EQUIPMENT-REPORT = YES                
+   ..
+
+"Comp SST:B1:5"     = COMPRESSOR
+   LIKE             = "Comp SST:B1:4"
+   ..
+
+"Suction Trunk 2"   = REFG-CIRCUIT       
+   TYPE             = SUCTION            
+   ATTACH-TO        = SUCTION-GROUP
+   SUCTION-GROUP    = "Rack SST:B1"
+   EQUIPMENT-REPORT = YES
+   .. 
+
+"1B2-1B6"           = REFG-FIXTURE  
+   LIBRARY-ENTRY    = "Hill-ORZC"
+   NUMBER-OF-DOORS  = 66.  
+   DESIGN-SUPPLY-T  = -11.
+   TEMP-CTRL        = LOCAL-EPR
+   TEMP-SETPT       = -11.
+   DEFROST-SCH      = DEF-2
+   ZONE             = "GroceryZ" 
+   LIQUID-CIRCUIT   = "Liquid Trunk 1"
+   SUCTION-CIRCUIT  = "Suction Trunk 2"
+   LIGHTING-SCH     = "Lighting Sales"
+   ..
+
+"1B7-1B10"          = REFG-FIXTURE     $ This case represents 1B7-1B10 & 1B9
+   LIBRARY-ENTRY    = "Hill-WIZFK"
+   LINE-UP-LENGTH   = 44.  
+   DESIGN-SUPPLY-T  = -11.
+   TEMP-CTRL        = LOCAL-EPR
+   TEMP-SETPT       = -11.
+   DEFROST-SCH      = DEF-4
+   ZONE             = "GroceryZ" 
+   LIQUID-CIRCUIT   = "Liquid Trunk 1"
+   SUCTION-CIRCUIT  = "Suction Trunk 2"
+   LIGHTING-SCH     = "Lighting Sales"
+   ..
+
+"1B11"              = REFG-FIXTURE  
+   LIBRARY-ENTRY    = "Hill-5Z"
+   LINE-UP-LENGTH   = 40.  
+   DESIGN-SUPPLY-T  = -5.
+   TEMP-CTRL        = LOCAL-EPR
+   TEMP-SETPT       = -5.
+   DEFROST-SCH      = DEF-X6
+   DEFROST-DURATION = 59
+   NUM-DEFROSTS/DAY = 6
+   ZONE             = "GroceryZ" 
+   LIQUID-CIRCUIT   = "Liquid Trunk 1"
+   SUCTION-CIRCUIT  = "Suction Trunk 2"
+   LIGHTING-SCH     = "Lighting Sales"
+   ..
+
+$ ***** WALK-IN SIMULATION WAS NOT POSSIBLE AT THE TIME THAT THIS INPUT FILE
+$ ***** WAS CREATED.  IT WILL BE ADDED ONCE THIS CAPABILITY BECOMES AVAILABLE.
+
+
+
+
+$ *********************************************************
+$ **                                                     **
+$ **                 Output Reporting                    **
+$ **                                                     **
+$ *********************************************************
+
+LOADS-REPORT    
+   VERIFICATION     = ( ALL-VERIFICATION ) $LV-A )
+   SUMMARY          = ( ALL-SUMMARY )      $LS-A )
+   ..
+SYSTEMS-REPORT  
+   VERIFICATION     = ( ALL-VERIFICATION ) $SV-A )
+   SUMMARY          = ( ALL-SUMMARY )
+   ..
+PLANT-REPORT    
+   VERIFICATION     = ( ALL-VERIFICATION )
+   SUMMARY          = ( ALL-SUMMARY )
+   DUMP-OPTIONS     = ( DEBUG, SIMULATION)
+   ..
+
+$ ---------------------------------------------------------
+$              Hourly Reporting
+$ ---------------------------------------------------------
+
+REP-SCH = SCHEDULE TYPE = ON/OFF THRU FEB  1 (ALL) (1,24) (0)
+                                 THRU FEB  8 (ALL) (1,24) (1)
+                                 THRU JUL  7 (ALL) (1,24) (0)
+                                 THRU JUL 14 (ALL) (1,24) (1)
+                                 THRU DEC 31 (ALL) (1,24) (0) ..
+
+
+RB-ZONE               = REPORT-BLOCK  VARIABLE-TYPE "GroceryZ"
+                                      VARIABLE-LIST (6,72,73,74)  ..
+
+"RB 1A1"  = REPORT-BLOCK  VARIABLE-TYPE "1A1"
+                                      VARIABLE-LIST (2,3,6,47,48)  ..
+"RB Rack SST:A1"      = REPORT-BLOCK  VARIABLE-TYPE "Rack SST:A1"
+                                      VARIABLE-LIST (2,7,8)  ..
+"RB Comp SST:A1:1"    = REPORT-BLOCK  VARIABLE-TYPE "Comp SST:A1:1"
+                                      VARIABLE-LIST (2,3,6,12)  ..
+"RB 1B2-1B6"      = REPORT-BLOCK  VARIABLE-TYPE "1B2-1B6"
+                                      VARIABLE-LIST (2,3,6,47,48)  ..
+"RB 1B7-1B10" = REPORT-BLOCK  VARIABLE-TYPE "1B7-1B10"
+                                      VARIABLE-LIST (2,3,6,47,48)  ..
+"RB 1B11"      = REPORT-BLOCK  VARIABLE-TYPE "1B11"
+                                      VARIABLE-LIST (2,3,6,47,48)  ..
+"RB Rack SST:B1"      = REPORT-BLOCK  VARIABLE-TYPE "Rack SST:B1"
+                                      VARIABLE-LIST (2,7,8)  ..
+"RB Comp SST:B1:2"     = REPORT-BLOCK  VARIABLE-TYPE "Comp SST:B1:2"
+                                      VARIABLE-LIST (2,3,6,12)  ..
+"RB Comp SST:B1:3"     = REPORT-BLOCK  VARIABLE-TYPE "Comp SST:B1:3"
+                                      VARIABLE-LIST (2,3,6,12)  ..
+"RB Comp SST:B1:4"     = REPORT-BLOCK  VARIABLE-TYPE "Comp SST:B1:4"
+                                      VARIABLE-LIST (2,3,6,12)  ..
+"RB Condenser 1"      = REPORT-BLOCK  VARIABLE-TYPE "Condenser 1"
+                                      VARIABLE-LIST (3,4,5,9)  ..
+"System 1"          = HOURLY-REPORT   
+   REPORT-SCHEDULE    = REP-SCH
+   REPORT-BLOCK       = (RB-ZONE,
+                         "RB 1A1",
+                         "RB Rack SST:A1",
+                         "RB Comp SST:A1:1",
+                         "RB 1B2-1B6",
+                         "RB 1B7-1B10",
+                         "RB 1B11",
+                         "RB Rack SST:B1",
+                         "RB Comp SST:B1:2",
+                         "RB Comp SST:B1:3",
+                         "RB Comp SST:B1:4",
+                         "RB Condenser 1" )  ..
+
+"RB 2D13-2D18"  = REPORT-BLOCK  VARIABLE-TYPE "2D13-2D18"
+                                      VARIABLE-LIST (2,3,6,47,48)  ..
+"RB Rack SST:D1"      = REPORT-BLOCK  VARIABLE-TYPE "Rack SST:D1"
+                                      VARIABLE-LIST (2,7,8)  ..
+"RB Comp SST:D1:1"    = REPORT-BLOCK  VARIABLE-TYPE "Comp SST:D1:1"
+                                      VARIABLE-LIST (2,3,6,12)  ..
+"RB Comp SST:D1:2"    = REPORT-BLOCK  VARIABLE-TYPE "Comp SST:D1:2"
+                                      VARIABLE-LIST (2,3,6,12)  ..
+"RB Comp SST:D1:3"    = REPORT-BLOCK  VARIABLE-TYPE "Comp SST:D1:3"
+                                      VARIABLE-LIST (2,3,6,12)  ..
+
+"RB 2D23"             = REPORT-BLOCK  VARIABLE-TYPE "2D23"
+                                      VARIABLE-LIST (1,2,3,5,6,12,18)  ..
+
+"RB Condenser 2"      = REPORT-BLOCK  VARIABLE-TYPE "Condenser 2"
+                                      VARIABLE-LIST (3,4,5,9)  ..
+"System 2"          = HOURLY-REPORT   
+   REPORT-SCHEDULE    = REP-SCH
+   REPORT-BLOCK       = (RB-ZONE,
+                         "RB 2D13-2D18",
+                         "RB Rack SST:D1",
+                         "RB Comp SST:D1:1",
+                         "RB Comp SST:D1:2",
+                         "RB Comp SST:D1:3",
+                         "RB 2D23",
+                         "RB Condenser 2" )  ..
+
+"RB 3C25-3C27"  = REPORT-BLOCK  VARIABLE-TYPE "3C25-3C27"
+                                      VARIABLE-LIST (2,3,6,47,48)  ..
+"RB Rack SST:C1"      = REPORT-BLOCK  VARIABLE-TYPE "Rack SST:C1"
+                                      VARIABLE-LIST (2,7,8)  ..
+"RB Comp SST:C1:1"    = REPORT-BLOCK  VARIABLE-TYPE "Comp SST:C1:1"
+                                      VARIABLE-LIST (2,3,6,12)  ..
+"RB Comp SST:C1:2"    = REPORT-BLOCK  VARIABLE-TYPE "Comp SST:C1:2"
+                                      VARIABLE-LIST (2,3,6,12)  ..
+"RB Comp SST:C1:3"    = REPORT-BLOCK  VARIABLE-TYPE "Comp SST:C1:3"
+                                      VARIABLE-LIST (2,3,6,12)  ..
+"RB 3C28-3C29"        = REPORT-BLOCK  VARIABLE-TYPE "3C28-3C29"
+                                      VARIABLE-LIST (2,3,6,47,48)  ..
+"RB 3C30 & 3C32"      = REPORT-BLOCK  VARIABLE-TYPE "3C30 & 3C32"
+                                      VARIABLE-LIST (2,3,6,47,48)  ..
+"RB 3C31 & 3C33"      = REPORT-BLOCK  VARIABLE-TYPE "3C31 & 3C33"
+                                      VARIABLE-LIST (2,3,6,47,48)  ..
+"RB 3C34" = REPORT-BLOCK  VARIABLE-TYPE "3C34"
+                                      VARIABLE-LIST (2,3,6,47,48)  ..
+
+"RB Condenser 3"      = REPORT-BLOCK  VARIABLE-TYPE "Condenser 3"
+                                      VARIABLE-LIST (3,4,5,9)  ..
+"System 3"          = HOURLY-REPORT   
+   REPORT-SCHEDULE    = REP-SCH
+   REPORT-BLOCK       = (RB-ZONE,
+                         "RB 3C25-3C27",
+                         "RB Rack SST:C1",
+                         "RB Comp SST:C1:1",
+                         "RB Comp SST:C1:2",
+                         "RB Comp SST:C1:3",
+                         "RB 3C28-3C29",
+                         "RB 3C30 & 3C32",
+                         "RB 3C31 & 3C33",
+                         "RB 3C34",
+                         "RB Condenser 3" )  ..
+
+"RB 4E38 & 4E39"  = REPORT-BLOCK  VARIABLE-TYPE "4E38 & 4E39"
+                                      VARIABLE-LIST (2,3,6,47,48)  ..
+"RB Rack SST:E1"      = REPORT-BLOCK  VARIABLE-TYPE "Rack SST:E1"
+                                      VARIABLE-LIST (2,7,8)  ..
+"RB Comp SST:E1:1"    = REPORT-BLOCK  VARIABLE-TYPE "Comp SST:E1:1"
+                                      VARIABLE-LIST (2,3,6,12)  ..
+"RB Comp SST:E1:2"    = REPORT-BLOCK  VARIABLE-TYPE "Comp SST:E1:2"
+                                      VARIABLE-LIST (2,3,6,12)  ..
+"RB Comp SST:E1:3"    = REPORT-BLOCK  VARIABLE-TYPE "Comp SST:E1:3"
+                                      VARIABLE-LIST (2,3,6,12)  ..
+"RB 4E40"     = REPORT-BLOCK  VARIABLE-TYPE "4E40"
+                                      VARIABLE-LIST (2,3,6,47,48)  ..
+"RB 4E41" = REPORT-BLOCK  VARIABLE-TYPE "4E41"
+                                      VARIABLE-LIST (2,3,6,47,48)  ..
+"RB 4E42-4E47" = REPORT-BLOCK  VARIABLE-TYPE "4E42-4E47"
+                                      VARIABLE-LIST (2,3,6,47,48)  ..
+"RB 4E45"     = REPORT-BLOCK  VARIABLE-TYPE "4E45"
+                                      VARIABLE-LIST (2,3,6,47,48)  ..
+"RB 4E46" = REPORT-BLOCK  VARIABLE-TYPE "4E46"
+                                      VARIABLE-LIST (2,3,6,47,48)  ..
+"RB 4E48" = REPORT-BLOCK  VARIABLE-TYPE "4E48"
+                                      VARIABLE-LIST (2,3,6,47,48)  ..
+
+"RB Condenser 4"      = REPORT-BLOCK  VARIABLE-TYPE "Condenser 4"
+                                      VARIABLE-LIST (3,4,5,9)  ..
+"System 4"          = HOURLY-REPORT   
+   REPORT-SCHEDULE    = REP-SCH
+   REPORT-BLOCK       = (RB-ZONE,
+                         "RB 4E38 & 4E39",
+                         "RB Rack SST:E1",
+                         "RB Comp SST:E1:1",
+                         "RB Comp SST:E1:2"
+                         "RB Comp SST:E1:3"
+                         "RB 4E40",
+                         "RB 4E41",
+                         "RB 4E42-4E47",
+                         "RB 4E45",
+                         "RB 4E46",
+                         "RB 4E48",
+                         "RB Condenser 4" )  ..
+
+"RB 5F49"  = REPORT-BLOCK  VARIABLE-TYPE "5F49"
+                                      VARIABLE-LIST (2,3,6,47,48)  ..
+"RB Rack SST:F1"      = REPORT-BLOCK  VARIABLE-TYPE "Rack SST:F1"
+                                      VARIABLE-LIST (2,7,8)  ..
+"RB Comp SST:F1:1"    = REPORT-BLOCK  VARIABLE-TYPE "Comp SST:F1:1"
+                                      VARIABLE-LIST (2,3,6,12)  ..
+"RB Comp SST:F1:2"    = REPORT-BLOCK  VARIABLE-TYPE "Comp SST:F1:2"
+                                      VARIABLE-LIST (2,3,6,12)  ..
+"RB Comp SST:F1:3"    = REPORT-BLOCK  VARIABLE-TYPE "Comp SST:F1:3"
+                                      VARIABLE-LIST (2,3,6,12)  ..
+"RB 5F50"      = REPORT-BLOCK  VARIABLE-TYPE "5F50"
+                                      VARIABLE-LIST (2,3,6,47,48)  ..
+"RB 5F51"     = REPORT-BLOCK  VARIABLE-TYPE "5F51"
+                                      VARIABLE-LIST (2,3,6,47,48)  ..
+"RB 5F52" = REPORT-BLOCK  VARIABLE-TYPE "5F52"
+                                      VARIABLE-LIST (2,3,6,47,48)  ..
+"RB 5F61"     = REPORT-BLOCK
+  VARIABLE-TYPE "5F61"
+  VARIABLE-LIST (1,2,3,5,6,12,18)  ..
+
+"RB Condenser 5"      = REPORT-BLOCK  VARIABLE-TYPE "Condenser 5"
+                                      VARIABLE-LIST (3,4,5,9)  ..
+"System 5"          = HOURLY-REPORT   
+   REPORT-SCHEDULE    = REP-SCH
+   REPORT-BLOCK       = (RB-ZONE,
+                         "RB 5F49",
+                         "RB Rack SST:F1",
+                         "RB Comp SST:F1:1",
+                         "RB Comp SST:F1:2",
+                         "RB Comp SST:F1:3",
+                         "RB 5F50",
+                         "RB 5F51",
+                         "RB 5F52",
+                         "RB 5F61",
+                         "RB Condenser 5" )  ..
+
+END ..
+COMPUTE ..
+STOP ..
