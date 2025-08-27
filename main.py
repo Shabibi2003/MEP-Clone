@@ -715,14 +715,15 @@ def main():
             )
 
         # Add download button for the log file
-        csv_data = logFile.to_csv(index=False).encode('utf-8')
-        st.download_button(
-            label="📥 Download Log File (CSV)",
-            data=csv_data,
-            file_name=f"{user_nm}_Batch_{new_batch_id}_log.csv",
-            mime="text/csv",
-            help="Click to download the simulation log file as a CSV"
-        )
+        if 'log_file_path' in locals() and log_file_path and os.path.exists(log_file_path):
+            with open(log_file_path, "rb") as f:
+                st.download_button(
+                label="⬇️ Download Log File (Excel)",
+                data=f,
+                file_name="simulation_log.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                )
 
 if __name__ == "__main__":
+    output_inp_folder = None 
     main()
