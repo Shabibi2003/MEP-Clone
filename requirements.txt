@@ -6,3 +6,4 @@ xlwings
 pdfplumber
 matplotlib
 seaborn
+openpyxl
