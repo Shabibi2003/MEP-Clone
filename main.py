@@ -674,7 +674,9 @@ def main():
         success_count = (logFile["Status"] == "Success").sum()
         success_rate = (success_count / total_sims) * 100 if total_sims > 0 else 0
         # 5 equal columns
+                # Display simulation summary in 5 columns
         col1, col2, col3, col4, col5 = st.columns(5)
+
         with col1:
             st.markdown(
                 "<div style='background:#e8f5e9; padding:15px; border-radius:12px; text-align:center;'>"
@@ -690,7 +692,7 @@ def main():
             )
             with st.expander("🔽 Click to View Log File"):
                 st.dataframe(logFile, use_container_width=True)
-                
+
         with col3:
             st.markdown(
                 f"<div style='background:#e3f2fd; padding:15px; border-radius:12px; text-align:center;'>"
@@ -711,6 +713,16 @@ def main():
                 f"📈 <br><b>Success Rate</b><br>{success_rate:.2f}%</div>",
                 unsafe_allow_html=True
             )
+
+        # Add download button for the log file
+        csv_data = logFile.to_csv(index=False).encode('utf-8')
+        st.download_button(
+            label="📥 Download Log File (CSV)",
+            data=csv_data,
+            file_name=f"{user_nm}_Batch_{new_batch_id}_log.csv",
+            mime="text/csv",
+            help="Click to download the simulation log file as a CSV"
+        )
 
 if __name__ == "__main__":
     main()
