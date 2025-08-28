@@ -28,7 +28,7 @@ from src import lv_b, ls_c, lv_d, pv_a_loop, sv_a, beps, bepu, lvd_summary, sva_
 
 
 # --- Streamlit Page Config ---
-st.set_page_config(page_title="ECM Batch Run",page_icon="💡", layout='wide',)
+st.set_page_config(page_title="ECM Batch Run",page_icon="💡", layout='wide')
 
 # --- Inject Custom CSS ---
 st.markdown("""
@@ -589,128 +589,142 @@ def main():
 
     # Start simulation
     if st.button("🚀 Start Simulation"):
-        os.makedirs(output_inp_folder, exist_ok=True)
-        new_batch_id = f"{int(time.time())}"  # unique ID
+        with st.spinner("⚡ Processing... This may take a few minutes."):
+            os.makedirs(output_inp_folder, exist_ok=True)
+            new_batch_id = f"{int(time.time())}"  # unique ID
 
-        selected_rows = updated_df[updated_df['Batch_ID'] == run_cnt]
-        batch_output_folder = os.path.join(output_inp_folder, f"{user_nm}_Batch_{new_batch_id}")
-        os.makedirs(batch_output_folder, exist_ok=True)
+            selected_rows = updated_df[updated_df['Batch_ID'] == run_cnt]
+            batch_output_folder = os.path.join(output_inp_folder, f"{user_nm}_Batch_{new_batch_id}")
+            os.makedirs(batch_output_folder, exist_ok=True)
 
-        num = 1
-        modified_files = []
-        for _, row in selected_rows.iterrows():
-            selected_inp = row["Selected_INP"]
-            new_inp_name = f"{row['Wall']}_{row['Roof']}_{row['Glazing']}_{row['Orient']}_{row['Light']}_{row['WWR']}_{row['Equip']}_{selected_inp}"
-            new_inp_path = os.path.join(batch_output_folder, new_inp_name)
+            num = 1
+            modified_files = []
+            for _, row in selected_rows.iterrows():
+                selected_inp = row["Selected_INP"]
+                new_inp_name = f"{row['Wall']}_{row['Roof']}_{row['Glazing']}_{row['Orient']}_{row['Light']}_{row['WWR']}_{row['Equip']}_{selected_inp}"
+                new_inp_path = os.path.join(batch_output_folder, new_inp_name)
 
-            inp_file_path = os.path.join(inp_folder, selected_inp)
-            if not os.path.exists(inp_file_path):
-                st.error(f"File {inp_file_path} not found. Skipping.")
-                continue
+                inp_file_path = os.path.join(inp_folder, selected_inp)
+                if not os.path.exists(inp_file_path):
+                    st.error(f"File {inp_file_path} not found. Skipping.")
+                    continue
 
-            # st.info(f"Modifying INP file {num}: {selected_inp} -> {new_inp_name}")
-            num += 1
+                # st.info(f"Modifying INP file {num}: {selected_inp} -> {new_inp_name}")
+                num += 1
 
-            # Apply modifications
-            inp_content = wwr.process_window_insertion_workflow(inp_file_path, row["WWR"] + 1)
-            inp_content = orient.updateOrientation(inp_content, row["Orient"])
-            inp_content = lighting.updateLPD(inp_content, row['Light'])
-            inp_content = insertWall.update_Material_Layers_Construction(inp_content, row["Wall"])
-            inp_content = insertRoof.update_Material_Layers_Construction(inp_content, row["Roof"])
-            inp_content = insertRoof.removeDuplicates(inp_content)
-            inp_content = equip.updateEquipment(inp_content, row['Equip'])
-            inp_content = windows.insert_glass_types_multiple_outputs(inp_content, row['Glazing'])
+                # Apply modifications
+                inp_content = wwr.process_window_insertion_workflow(inp_file_path, row["WWR"] + 1)
+                inp_content = orient.updateOrientation(inp_content, row["Orient"])
+                inp_content = lighting.updateLPD(inp_content, row['Light'])
+                inp_content = insertWall.update_Material_Layers_Construction(inp_content, row["Wall"])
+                inp_content = insertRoof.update_Material_Layers_Construction(inp_content, row["Roof"])
+                inp_content = insertRoof.removeDuplicates(inp_content)
+                inp_content = equip.updateEquipment(inp_content, row['Equip'])
+                inp_content = windows.insert_glass_types_multiple_outputs(inp_content, row['Glazing'])
 
-            with open(new_inp_path, 'w') as file:
-                file.writelines(inp_content)
-            modified_files.append(new_inp_name)
-        st.markdown(
-            "<strong>🔧 Modified Files →</strong> " +
-            "".join([
-                f"<span style='background:#e0f7fa; color:#00796b; padding:4px 8px; "
-                f"border-radius:12px; margin:2px; display:inline-block;'>"
-                f"{name}</span>"
-                for name in modified_files
-            ]),
-            unsafe_allow_html=True
-        )
-
-
-        simulate_files = []
-        # Copy and run batch script
-        if uploaded_file is None:
-            st.error("Please upload an INP file before starting the simulation.")
-        else:
-            script_dir = os.path.dirname(os.path.abspath(__file__))
-            shutil.copy(os.path.join(script_dir, "script.bat"), batch_output_folder)
-            inp_files = [f for f in os.listdir(batch_output_folder) if f.lower().endswith(".inp")]
-            for inp_file in inp_files:
-                file_path = os.path.join(batch_output_folder, os.path.splitext(inp_file)[0])
-                subprocess.call(
-                    [os.path.join(batch_output_folder, "script.bat"), file_path, weather_path],
-                    shell=True
-                )
-                simulate_files.append(inp_file)
+                with open(new_inp_path, 'w') as file:
+                    file.writelines(inp_content)
+                modified_files.append(new_inp_name)
             st.markdown(
-                "<strong>⚡ Simulated Files →</strong> " +
+                "<strong>🔧 Modified Files →</strong> " +
                 "".join([
                     f"<span style='background:#e0f7fa; color:#00796b; padding:4px 8px; "
                     f"border-radius:12px; margin:2px; display:inline-block;'>"
                     f"{name}</span>"
-                    for name in simulate_files
+                    for name in modified_files
                 ]),
                 unsafe_allow_html=True
             )
-            # subprocess.call([os.path.join(batch_output_folder, "script.bat"), batch_output_folder, weather_path], shell=True)
-            
-            required_sections = ['BEPS', 'BEPU', 'LS-C', 'LV-B', 'LV-D', 'PS-E', 'SV-A']
-            log_file_path = check_missing_sections(batch_output_folder, required_sections, new_batch_id, user_nm)
-            get_failed_simulation_data(batch_output_folder, log_file_path)
-            clean_folder(batch_output_folder)
-            get_files_for_data_extraction(batch_output_folder, log_file_path, new_batch_id, location_id, user_nm)
-        logFile = pd.read_excel(log_file_path)
-        total_runs = len(updated_df)
-        total_sims = len(logFile)
-        success_count = (logFile["Status"] == "Success").sum()
-        success_rate = (success_count / total_sims) * 100 if total_sims > 0 else 0
-        # 5 equal columns
-        col1, col2, col3, col4, col5 = st.columns(5)
-        with col1:
-            st.markdown(
-                "<div style='background:#e8f5e9; padding:15px; border-radius:12px; text-align:center;'>"
-                "✅ <br><b>Completed</b><br>Simulation & Extraction</div>",
-                unsafe_allow_html=True
-            )
 
-        with col2:
-            st.markdown(
-                "<div style='background:#f3e5f5; padding:15px; border-radius:12px; text-align:center;'>"
-                "📊 <b>Log File</b></div>",
-                unsafe_allow_html=True
-            )
-            with st.expander("🔽 Click to View Log File"):
-                st.dataframe(logFile, use_container_width=True)
+
+            simulate_files = []
+            try:
+                # Copy and run batch script
+                if uploaded_file is None:
+                    st.error("Please upload an INP file before starting the simulation.")
+                else:
+                    script_dir = os.path.dirname(os.path.abspath(__file__))
+                    shutil.copy(os.path.join(script_dir, "script.bat"), batch_output_folder)
+                    inp_files = [f for f in os.listdir(batch_output_folder) if f.lower().endswith(".inp")]
+                    for inp_file in inp_files:
+                        file_path = os.path.join(batch_output_folder, os.path.splitext(inp_file)[0])
+                        subprocess.call(
+                            [os.path.join(batch_output_folder, "script.bat"), file_path, weather_path],
+                            shell=True
+                        )
+                        simulate_files.append(inp_file)
+                    st.markdown(
+                        "<strong>⚡ Simulated Files →</strong> " +
+                        "".join([
+                            f"<span style='background:#e0f7fa; color:#00796b; padding:4px 8px; "
+                            f"border-radius:12px; margin:2px; display:inline-block;'>"
+                            f"{name}</span>"
+                            for name in simulate_files
+                        ]),
+                        unsafe_allow_html=True
+                    )
+                    # subprocess.call([os.path.join(batch_output_folder, "script.bat"), batch_output_folder, weather_path], shell=True)
+                    required_sections = ['BEPS', 'BEPU', 'LS-C', 'LV-B', 'LV-D', 'PS-E', 'SV-A']
+                    log_file_path = check_missing_sections(batch_output_folder, required_sections, new_batch_id, user_nm)
+                    get_failed_simulation_data(batch_output_folder, log_file_path)
+                    clean_folder(batch_output_folder)
+                    combinedData = get_files_for_data_extraction(batch_output_folder, log_file_path, new_batch_id, location_id, user_nm)
+                logFile = pd.read_excel(log_file_path)
+                total_runs = len(updated_df)
+                total_sims = len(logFile)
+                success_count = (logFile["Status"] == "Success").sum()
+                success_rate = (success_count / total_sims) * 100 if total_sims > 0 else 0
+                # 5 equal columns
+                col1, col2, col3, col4, col5, col6 = st.columns(6)
+                with col1:
+                    st.markdown(
+                        "<div style='background:#e8f5e9; padding:15px; border-radius:12px; text-align:center; color:black'>"
+                        "✅ <br><b>Completed</b><br>Simulation & Extraction</div>",
+                        unsafe_allow_html=True
+                    )
+
+                with col2:
+                    st.markdown(
+                        "<div style='background:#f3e5f5; padding:15px; border-radius:12px; text-align:center; color:black'>"
+                        "📊 <b>Log File</b></div>",
+                        unsafe_allow_html=True
+                    )
+                    with st.expander("🔽 Click to View Log File"):
+                        st.dataframe(logFile, use_container_width=True)
+                        
+                with col3:
+                    st.markdown(
+                        f"<div style='background:#e3f2fd; padding:15px; border-radius:12px; text-align:center; color:black'>"
+                        f"🧮 <br><b>Total Runs</b><br>{total_runs}</div>",
+                        unsafe_allow_html=True
+                    )
+
+                with col4:
+                    st.markdown(
+                        f"<div style='background:#ede7f6; padding:15px; border-radius:12px; text-align:center; color:black'>"
+                        f"🧮 <br><b>Total Sims</b><br>{total_sims}</div>",
+                        unsafe_allow_html=True
+                    )
+
+                with col5:
+                    st.markdown(
+                        f"<div style='background:#fff3e0; padding:15px; border-radius:12px; text-align:center; color:black'>"
+                        f"📈 <br><b>Success Rate</b><br>{success_rate:.2f}%</div>",
+                        unsafe_allow_html=True
+                    )
                 
-        with col3:
-            st.markdown(
-                f"<div style='background:#e3f2fd; padding:15px; border-radius:12px; text-align:center;'>"
-                f"🧮 <br><b>Total Runs</b><br>{total_runs}</div>",
-                unsafe_allow_html=True
-            )
+                with col6:
+                    st.markdown(
+                        "<div style='background:#f3e5f5; padding:15px; border-radius:12px; text-align:center; color:black'>"
+                        "📊 <b>Final Report</b></div>",
+                        unsafe_allow_html=True
+                    )
+                    with st.expander("🔽 Click to View Final Report"):
+                        st.dataframe(combinedData, use_container_width=True)
 
-        with col4:
-            st.markdown(
-                f"<div style='background:#ede7f6; padding:15px; border-radius:12px; text-align:center;'>"
-                f"🧮 <br><b>Total Sims</b><br>{total_sims}</div>",
-                unsafe_allow_html=True
-            )
-
-        with col5:
-            st.markdown(
-                f"<div style='background:#fff3e0; padding:15px; border-radius:12px; text-align:center;'>"
-                f"📈 <br><b>Success Rate</b><br>{success_rate:.2f}%</div>",
-                unsafe_allow_html=True
-            )
+            except Exception as e:
+                st.toast("⚡ Processing couldn't be completed. Try again with after few seconds.", icon="⚡")
+        
 
 if __name__ == "__main__":
     main()
